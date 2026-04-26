@@ -1,84 +1,44 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
 
-Route::get('/', function () {
-    return view('pages.home');
-})->name('home');
+// Dynamic Pages (using Controller)
+Route::controller(PageController::class)->group(function () {
+    Route::get('/', 'home')->name('home');
+    Route::get('/doctors', 'doctors')->name('doctors');
+    Route::get('/services', 'services')->name('services');
+    Route::get('/departments', 'departments')->name('departments');
+});
 
-Route::get('/about', function () {
-    return view('pages.about');
-})->name('about');
+// Static Pages (using Route::view)
+Route::view('/about', 'pages.about')->name('about');
+Route::view('/appointment', 'pages.appointment')->name('appointment');
+Route::view('/contact', 'pages.contact')->name('contact');
+Route::view('/department-details', 'pages.department-details')->name('department-details');
+Route::view('/faq', 'pages.faq')->name('faq');
+Route::view('/gallery', 'pages.gallery')->name('gallery');
+Route::view('/privacy', 'pages.privacy')->name('privacy');
+Route::view('/service-details', 'pages.service-details')->name('service-details');
+Route::view('/starter-page', 'pages.starter-page')->name('starter-page');
+Route::view('/terms', 'pages.terms')->name('terms');
+Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 
-Route::get('/appointment', function () {
-    return view('pages.appointment');
-})->name('appointment');
+// Breeze Routes
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/contact', function () {
-    return view('pages.contact');
-})->name('contact');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::get('/department-details', function () {
-    return view('pages.department-details');
-})->name('department-details');
+require __DIR__.'/auth.php';
 
-Route::get('/departments', function () {
-    return view('pages.departments');
-})->name('departments');
-
-Route::get('/doctors', function () {
-    return view('pages.doctors');
-})->name('doctors');
-
-Route::get('/faq', function () {
-    return view('pages.faq');
-})->name('faq');
-
-Route::get('/gallery', function () {
-    return view('pages.gallery');
-})->name('gallery');
-
-Route::get('/landing', function () {
-    return view('pages.landing');
-})->name('landing');
-
-Route::get('/privacy', function () {
-    return view('pages.privacy');
-})->name('privacy');
-
-Route::get('/service-details', function () {
-    return view('pages.service-details');
-})->name('service-details');
-
-Route::get('/services', function () {
-    return view('pages.services');
-})->name('services');
-
-Route::get('/starter-page', function () {
-    return view('pages.starter-page');
-})->name('starter-page');
-
-Route::get('/terms', function () {
-    return view('pages.terms');
-})->name('terms');
-
-Route::get('/testimonials', function () {
-    return view('pages.testimonials');
-})->name('testimonials');
-
+// Fallback Route (404)
 Route::fallback(function () {
-    return view('pages.404');
-})->name('404');
-
-Route::get('/terms', function () {
-    return view('pages.terms');
+    return response()->view('pages.404', [], 404);
 });
-
-Route::get('/testimonials', function () {
-    return view('pages.testimonials');
-});
-
-Route::fallback(function () {
-    return view('pages.404');
-});
-

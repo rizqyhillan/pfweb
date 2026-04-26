@@ -7,7 +7,7 @@
 
           <div class="col-lg-5">
             <div class="brand-section">
-              <a href="index.html" class="logo d-flex align-items-center mb-4">
+              <a href="{{ route('home') }}" class="logo d-flex align-items-center mb-4">
                 <span class="sitename">Clinic</span>
               </a>
               <p class="brand-description">Crafting exceptional digital experiences through thoughtful design and
