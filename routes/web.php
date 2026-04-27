@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\BoardingController;
 use App\Http\Controllers\Admin\MedicalRecordController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ProductBatchController;
+use App\Http\Controllers\Admin\StockCardController;
 
 // Dynamic Pages (using Controller)
 Route::controller(PageController::class)->group(function () {
@@ -58,6 +60,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('medical-records', MedicalRecordController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('users', UserController::class);
+    Route::resource('product-batches', ProductBatchController::class);
+    Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
 });
 
 require __DIR__.'/auth.php';

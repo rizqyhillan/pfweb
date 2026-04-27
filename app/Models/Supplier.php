@@ -1,21 +1,11 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
-    protected $fillable = [
-        'name',
-        'contact',
-        'email',
-        'address',
-    ];
+    protected $table = 'supplier';
+    protected $fillable = ['nama_supplier', 'kontak', 'email', 'alamat'];
 
-    public function productBatches(): HasMany
-    {
-        return $this->hasMany(ProductBatch::class);
-    }
+    public function getNameAttribute() { return $this->nama_supplier; }
 }

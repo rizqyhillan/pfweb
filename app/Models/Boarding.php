@@ -1,38 +1,16 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Boarding extends Model
 {
-    protected $fillable = [
-        'pet_id',
-        'room_id',
-        'check_in_date',
-        'planned_check_out_date',
-        'check_out_date',
-        'drop_off_notes',
-        'pick_up_notes',
-        'status',
-        'total_cost',
-    ];
+    protected $table = 'penitipan';
+    protected $fillable = ['id_hewan', 'id_kamar', 'tanggal_masuk', 'tanggal_rencana_keluar', 'tanggal_keluar', 'catatan_titip', 'catatan_jemput', 'status', 'total_biaya'];
+    protected $casts = ['total_biaya' => 'decimal:2', 'tanggal_masuk' => 'date', 'tanggal_rencana_keluar' => 'date', 'tanggal_keluar' => 'date'];
 
-    protected $casts = [
-        'check_in_date' => 'date',
-        'planned_check_out_date' => 'date',
-        'check_out_date' => 'date',
-        'total_cost' => 'decimal:2',
-    ];
-
-    public function pet(): BelongsTo
-    {
-        return $this->belongsTo(Pet::class);
-    }
-
-    public function room(): BelongsTo
-    {
-        return $this->belongsTo(Room::class);
-    }
+    public function hewan() { return $this->belongsTo(Pet::class, 'id_hewan'); }
+    public function kamar() { return $this->belongsTo(Room::class, 'id_kamar'); }
+    // Backward compat
+    public function pet() { return $this->hewan(); }
+    public function room() { return $this->kamar(); }
 }

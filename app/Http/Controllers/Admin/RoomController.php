@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -21,17 +19,15 @@ class RoomController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:50',
-            'type' => 'required|in:small,medium,large',
-            'price_per_day' => 'required|numeric|min:0',
-            'capacity' => 'required|integer|min:1',
-            'status' => 'required|in:available,occupied,maintenance',
-            'description' => 'nullable|string',
+        $v = $request->validate([
+            'nama_kamar' => 'required|string|max:50',
+            'tipe' => 'required|in:kecil,sedang,besar',
+            'harga_per_hari' => 'required|numeric|min:0',
+            'kapasitas' => 'required|integer|min:1',
+            'keterangan' => 'nullable|string',
         ]);
-
-        Room::create($validated);
-
+        $v['status'] = 'tersedia';
+        Room::create($v);
         return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil ditambahkan.');
     }
 
@@ -42,18 +38,16 @@ class RoomController extends Controller
 
     public function update(Request $request, Room $room)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:50',
-            'type' => 'required|in:small,medium,large',
-            'price_per_day' => 'required|numeric|min:0',
-            'capacity' => 'required|integer|min:1',
-            'status' => 'required|in:available,occupied,maintenance',
-            'description' => 'nullable|string',
+        $v = $request->validate([
+            'nama_kamar' => 'required|string|max:50',
+            'tipe' => 'required|in:kecil,sedang,besar',
+            'harga_per_hari' => 'required|numeric|min:0',
+            'kapasitas' => 'required|integer|min:1',
+            'status' => 'required|in:tersedia,terisi,maintenance',
+            'keterangan' => 'nullable|string',
         ]);
-
-        $room->update($validated);
-
-        return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil diupdate.');
+        $room->update($v);
+        return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil diperbarui.');
     }
 
     public function destroy(Room $room)

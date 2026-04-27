@@ -1,29 +1,17 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $fillable = [
-        'name',
-        'category',
-        'price',
-        'stock',
-        'unit',
-        'description',
-        'is_active',
-    ];
+    protected $table = 'barang';
+    protected $fillable = ['nama_barang', 'kategori', 'harga', 'stok', 'satuan', 'deskripsi', 'is_aktif'];
+    protected $casts = ['harga' => 'decimal:2', 'is_aktif' => 'boolean'];
 
-    protected $casts = [
-        'price' => 'decimal:2',
-        'is_active' => 'boolean',
-    ];
+    public function getNameAttribute() { return $this->nama_barang; }
+    public function getPriceAttribute() { return $this->harga; }
+    public function getStockAttribute() { return $this->stok; }
 
-    public function batches(): HasMany
-    {
-        return $this->hasMany(ProductBatch::class);
-    }
+    public function batches() { return $this->hasMany(ProductBatch::class, 'id_barang'); }
+    public function kartuStok() { return $this->hasMany(StockCard::class, 'id_barang'); }
 }

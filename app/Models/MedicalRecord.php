@@ -1,34 +1,16 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MedicalRecord extends Model
 {
-    protected $fillable = [
-        'pet_id',
-        'doctor_id',
-        'diagnosis',
-        'treatment',
-        'prescription',
-        'current_weight',
-        'date',
-    ];
+    protected $table = 'rekam_medis';
+    protected $fillable = ['id_hewan', 'id_dokter', 'diagnosa', 'tindakan', 'resep', 'berat_saat_itu', 'catatan', 'tanggal'];
+    protected $casts = ['berat_saat_itu' => 'decimal:2', 'tanggal' => 'datetime'];
 
-    protected $casts = [
-        'current_weight' => 'decimal:2',
-        'date' => 'datetime',
-    ];
-
-    public function pet(): BelongsTo
-    {
-        return $this->belongsTo(Pet::class);
-    }
-
-    public function doctor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'doctor_id');
-    }
+    public function hewan() { return $this->belongsTo(Pet::class, 'id_hewan'); }
+    public function dokter() { return $this->belongsTo(User::class, 'id_dokter'); }
+    // Backward compat
+    public function pet() { return $this->hewan(); }
+    public function doctor() { return $this->dokter(); }
 }

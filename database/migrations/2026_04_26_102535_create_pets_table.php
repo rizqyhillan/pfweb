@@ -1,34 +1,22 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        Schema::create('pets', function (Blueprint $table) {
+        Schema::create('hewan', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
-            $table->string('name', 100);
-            $table->string('species', 50);
-            $table->string('breed', 100)->nullable();
-            $table->string('age', 30)->nullable();
-            $table->decimal('weight', 5, 2)->nullable();
-            $table->text('notes')->nullable();
+            $table->foreignId('id_pemilik')->constrained('users')->onDelete('cascade');
+            $table->string('nama_hewan', 100);
+            $table->string('jenis', 50);
+            $table->string('ras', 100)->nullable();
+            $table->string('umur', 30)->nullable();
+            $table->decimal('berat', 5, 2)->nullable();
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('pets');
-    }
+    public function down(): void { Schema::dropIfExists('hewan'); }
 };

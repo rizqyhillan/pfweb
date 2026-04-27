@@ -1,35 +1,16 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pet extends Model
 {
-    protected $fillable = [
-        'owner_id',
-        'name',
-        'species',
-        'breed',
-        'age',
-        'weight',
-        'notes',
-    ];
+    protected $table = 'hewan';
+    protected $fillable = ['id_pemilik', 'nama_hewan', 'jenis', 'ras', 'umur', 'berat', 'catatan'];
+    protected $casts = ['berat' => 'decimal:2'];
 
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'owner_id');
-    }
+    // Accessor agar $pet->name tetap jalan di view
+    public function getNameAttribute() { return $this->nama_hewan; }
 
-    public function medicalRecords(): HasMany
-    {
-        return $this->hasMany(MedicalRecord::class);
-    }
-
-    public function boardings(): HasMany
-    {
-        return $this->hasMany(Boarding::class);
-    }
+    public function owner() { return $this->belongsTo(User::class, 'id_pemilik'); }
+    public function rekamMedis() { return $this->hasMany(MedicalRecord::class, 'id_hewan'); }
 }

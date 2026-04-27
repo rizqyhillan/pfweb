@@ -1,12 +1,8 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -23,21 +19,18 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:admin,doctor,owner,cashier',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
+        $v = $request->validate([
+            'nama' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,dokter,pemilik,kasir',
+            'no_hp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string',
         ]);
-
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['is_active'] = true;
-
-        User::create($validated);
-
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
+        $v['password'] = bcrypt($v['password']);
+        $v['is_aktif'] = 1;
+        User::create($v);
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
     public function edit(User $user)
@@ -47,34 +40,24 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,doctor,owner,cashier',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'is_active' => 'boolean',
+        $v = $request->validate([
+            'nama' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
+            'role' => 'required|in:admin,dokter,pemilik,kasir',
+            'no_hp' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string',
         ]);
-
-        $validated['is_active'] = $request->has('is_active');
-
         if ($request->filled('password')) {
-            $request->validate(['password' => ['confirmed', Rules\Password::defaults()]]);
-            $validated['password'] = Hash::make($request->password);
+            $v['password'] = bcrypt($request->password);
         }
-
-        $user->update($validated);
-
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil diupdate.');
+        $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
+        $user->update($v);
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) {
-            return redirect()->route('admin.users.index')->with('error', 'Tidak bisa menghapus akun sendiri.');
-        }
-
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

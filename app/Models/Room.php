@@ -1,27 +1,13 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Room extends Model
 {
-    protected $fillable = [
-        'name',
-        'type',
-        'price_per_day',
-        'capacity',
-        'status',
-        'description',
-    ];
+    protected $table = 'kamar';
+    protected $fillable = ['nama_kamar', 'tipe', 'harga_per_hari', 'kapasitas', 'status', 'keterangan'];
+    protected $casts = ['harga_per_hari' => 'decimal:2'];
 
-    protected $casts = [
-        'price_per_day' => 'decimal:2',
-    ];
-
-    public function boardings(): HasMany
-    {
-        return $this->hasMany(Boarding::class);
-    }
+    public function getNameAttribute() { return $this->nama_kamar; }
+    public function getPricePerDayAttribute() { return $this->harga_per_hari; }
 }

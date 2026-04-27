@@ -1,46 +1,47 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\Boarding;
 use App\Models\Pet;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class BoardingController extends Controller
 {
     public function index()
     {
-        $boardings = Boarding::with(['pet.owner', 'room'])->latest()->paginate(15);
+        $boardings = Boarding::with(['hewan.owner', 'kamar'])->latest()->paginate(15);
         return view('admin.boardings.index', compact('boardings'));
     }
 
     public function create()
     {
         $pets = Pet::with('owner')->get();
-        $rooms = Room::where('status', 'available')->get();
+        $rooms = Room::where('status', 'tersedia')->get();
         return view('admin.boardings.create', compact('pets', 'rooms'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
-            'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date',
-            'planned_check_out_date' => 'required|date|after:check_in_date',
-            'drop_off_notes' => 'nullable|string',
-            'total_cost' => 'required|numeric|min:0',
+        $v = $request->validate([
+            'id_hewan' => 'required|exists:hewan,id',
+            'id_kamar' => 'required|exists:kamar,id',
+            'tanggal_masuk' => 'required|date',
+            'tanggal_rencana_keluar' => 'required|date|after:tanggal_masuk',
+            'catatan_titip' => 'nullable|string',
+            'total_biaya' => 'nullable|numeric|min:0',
         ]);
 
-        $validated['status'] = 'active';
-        Boarding::create($validated);
-
-        // Update room status
-        Room::where('id', $validated['room_id'])->update(['status' => 'occupied']);
-
-        return redirect()->route('admin.boardings.index')->with('success', 'Boarding berhasil dibuat.');
+        $room = Room::find($v['id_kamar']);
+        $days = max(1, Carbon::parse($v['tanggal_masuk'])->diffInDays(Carbon::parse($v['tanggal_rencana_keluar'])));
+        if (empty($v['total_biaya']) || $v['total_biaya'] == 0) {
+            $v['total_biaya'] = $room->harga_per_hari * $days;
+        }
+        $v['status'] = 'aktif';
+        Boarding::create($v);
+        Room::where('id', $v['id_kamar'])->update(['status' => 'terisi']);
+        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp ' . number_format($v['total_biaya'], 0, ',', '.'));
     }
 
     public function edit(Boarding $boarding)
@@ -52,33 +53,35 @@ class BoardingController extends Controller
 
     public function update(Request $request, Boarding $boarding)
     {
-        $validated = $request->validate([
-            'pet_id' => 'required|exists:pets,id',
-            'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date',
-            'planned_check_out_date' => 'required|date|after:check_in_date',
-            'check_out_date' => 'nullable|date',
-            'drop_off_notes' => 'nullable|string',
-            'pick_up_notes' => 'nullable|string',
-            'status' => 'required|in:active,completed,cancelled',
-            'total_cost' => 'required|numeric|min:0',
+        $v = $request->validate([
+            'id_hewan' => 'required|exists:hewan,id',
+            'id_kamar' => 'required|exists:kamar,id',
+            'tanggal_masuk' => 'required|date',
+            'tanggal_rencana_keluar' => 'required|date|after:tanggal_masuk',
+            'tanggal_keluar' => 'nullable|date',
+            'catatan_titip' => 'nullable|string',
+            'catatan_jemput' => 'nullable|string',
+            'status' => 'required|in:aktif,selesai,batal',
+            'total_biaya' => 'nullable|numeric|min:0',
         ]);
 
-        $boarding->update($validated);
-
-        // If completed or cancelled, free the room
-        if (in_array($validated['status'], ['completed', 'cancelled'])) {
-            Room::where('id', $validated['room_id'])->update(['status' => 'available']);
+        if (empty($v['total_biaya']) || $v['total_biaya'] == 0) {
+            $room = Room::find($v['id_kamar']);
+            $endDate = $v['tanggal_keluar'] ? Carbon::parse($v['tanggal_keluar']) : Carbon::parse($v['tanggal_rencana_keluar']);
+            $days = max(1, Carbon::parse($v['tanggal_masuk'])->diffInDays($endDate));
+            $v['total_biaya'] = $room->harga_per_hari * $days;
         }
-
-        return redirect()->route('admin.boardings.index')->with('success', 'Boarding berhasil diupdate.');
+        $boarding->update($v);
+        if (in_array($v['status'], ['selesai', 'batal'])) {
+            Room::where('id', $v['id_kamar'])->update(['status' => 'tersedia']);
+        }
+        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil diperbarui.');
     }
 
     public function destroy(Boarding $boarding)
     {
-        // Free the room
-        Room::where('id', $boarding->room_id)->update(['status' => 'available']);
+        Room::where('id', $boarding->id_kamar)->update(['status' => 'tersedia']);
         $boarding->delete();
-        return redirect()->route('admin.boardings.index')->with('success', 'Boarding berhasil dihapus.');
+        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil dihapus.');
     }
 }

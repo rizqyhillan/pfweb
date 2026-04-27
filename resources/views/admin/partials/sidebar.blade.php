@@ -66,7 +66,7 @@
       </a>
     </li>
 
-    <!-- Dokter -->
+    <!-- Dokter & Layanan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Dokter & Layanan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
@@ -93,7 +93,21 @@
       </a>
     </li>
 
-    <!-- Boarding -->
+    <li class="menu-item {{ request()->routeIs('admin.product-batches.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.product-batches.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-box"></i>
+        <div class="text-truncate">Batch Produk</div>
+      </a>
+    </li>
+
+    <li class="menu-item {{ request()->routeIs('admin.stock-cards.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.stock-cards.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-transfer"></i>
+        <div class="text-truncate">Kartu Stok</div>
+      </a>
+    </li>
+
+    <!-- Penitipan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Penitipan Hewan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
@@ -106,17 +120,17 @@
     <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
       <a href="{{ route('admin.boardings.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-hotel"></i>
-        <div class="text-truncate">Boarding</div>
+        <div class="text-truncate">Penitipan</div>
       </a>
     </li>
 
-    <!-- Transaksi -->
+    <!-- Keuangan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Keuangan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
       <a href="{{ route('admin.transactions.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-money"></i>
-        <div class="text-truncate">Transaksi</div>
+        <div class="text-truncate">Kasir / POS</div>
       </a>
     </li>
 
@@ -126,11 +140,11 @@
     <li class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
       <a href="{{ route('admin.users.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-user"></i>
-        <div class="text-truncate">Users</div>
+        <div class="text-truncate">Pengguna</div>
       </a>
     </li>
 
-    <!-- Back to Site -->
+    <!-- Lainnya -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Lainnya</span></li>
     <li class="menu-item">
       <a href="{{ route('home') }}" class="menu-link" target="_blank">

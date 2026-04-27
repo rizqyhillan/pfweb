@@ -32,7 +32,7 @@
                   </div>
                 </div>
                 <div class="flex-grow-1">
-                  <h6 class="mb-0">{{ Auth::user()->name ?? 'Admin' }}</h6>
+                  <h6 class="mb-0">{{ Auth::user()->nama ?? 'Admin' }}</h6>
                   <small class="text-body-secondary">{{ ucfirst(Auth::user()->role ?? 'admin') }}</small>
                 </div>
               </div>
@@ -41,7 +41,7 @@
           <li><div class="dropdown-divider my-1"></div></li>
           <li>
             <a class="dropdown-item" href="{{ route('profile.edit') }}">
-              <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
+              <i class="icon-base bx bx-user icon-md me-3"></i><span>Profil Saya</span>
             </a>
           </li>
           <li><div class="dropdown-divider my-1"></div></li>
@@ -49,7 +49,7 @@
             <form method="POST" action="{{ route('logout') }}">
               @csrf
               <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
-                <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span>
+                <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Keluar</span>
               </a>
             </form>
           </li>

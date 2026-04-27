@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -21,15 +19,13 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'contact' => 'nullable|string|max:50',
+        $v = $request->validate([
+            'nama_supplier' => 'required|string|max:150',
+            'kontak' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:150',
-            'address' => 'nullable|string',
+            'alamat' => 'nullable|string',
         ]);
-
-        Supplier::create($validated);
-
+        Supplier::create($v);
         return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
     }
 
@@ -40,16 +36,14 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'contact' => 'nullable|string|max:50',
+        $v = $request->validate([
+            'nama_supplier' => 'required|string|max:150',
+            'kontak' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:150',
-            'address' => 'nullable|string',
+            'alamat' => 'nullable|string',
         ]);
-
-        $supplier->update($validated);
-
-        return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil diupdate.');
+        $supplier->update($v);
+        return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil diperbarui.');
     }
 
     public function destroy(Supplier $supplier)

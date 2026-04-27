@@ -1,34 +1,23 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        Schema::create('medical_records', function (Blueprint $table) {
+        Schema::create('rekam_medis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pet_id')->constrained('pets')->onDelete('cascade');
-            $table->foreignId('doctor_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->text('diagnosis')->nullable();
-            $table->text('treatment')->nullable();
-            $table->text('prescription')->nullable();
-            $table->decimal('current_weight', 5, 2)->nullable();
-            $table->dateTime('date')->useCurrent();
+            $table->foreignId('id_hewan')->constrained('hewan')->onDelete('cascade');
+            $table->foreignId('id_dokter')->nullable()->constrained('users')->onDelete('set null');
+            $table->text('diagnosa')->nullable();
+            $table->text('tindakan')->nullable();
+            $table->text('resep')->nullable();
+            $table->decimal('berat_saat_itu', 5, 2)->nullable();
+            $table->text('catatan')->nullable();
+            $table->dateTime('tanggal')->useCurrent();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('medical_records');
-    }
+    public function down(): void { Schema::dropIfExists('rekam_medis'); }
 };

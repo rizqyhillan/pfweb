@@ -1,30 +1,15 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockCard extends Model
 {
-    protected $fillable = [
-        'batch_id',
-        'date',
-        'mutation_type',
-        'quantity',
-        'balance',
-        'unit_price',
-        'reference',
-        'notes',
-    ];
+    protected $table = 'kartu_stok';
+    protected $fillable = ['id_barang', 'id_batch', 'tanggal', 'jenis_mutasi', 'jumlah', 'saldo', 'harga_satuan', 'referensi', 'keterangan'];
+    protected $casts = ['harga_satuan' => 'decimal:2', 'tanggal' => 'datetime'];
 
-    protected $casts = [
-        'unit_price' => 'decimal:2',
-        'date' => 'datetime',
-    ];
-
-    public function batch(): BelongsTo
-    {
-        return $this->belongsTo(ProductBatch::class, 'batch_id');
-    }
+    public function barang() { return $this->belongsTo(Product::class, 'id_barang'); }
+    public function batch() { return $this->belongsTo(ProductBatch::class, 'id_batch'); }
+    // Backward compat
+    public function product() { return $this->barang(); }
 }

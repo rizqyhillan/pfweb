@@ -1,43 +1,15 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductBatch extends Model
 {
-    protected $fillable = [
-        'product_id',
-        'supplier_id',
-        'batch_number',
-        'purchase_price',
-        'quantity_received',
-        'stock_remaining',
-        'received_date',
-        'expired_date',
-        'notes',
-    ];
+    protected $table = 'barang_batch';
+    protected $fillable = ['id_barang', 'id_supplier', 'no_batch', 'harga_beli', 'jumlah_masuk', 'sisa_stok', 'tanggal_masuk', 'tanggal_expired', 'keterangan'];
+    protected $casts = ['harga_beli' => 'decimal:2', 'tanggal_masuk' => 'date', 'tanggal_expired' => 'date'];
 
-    protected $casts = [
-        'purchase_price' => 'decimal:2',
-        'received_date' => 'date',
-        'expired_date' => 'date',
-    ];
-
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function stockCards(): HasMany
-    {
-        return $this->hasMany(StockCard::class, 'batch_id');
-    }
+    public function barang() { return $this->belongsTo(Product::class, 'id_barang'); }
+    public function supplier() { return $this->belongsTo(Supplier::class, 'id_supplier'); }
+    // Backward compat
+    public function product() { return $this->barang(); }
 }

@@ -1,27 +1,12 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DoctorSchedule extends Model
 {
-    protected $fillable = [
-        'doctor_id',
-        'day_of_week',
-        'start_time',
-        'end_time',
-        'quota',
-        'is_active',
-    ];
+    protected $table = 'jadwal_dokter';
+    protected $fillable = ['id_dokter', 'hari', 'jam_mulai', 'jam_selesai', 'kuota', 'is_aktif'];
+    protected $casts = ['is_aktif' => 'boolean'];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    public function doctor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'doctor_id');
-    }
+    public function dokter() { return $this->belongsTo(User::class, 'id_dokter'); }
 }

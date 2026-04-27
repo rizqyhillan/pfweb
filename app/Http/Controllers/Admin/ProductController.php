@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -21,19 +19,17 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'category' => 'nullable|string|max:100',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'unit' => 'required|string|max:20',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+        $v = $request->validate([
+            'nama_barang' => 'required|string|max:150',
+            'kategori' => 'nullable|string|max:100',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+            'satuan' => 'nullable|string|max:20',
+            'deskripsi' => 'nullable|string',
         ]);
-
-        $validated['is_active'] = $request->has('is_active');
-        Product::create($validated);
-
+        $v['is_aktif'] = 1;
+        $v['satuan'] = $v['satuan'] ?? 'pcs';
+        Product::create($v);
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
@@ -44,20 +40,17 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'category' => 'nullable|string|max:100',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'unit' => 'required|string|max:20',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
+        $v = $request->validate([
+            'nama_barang' => 'required|string|max:150',
+            'kategori' => 'nullable|string|max:100',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+            'satuan' => 'nullable|string|max:20',
+            'deskripsi' => 'nullable|string',
         ]);
-
-        $validated['is_active'] = $request->has('is_active');
-        $product->update($validated);
-
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diupdate.');
+        $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
+        $product->update($v);
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product)

@@ -9,25 +9,22 @@
   <form action="{{ route('admin.medical-records.store') }}" method="POST">@csrf
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Hewan *</label>
-        <select class="form-select @error('pet_id') is-invalid @enderror" name="pet_id" required>
-          <option value="">-- Pilih Hewan --</option>
-          @foreach($pets as $pet)<option value="{{ $pet->id }}" {{ old('pet_id') == $pet->id ? 'selected' : '' }}>{{ $pet->name }} ({{ $pet->owner->name ?? '-' }})</option>@endforeach
-        </select>@error('pet_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-      </div>
+        <select class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih --</option>
+          @foreach($pets as $p)<option value="{{ $p->id }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>{{ $p->nama_hewan }} ({{ $p->owner->nama ?? '-' }})</option>@endforeach
+        </select>@error('id_hewan')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-4"><label class="form-label">Dokter</label>
-        <select class="form-select" name="doctor_id">
-          <option value="">-- Pilih Dokter --</option>
-          @foreach($doctors as $doc)<option value="{{ $doc->id }}" {{ old('doctor_id') == $doc->id ? 'selected' : '' }}>{{ $doc->name }}</option>@endforeach
-        </select>
-      </div>
-      <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="current_weight" value="{{ old('current_weight') }}" /></div>
-      <div class="col-md-2"><label class="form-label">Tanggal *</label><input type="date" class="form-control" name="date" value="{{ old('date', date('Y-m-d')) }}" required /></div>
+        <select class="form-select" name="id_dokter"><option value="">-- Pilih --</option>
+          @foreach($doctors as $d)<option value="{{ $d->id }}" {{ old('id_dokter') == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>@endforeach
+        </select></div>
+      <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="berat_saat_itu" value="{{ old('berat_saat_itu') }}" /></div>
+      <div class="col-md-2"><label class="form-label">Tanggal *</label><input type="date" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required /></div>
     </div>
     <div class="row mb-6">
-      <div class="col-md-4"><label class="form-label">Diagnosis</label><textarea class="form-control" name="diagnosis" rows="3">{{ old('diagnosis') }}</textarea></div>
-      <div class="col-md-4"><label class="form-label">Treatment</label><textarea class="form-control" name="treatment" rows="3">{{ old('treatment') }}</textarea></div>
-      <div class="col-md-4"><label class="form-label">Resep</label><textarea class="form-control" name="prescription" rows="3">{{ old('prescription') }}</textarea></div>
+      <div class="col-md-4"><label class="form-label">Diagnosa</label><textarea class="form-control" name="diagnosa" rows="4">{{ old('diagnosa') }}</textarea></div>
+      <div class="col-md-4"><label class="form-label">Tindakan</label><textarea class="form-control" name="tindakan" rows="4">{{ old('tindakan') }}</textarea></div>
+      <div class="col-md-4"><label class="form-label">Resep Obat</label><textarea class="form-control" name="resep" rows="4">{{ old('resep') }}</textarea></div>
     </div>
+    <div class="mb-6"><label class="form-label">Catatan</label><textarea class="form-control" name="catatan" rows="2">{{ old('catatan') }}</textarea></div>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>
