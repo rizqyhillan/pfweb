@@ -17,7 +17,7 @@
           @foreach($doctors as $d)<option value="{{ $d->id }}" {{ old('id_dokter') == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>@endforeach
         </select></div>
       <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="berat_saat_itu" value="{{ old('berat_saat_itu') }}" /></div>
-      <div class="col-md-2"><label class="form-label">Tanggal *</label><input type="date" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required /></div>
+      <div class="col-md-2"><label class="form-label">Tanggal *</label><input type="datetime-local" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d\TH:i')) }}" required /></div>
     </div>
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Diagnosa</label><textarea class="form-control" name="diagnosa" rows="4">{{ old('diagnosa') }}</textarea></div>

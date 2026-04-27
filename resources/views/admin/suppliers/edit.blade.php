@@ -9,7 +9,7 @@
   <form action="{{ route('admin.suppliers.update', $supplier) }}" method="POST">@csrf @method('PUT')
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Nama Supplier *</label><input type="text" class="form-control" name="nama_supplier" value="{{ old('nama_supplier', $supplier->nama_supplier) }}" required /></div>
-      <div class="col-md-3"><label class="form-label">Kontak</label><input type="text" class="form-control" name="kontak" value="{{ old('kontak', $supplier->kontak) }}" /></div>
+      <div class="col-md-3"><label class="form-label">Kontak</label><input type="number" class="form-control" name="kontak" value="{{ old('kontak', $supplier->kontak) }}" /></div>
       <div class="col-md-3"><label class="form-label">Email</label><input type="email" class="form-control" name="email" value="{{ old('email', $supplier->email) }}" /></div>
     </div>
     <div class="mb-6"><label class="form-label">Alamat</label><textarea class="form-control" name="alamat" rows="2">{{ old('alamat', $supplier->alamat) }}</textarea></div>
