@@ -19,7 +19,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Lato:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS -->
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
@@ -31,6 +31,25 @@
 
   <!-- Main CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+
+  <!-- PawPet Theme Overrides -->
+  <style>
+    :root {
+      --default-font: 'Quicksand', sans-serif;
+      --heading-font: 'Quicksand', sans-serif;
+      --nav-font: 'Quicksand', sans-serif;
+
+      --background-color: #ffffff;
+      --accent-color: #f59e0b; /* Orange accent */
+      --nav-hover-color: #f59e0b;
+      --nav-dropdown-hover-color: #f59e0b;
+    }
+    
+    .light-background {
+      --background-color: #fffaf5 !important; /* Cream sangat ringan */
+      --surface-color: #ffffff;
+    }
+  </style>
 
   @stack('styles')
 </head>

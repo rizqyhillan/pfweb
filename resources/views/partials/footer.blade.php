@@ -8,23 +8,22 @@
           <div class="col-lg-5">
             <div class="brand-section">
               <a href="{{ route('home') }}" class="logo d-flex align-items-center mb-4">
-                <span class="sitename">Clinic</span>
+                <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet Logo" style="max-height: 40px; border-radius: 8px; margin-right: 10px;"><span class="sitename" style="font-weight: 700; color: var(--accent-color);">PawPet</span>
               </a>
-              <p class="brand-description">Crafting exceptional digital experiences through thoughtful design and
-                innovative solutions that elevate your brand presence.</p>
+              <p class="brand-description">Aplikasi terpercaya untuk segala kebutuhan anabul kesayangan Anda. Dari konsultasi kesehatan hingga kebutuhan harian, semua ada di PawPet.</p>
 
               <div class="contact-info mt-5">
                 <div class="contact-item">
                   <i class="bi bi-geo-alt"></i>
-                  <span>123 Creative Boulevard, Design District, NY 10012</span>
+                  <span>Jl. Raya Pet Care No. 123, Jakarta</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-telephone"></i>
-                  <span>+1 (555) 987-6543</span>
+                  <span>+62 811 2233 4455</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-envelope"></i>
-                  <span>hello@designstudio.com</span>
+                  <span>hello@pawpet.id</span>
                 </div>
               </div>
             </div>
@@ -36,52 +35,48 @@
 
                 <div class="col-6 col-lg-3">
                   <div class="nav-column">
-                    <h6>Studio</h6>
+                    <h6>Layanan</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Our Story</a>
-                      <a href="#!">Design Process</a>
-                      <a href="#!">Portfolio</a>
-                      <a href="#!">Case Studies</a>
-                      <a href="#!">Awards</a>
+                      <a href="#!">Konsultasi Dokter</a>
+                      <a href="#!">Grooming</a>
+                      <a href="#!">Penitipan Hewan</a>
+                      <a href="#!">Vaksinasi</a>
                     </nav>
                   </div>
                 </div>
 
                 <div class="col-6 col-lg-3">
                   <div class="nav-column">
-                    <h6>Services</h6>
+                    <h6>PawPet Shop</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Brand Identity</a>
-                      <a href="#!">Web Design</a>
-                      <a href="#!">Mobile Apps</a>
-                      <a href="#!">Digital Strategy</a>
-                      <a href="#!">Consultation</a>
+                      <a href="#!">Makanan Kucing & Anjing</a>
+                      <a href="#!">Aksesoris & Mainan</a>
+                      <a href="#!">Vitamin & Obat</a>
+                      <a href="#!">Perlengkapan Mandi</a>
                     </nav>
                   </div>
                 </div>
 
                 <div class="col-6 col-lg-3">
                   <div class="nav-column">
-                    <h6>Resources</h6>
+                    <h6>Bantuan</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Design Blog</a>
-                      <a href="#!">Style Guide</a>
-                      <a href="#!">Free Assets</a>
-                      <a href="#!">Tutorials</a>
-                      <a href="#!">Inspiration</a>
+                      <a href="#!">FAQ</a>
+                      <a href="#!">Pusat Bantuan</a>
+                      <a href="#!">Syarat & Ketentuan</a>
+                      <a href="#!">Kebijakan Privasi</a>
                     </nav>
                   </div>
                 </div>
 
                 <div class="col-6 col-lg-3">
                   <div class="nav-column">
-                    <h6>Connect</h6>
+                    <h6>Ikuti Kami</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Start Project</a>
-                      <a href="#!">Schedule Call</a>
-                      <a href="#!">Join Newsletter</a>
-                      <a href="#!">Follow Updates</a>
-                      <a href="#!">Partnership</a>
+                      <a href="#!">Instagram</a>
+                      <a href="#!">Facebook</a>
+                      <a href="#!">TikTok</a>
+                      <a href="#!">Twitter</a>
                     </nav>
                   </div>
                 </div>
@@ -102,7 +97,7 @@
 
             <div class="col-lg-6">
               <div class="copyright">
-                <p>© <span class="sitename">Clinic</span>. All rights reserved.</p>
+                <p>© <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet Logo" style="max-height: 40px; border-radius: 8px; margin-right: 10px;"><span class="sitename" style="font-weight: 700; color: var(--accent-color);">PawPet</span>. All rights reserved.</p>
               </div>
             </div>
 

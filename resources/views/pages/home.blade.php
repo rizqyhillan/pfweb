@@ -30,12 +30,11 @@
               </div>
 
               <h1 data-aos="fade-right" data-aos-delay="300">
-                Excellence in <span class="highlight">Healthcare</span> With Compassionate Care
+                Teman Setia, <span class="highlight">Perawatan Terbaik</span> untuk Anabul
               </h1>
 
               <p class="hero-description" data-aos="fade-right" data-aos-delay="400">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+                Layanan pet care lengkap dan terpercaya. Mulai dari konsultasi kesehatan, grooming, hingga kebutuhan sehari-hari untuk teman berbulu kesayangan Anda.
               </p>
 
               <div class="hero-stats mb-4" data-aos="fade-right" data-aos-delay="500">
@@ -47,17 +46,17 @@
                 <div class="stat-item">
                   <h3><span data-purecounter-start="0" data-purecounter-end="5000" data-purecounter-duration="2"
                       class="purecounter"></span>+</h3>
-                  <p>Patients Treated</p>
+                  <p>Anabul Bahagia</p>
                 </div>
                 <div class="stat-item">
                   <h3><span data-purecounter-start="0" data-purecounter-end="50" data-purecounter-duration="2"
                       class="purecounter"></span>+</h3>
-                  <p>Medical Experts</p>
+                  <p>Dokter Hewan</p>
                 </div>
               </div>
 
               <div class="hero-actions" data-aos="fade-right" data-aos-delay="600">
-                <a href="{{ route('appointment') }}" class="btn btn-primary">Book Appointment</a>
+                <a href="{{ route('appointment') }}" class="btn btn-primary">Booking Sekarang</a>
                 <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="btn btn-outline glightbox">
                   <i class="bi bi-play-circle me-2"></i>
                   Watch Our Story
@@ -79,7 +78,7 @@
           <div class="col-lg-6">
             <div class="hero-visual" data-aos="fade-left" data-aos-delay="400">
               <div class="main-image">
-                <img src="{{ asset('assets/img/health/staff-10.webp') }}" alt="Modern Healthcare Facility" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/hero/Don\'t tell me I remind you of someone.jpg') }}" alt="PawPet Care" class="img-fluid">
                 <div class="floating-card appointment-card">
                   <div class="card-icon">
                     <i class="bi bi-calendar-check"></i>
@@ -87,7 +86,7 @@
                   <div class="card-content">
                     <h6>Next Available</h6>
                     <p>Today 2:30 PM</p>
-                    <small>Dr. Sarah Johnson</small>
+                    <small>Drh. Sarah</small>
                   </div>
                 </div>
                 <div class="floating-card rating-card">
@@ -125,14 +124,11 @@
         <div class="row align-items-center">
           <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="200">
             <div class="about-content">
-              <h2 class="section-heading">Compassionate Care, Advanced Medicine</h2>
+              <h2 class="section-heading">Fasilitas Terbaik untuk Anabul</h2>
               <p class="lead-text">For over two decades, we've been dedicated to providing exceptional healthcare that
                 combines cutting-edge medical technology with the personal touch our patients deserve.</p>
 
-              <p>Our multidisciplinary team of specialists works collaboratively to ensure every patient receives
-                comprehensive care tailored to their unique needs. From preventive services to complex procedures, we
-                maintain the highest standards of medical excellence while fostering an environment of trust and
-                healing.</p>
+              <p>Tim kami selalu siap memastikan setiap hewan peliharaan mendapatkan perawatan komprehensif yang disesuaikan dengan kebutuhan unik mereka.</p>
 
               <div class="stats-grid">
                 <div class="stat-item">
@@ -148,7 +144,7 @@
                 <div class="stat-item">
                   <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="50"
                     data-purecounter-duration="1"></div>
-                  <div class="stat-label">Medical Specialists</div>
+                  <div class="stat-label">Pet Stylist & Vet</div>
                 </div>
               </div>
 
@@ -161,7 +157,7 @@
           <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
             <div class="about-visual">
               <div class="main-image">
-                <img src="{{ asset('assets/img/health/facilities-9.webp') }}" alt="Modern medical facility" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/services/Veterinarian in Clean Uniform Holding a Cute Dog.jpg') }}" alt="Modern medical facility" class="img-fluid">
               </div>
               <div class="floating-card">
                 <div class="card-content">
@@ -169,7 +165,7 @@
                     <i class="bi bi-heart-pulse"></i>
                   </div>
                   <div class="card-text">
-                    <h4>24/7 Emergency Care</h4>
+                    <h4>24/7 Pet Care</h4>
                     <p>Always here when you need us most</p>
                   </div>
                 </div>
@@ -193,8 +189,8 @@
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Featured Departments</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        <h2>Layanan Unggulan</h2>
+        <p>Solusi lengkap untuk kesehatan dan kebahagiaan teman kecil Anda</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -207,9 +203,8 @@
                 <div class="specialty-meta">
                   <span class="specialty-label">Specialized Care</span>
                 </div>
-                <h3>Cardiovascular Medicine</h3>
-                <p>Advanced diagnostic imaging and interventional procedures for comprehensive heart health management
-                  with personalized treatment protocols.</p>
+                <h3>Perawatan Medis Lengkap</h3>
+                <p>Pemeriksaan menyeluruh, penanganan medis, dan saran kesehatan dari ahlinya untuk anabul yang selalu aktif.</p>
                 <div class="specialty-features">
                   <span><i class="bi bi-check-circle-fill"></i>24/7 Emergency Cardiac Care</span>
                   <span><i class="bi bi-check-circle-fill"></i>Minimally Invasive Procedures</span>
@@ -219,7 +214,7 @@
                 </a>
               </div>
               <div class="specialty-visual">
-                <img src="{{ asset('assets/img/health/cardiology-1.webp') }}" alt="Cardiovascular Medicine" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/services/Veterinarian in Clean Uniform Holding a Cute Dog.jpg') }}" alt="Perawatan Medis Lengkap" class="img-fluid">
                 <div class="visual-overlay">
                   <i class="bi bi-heart-pulse"></i>
                 </div>
@@ -233,9 +228,8 @@
                 <div class="specialty-meta">
                   <span class="specialty-label">Expert Care</span>
                 </div>
-                <h3>Neurological Sciences</h3>
-                <p>Cutting-edge neuroimaging and neurosurgical expertise for complex brain and spinal cord conditions
-                  with innovative treatment approaches.</p>
+                <h3>Konsultasi Nutrisi & Diet</h3>
+                <p>Pemberian saran nutrisi yang tepat untuk menjaga berat badan ideal dan kesehatan pencernaan hewan peliharaan.</p>
                 <div class="specialty-features">
                   <span><i class="bi bi-check-circle-fill"></i>Advanced Brain Imaging</span>
                   <span><i class="bi bi-check-circle-fill"></i>Robotic Surgery</span>
@@ -245,7 +239,7 @@
                 </a>
               </div>
               <div class="specialty-visual">
-                <img src="{{ asset('assets/img/health/neurology-4.webp') }}" alt="Neurological Sciences" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/services/I got Vet! What Should You Be When You Grow Up_.jpg') }}" alt="Konsultasi Nutrisi & Diet" class="img-fluid">
                 <div class="visual-overlay">
                   <i class="bi bi-cpu"></i>
                 </div>
@@ -258,9 +252,8 @@
               <div class="highlight-icon">
                 <i class="bi bi-shield-plus"></i>
               </div>
-              <h4>Orthopedic Surgery</h4>
-              <p>Comprehensive musculoskeletal care utilizing advanced arthroscopic techniques and joint replacement
-                procedures.</p>
+              <h4>Grooming Premium</h4>
+              <p>Perawatan bulu dan kebersihan tubuh dengan sentuhan lembut agar mereka nyaman dan tampil maksimal.</p>
               <ul class="highlight-list">
                 <li>Sports Medicine</li>
                 <li>Joint Replacement</li>
@@ -275,9 +268,8 @@
               <div class="highlight-icon">
                 <i class="bi bi-people"></i>
               </div>
-              <h4>Pediatric Care</h4>
-              <p>Child-centered healthcare services from newborn to adolescence with family-focused treatment
-                approaches.</p>
+              <h4>Penitipan Hewan</h4>
+              <p>Layanan penginapan yang aman, bersih, dan nyaman saat Anda harus bepergian.</p>
               <ul class="highlight-list">
                 <li>Neonatal Intensive Care</li>
                 <li>Developmental Pediatrics</li>
@@ -292,9 +284,8 @@
               <div class="highlight-icon">
                 <i class="bi bi-activity"></i>
               </div>
-              <h4>Cancer Treatment</h4>
-              <p>Multidisciplinary oncology program offering personalized cancer care with latest therapeutic
-                innovations.</p>
+              <h4>Vaksinasi</h4>
+              <p>Jadwal imunisasi yang teratur demi mencegah berbagai risiko penyakit berbahaya.</p>
               <ul class="highlight-list">
                 <li>Precision Medicine</li>
                 <li>Immunotherapy</li>
@@ -333,8 +324,8 @@
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Featured Services</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        <h2>Layanan Terpadu</h2>
+        <p>Solusi lengkap untuk kesehatan dan kebahagiaan teman kecil Anda</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -344,17 +335,17 @@
           <div class="col-lg-8" data-aos="fade-right" data-aos-delay="200">
             <div class="featured-service-main">
               <div class="service-image-wrapper">
-                <img src="{{ asset('assets/img/health/consultation-4.webp') }}" alt="Premier Healthcare Services" class="img-fluid"
+                <img src="{{ asset('assets/pawpet/services/Master the Art of Dog Grooming with Pro Shears.jpg') }}" alt="Premier Healthcare Services" class="img-fluid"
                   loading="lazy">
                 <div class="service-overlay">
                   <div class="service-badge">
                     <i class="bi bi-heart-pulse"></i>
-                    <span>Emergency Care</span>
+                    <span>Pet Care</span>
                   </div>
                 </div>
               </div>
               <div class="service-details">
-                <h2>Comprehensive Healthcare Excellence</h2>
+                <h2>Kesehatan dan Perawatan Terbaik</h2>
                 <p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus
                   orci luctus et ultrices posuere cubilia curae donec velit neque.</p>
                 <a href="{{ route('services') }}" class="main-cta">Explore Our Services</a>
@@ -370,7 +361,7 @@
                   <i class="bi bi-capsule"></i>
                 </div>
                 <div class="service-info">
-                  <h4>Dermatology Clinic</h4>
+                  <h4>Perawatan Kulit & Bulu</h4>
                   <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
                   <a href="{{ route('services') }}" class="service-link">Learn More</a>
                 </div>
@@ -381,7 +372,7 @@
                   <i class="bi bi-bandaid"></i>
                 </div>
                 <div class="service-info">
-                  <h4>Surgery Center</h4>
+                  <h4>Tindakan Medis</h4>
                   <p>Donec rutrum congue leo eget malesuada curabitur arcu erat accumsan id imperdiet et porttitor at
                     sem.</p>
                   <a href="{{ route('services') }}" class="service-link">Learn More</a>
@@ -393,7 +384,7 @@
                   <i class="bi bi-activity"></i>
                 </div>
                 <div class="service-info">
-                  <h4>Diagnostics Lab</h4>
+                  <h4>Laboratorium Hewan</h4>
                   <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui cras ultricies ligula sed
                     magna.</p>
                   <a href="{{ route('services') }}" class="service-link">Learn More</a>
@@ -411,11 +402,11 @@
             <div class="col-lg-3 col-md-6">
               <div class="specialty-card">
                 <div class="specialty-image">
-                  <img src="{{ asset('assets/img/health/maternal-2.webp') }}" alt="Maternal Care" class="img-fluid" loading="lazy">
+                  <img src="{{ asset('assets/pawpet/icons/icon-pet.jpeg') }}" alt="Konsultasi Dokter Hewan" class="img-fluid" loading="lazy">
                 </div>
                 <div class="specialty-content">
-                  <h5>Maternal Care</h5>
-                  <span>Expert pregnancy &amp; delivery support</span>
+                  <h5>Konsultasi Dokter Hewan</h5>
+                  <span>Pemeriksaan rutin</span>
                 </div>
               </div>
             </div>
@@ -423,11 +414,11 @@
             <div class="col-lg-3 col-md-6">
               <div class="specialty-card">
                 <div class="specialty-image">
-                  <img src="{{ asset('assets/img/health/vaccination-3.webp') }}" alt="Vaccination" class="img-fluid" loading="lazy">
+                  <img src="{{ asset('assets/pawpet/icons/icon-sevices.jpeg') }}" alt="Grooming" class="img-fluid" loading="lazy">
                 </div>
                 <div class="specialty-content">
-                  <h5>Vaccination</h5>
-                  <span>Complete immunization programs</span>
+                  <h5>Grooming</h5>
+                  <span>Spa & potong kuku</span>
                 </div>
               </div>
             </div>
@@ -435,11 +426,11 @@
             <div class="col-lg-3 col-md-6">
               <div class="specialty-card">
                 <div class="specialty-image">
-                  <img src="{{ asset('assets/img/health/emergency-1.webp') }}" alt="Emergency Care" class="img-fluid" loading="lazy">
+                  <img src="{{ asset('assets/pawpet/icons/icon-shopping.jpeg') }}" alt="Pet Care" class="img-fluid" loading="lazy">
                 </div>
                 <div class="specialty-content">
-                  <h5>Emergency Care</h5>
-                  <span>24/7 critical care services</span>
+                  <h5>Pet Care</h5>
+                  <span>Kebutuhan harian</span>
                 </div>
               </div>
             </div>
@@ -447,11 +438,11 @@
             <div class="col-lg-3 col-md-6">
               <div class="specialty-card">
                 <div class="specialty-image">
-                  <img src="{{ asset('assets/img/health/facilities-6.webp') }}" alt="Advanced Tech" class="img-fluid" loading="lazy">
+                  <img src="{{ asset('assets/pawpet/icons/icon-product.jpeg') }}" alt="Advanced Tech" class="img-fluid" loading="lazy">
                 </div>
                 <div class="specialty-content">
-                  <h5>Advanced Technology</h5>
-                  <span>State-of-the-art medical equipment</span>
+                  <h5>Mudah Booking</h5>
+                  <span>Jadwalkan via web</span>
                 </div>
               </div>
             </div>
@@ -468,8 +459,8 @@
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Find A Doctor</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+        <h2>PawPet Shop</h2>
+        <p>Solusi lengkap untuk kesehatan dan kebahagiaan teman kecil Anda</p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -477,14 +468,14 @@
         <div class="row justify-content-center mb-5" data-aos="fade-up" data-aos-delay="200">
           <div class="col-lg-8 text-center">
             <div class="search-section">
-              <h3 class="search-title">Find Your Perfect Healthcare Provider</h3>
-              <p class="search-subtitle">Search through our comprehensive directory of experienced medical professionals
+              <h3 class="search-title">Temukan Kebutuhan Anabul Anda</h3>
+              <p class="search-subtitle">Berbagai pilihan makanan, aksesoris, dan mainan berkualitas
               </p>
               <form class="search-form" action="#!" method="#">
                 <div class="search-input-group">
                   <div class="input-wrapper">
                     <i class="bi bi-person"></i>
-                    <input type="text" class="form-control" name="doctor_name" placeholder="Enter doctor name">
+                    <input type="text" class="form-control" name="doctor_name" placeholder="Cari produk">
                   </div>
                   <div class="select-wrapper">
                     <i class="bi bi-heart-pulse"></i>
@@ -500,7 +491,7 @@
                   </div>
                   <button type="submit" class="search-btn">
                     <i class="bi bi-search"></i>
-                    Find Doctors
+                    Cari Produk
                   </button>
                 </div>
               </form>
@@ -512,15 +503,15 @@
           <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="100">
             <div class="profile-header">
               <div class="doctor-avatar">
-                <img src="{{ asset('assets/img/health/staff-2.webp') }}" alt="Dr. Amanda Foster" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/products/Dog pedigree packs.jpg') }}" alt="Premium Dog Food" class="img-fluid">
                 <div class="status-indicator available"></div>
               </div>
               <div class="doctor-details">
-                <h4>Dr. Amanda Foster</h4>
-                <span class="specialty-tag">Cardiology Specialist</span>
+                <h4>Premium Dog Food</h4>
+                <span class="specialty-tag">Makanan Anjing</span>
                 <div class="experience-info">
                   <i class="bi bi-award"></i>
-                  <span>14 years experience</span>
+                  <span>Rp 125.000</span>
                 </div>
               </div>
             </div>
@@ -544,15 +535,15 @@
           <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="200">
             <div class="profile-header">
               <div class="doctor-avatar">
-                <img src="{{ asset('assets/img/health/staff-6.webp') }}" alt="Dr. Marcus Johnson" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/products/Ultra Moisturizing All Natural & Organic Paw Balm for Dogs - 0_15oz.jpg') }}" alt="Organic Paw Balm" class="img-fluid">
                 <div class="status-indicator busy"></div>
               </div>
               <div class="doctor-details">
-                <h4>Dr. Marcus Johnson</h4>
-                <span class="specialty-tag">Neurology Expert</span>
+                <h4>Organic Paw Balm</h4>
+                <span class="specialty-tag">Perawatan Tubuh</span>
                 <div class="experience-info">
                   <i class="bi bi-award"></i>
-                  <span>16 years experience</span>
+                  <span>Rp 85.000</span>
                 </div>
               </div>
             </div>
@@ -576,15 +567,15 @@
           <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="300">
             <div class="profile-header">
               <div class="doctor-avatar">
-                <img src="{{ asset('assets/img/health/staff-4.webp') }}" alt="Dr. Rachel Williams" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/products/Things for Dogs_ Must-Have Products for Canine Comfort and Happiness.jpg') }}" alt="Cozy Pet Bed" class="img-fluid">
                 <div class="status-indicator available"></div>
               </div>
               <div class="doctor-details">
-                <h4>Dr. Rachel Williams</h4>
-                <span class="specialty-tag">Pediatrics Care</span>
+                <h4>Cozy Pet Bed</h4>
+                <span class="specialty-tag">Tempat Tidur</span>
                 <div class="experience-info">
                   <i class="bi bi-award"></i>
-                  <span>11 years experience</span>
+                  <span>Rp 250.000</span>
                 </div>
               </div>
             </div>
@@ -608,15 +599,15 @@
           <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="400">
             <div class="profile-header">
               <div class="doctor-avatar">
-                <img src="{{ asset('assets/img/health/staff-8.webp') }}" alt="Dr. David Chen" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/products/download.jpg') }}" alt="Cat Accessories Bundle" class="img-fluid">
                 <div class="status-indicator offline"></div>
               </div>
               <div class="doctor-details">
-                <h4>Dr. David Chen</h4>
-                <span class="specialty-tag">Orthopedic Surgery</span>
+                <h4>Cat Accessories Bundle</h4>
+                <span class="specialty-tag">Grooming Premium</span>
                 <div class="experience-info">
                   <i class="bi bi-award"></i>
-                  <span>22 years experience</span>
+                  <span>Rp 65.000</span>
                 </div>
               </div>
             </div>
@@ -724,7 +715,7 @@
 
             <div class="col-lg-6">
               <div class="content-wrapper" data-aos="fade-up" data-aos-delay="200">
-                <h1>Excellence in Medical Care, Every Day</h1>
+                <h1>Siap Memberikan yang Terbaik untuk Anabul?</h1>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore
                   et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
 
@@ -743,7 +734,7 @@
 
             <div class="col-lg-6">
               <div class="image-container" data-aos="fade-left" data-aos-delay="300">
-                <img src="{{ asset('assets/img/health/facilities-9.webp') }}" alt="Medical Excellence" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/services/Veterinarian in Clean Uniform Holding a Cute Dog.jpg') }}" alt="Medical Excellence" class="img-fluid">
               </div>
             </div>
 
@@ -759,7 +750,7 @@
                 <div class="feature-icon">
                   <i class="bi bi-shield-check"></i>
                 </div>
-                <h3>Advanced Technology</h3>
+                <h3>Mudah Booking</h3>
                 <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
                   laborum.</p>
               </div>
@@ -797,7 +788,7 @@
             <div class="col-lg-8">
               <div class="contact-content" data-aos="fade-up" data-aos-delay="200">
                 <h2>Need Immediate Medical Assistance?</h2>
-                <p>Our emergency response team is available around the clock to provide immediate medical support when
+                <p>Tim kami selalu siap sedia memberikan pelayanan terbaik untuk anabul Anda, kapanpun dibutuhkan.
                   you need it most.</p>
               </div>
             </div>
