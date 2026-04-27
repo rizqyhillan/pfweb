@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PetClinic') }} Admin</title>
+    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PawPet') }} Admin</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('admin-assets/img/favicon/favicon.ico') }}" />
@@ -78,7 +78,7 @@
               <div class="container-xxl">
                 <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
                   <div class="text-body mb-2 mb-md-0">
-                    &copy; {{ date('Y') }} {{ config('app.name', 'PetClinic') }}. All rights reserved.
+                    &copy; {{ date('Y') }} {{ config('app.name', 'Pawpet') }}. All rights reserved.
                   </div>
                 </div>
               </div>
