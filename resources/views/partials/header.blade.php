@@ -18,6 +18,66 @@
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
+        {{-- AUTH BUTTONS ──────────────────────────── --}}
+        <div class="d-flex align-items-center gap-2 ms-3" style="flex-shrink:0;">
+
+          @guest
+            {{-- Belum login: tampilkan Login & Register --}}
+            <a href="{{ route('login') }}"
+               style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
+                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
+                      transition:all .2s;"
+               onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
+               onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
+              <i class="bi bi-person me-1"></i>Login
+            </a>
+            <a href="{{ route('register') }}"
+               style="padding:.42rem 1.1rem;background:var(--accent-color);color:#fff;
+                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
+                      border:2px solid var(--accent-color);transition:all .2s;"
+               onmouseover="this.style.opacity='.88';"
+               onmouseout="this.style.opacity='1';">
+              <i class="bi bi-person-plus me-1"></i>Daftar
+            </a>
+          @endguest
+
+          @auth
+            {{-- Sudah login: Dashboard sesuai role --}}
+            @if(Auth::user()->role !== 'pemilik')
+                @php
+                  $dashRoute = match(Auth::user()->role) {
+                    'dokter' => route('doctor.dashboard'),
+                    'kasir'  => route('karyawan.dashboard'),
+                    'admin'  => route('admin.dashboard'),
+                  };
+                @endphp
+
+                <a href="{{ $dashRoute }}"
+                   style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
+                          border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
+                          transition:all .2s;"
+                   onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
+                   onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
+                  <i class="bi bi-grid me-1"></i>Dashboard
+                </a>
+            @endif
+
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+              @csrf
+              <button type="submit"
+                      style="padding:.42rem 1rem;background:rgba(239,68,68,.1);color:#ef4444;
+                             border:2px solid rgba(239,68,68,.25);border-radius:25px;
+                             font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;"
+                      onmouseover="this.style.background='rgba(239,68,68,.2)';"
+                      onmouseout="this.style.background='rgba(239,68,68,.1)';">
+                <i class="bi bi-box-arrow-right me-1"></i>Keluar
+              </button>
+            </form>
+          @endauth
+
+        </div>
+        {{-- /AUTH BUTTONS ─────────────────────────── --}}
+
       </div>
 
     </div>

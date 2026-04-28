@@ -56,11 +56,33 @@
               </div>
 
               <div class="hero-actions" data-aos="fade-right" data-aos-delay="600">
-                <a href="{{ route('appointment') }}" class="btn btn-primary">Booking Sekarang</a>
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="btn btn-outline glightbox">
-                  <i class="bi bi-play-circle me-2"></i>
-                  Watch Our Story
-                </a>
+                @guest
+                  {{-- Belum login: Booking + ajakan daftar --}}
+                  <a href="{{ route('appointment') }}" class="btn btn-primary">
+                    <i class="bi bi-calendar-check me-1"></i>Booking Sekarang
+                  </a>
+                  <a href="{{ route('register') }}" class="btn btn-outline">
+                    <i class="bi bi-person-plus me-1"></i>Daftar Gratis
+                  </a>
+                @endguest
+
+                @auth
+                  {{-- Sudah login: arahkan ke dashboard sesuai role --}}
+                  @php
+                    $heroDash = match(Auth::user()->role) {
+                      'dokter' => route('doctor.dashboard'),
+                      'kasir'  => route('karyawan.dashboard'),
+                      'admin'  => route('admin.dashboard'),
+                      default  => route('home'),
+                    };
+                  @endphp
+                  <a href="{{ $heroDash }}" class="btn btn-primary">
+                    <i class="bi bi-grid me-1"></i>Ke Dashboard
+                  </a>
+                  <a href="{{ route('appointment') }}" class="btn btn-outline">
+                    <i class="bi bi-calendar-check me-1"></i>Booking Sekarang
+                  </a>
+                @endauth
               </div>
 
               <div class="emergency-contact" data-aos="fade-right" data-aos-delay="700">

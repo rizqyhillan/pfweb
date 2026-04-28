@@ -48,6 +48,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Pemilik (customer) diarahkan ke homepage, bukan admin panel
+        return redirect()->route('home');
     }
 }

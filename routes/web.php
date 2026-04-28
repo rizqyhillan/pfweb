@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProductBatchController;
 use App\Http\Controllers\Admin\StockCardController;
+use App\Http\Controllers\Doctor\DoctorController;
+use App\Http\Controllers\Karyawan\KaryawanController;
 
 // Dynamic Pages (using Controller)
 Route::controller(PageController::class)->group(function () {
@@ -62,6 +64,21 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('users', UserController::class);
     Route::resource('product-batches', ProductBatchController::class);
     Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
+});
+
+// Doctor Routes
+Route::middleware(['auth'])->prefix('doctor')->name('doctor.')->group(function () {
+    Route::get('/', function () { return redirect()->route('doctor.dashboard'); });
+    Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');
+    Route::get('/medical-records', [DoctorController::class, 'medicalRecords'])->name('medical-records');
+    Route::get('/schedule', [DoctorController::class, 'schedule'])->name('schedule');
+});
+
+// Karyawan Routes
+Route::middleware(['auth'])->prefix('karyawan')->name('karyawan.')->group(function () {
+    Route::get('/', function () { return redirect()->route('karyawan.dashboard'); });
+    Route::get('/dashboard', [KaryawanController::class, 'dashboard'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
