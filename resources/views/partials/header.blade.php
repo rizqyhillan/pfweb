@@ -43,24 +43,23 @@
 
           @auth
             {{-- Sudah login: Dashboard sesuai role --}}
-            @if(Auth::user()->role !== 'pemilik')
-                @php
-                  $dashRoute = match(Auth::user()->role) {
-                    'dokter' => route('doctor.dashboard'),
-                    'kasir'  => route('karyawan.dashboard'),
-                    'admin'  => route('admin.dashboard'),
-                  };
-                @endphp
+            @php
+              $dashRoute = match(Auth::user()->role) {
+                'admin'    => route('admin.dashboard'),
+                'doctor'   => route('doctor.dashboard'),
+                'karyawan' => route('karyawan.dashboard'),
+                default    => route('home'),
+              };
+            @endphp
 
-                <a href="{{ $dashRoute }}"
-                   style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
-                          border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
-                          transition:all .2s;"
-                   onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
-                   onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
-                  <i class="bi bi-grid me-1"></i>Dashboard
-                </a>
-            @endif
+            <a href="{{ $dashRoute }}"
+               style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
+                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
+                      transition:all .2s;"
+               onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
+               onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
+              <i class="bi bi-grid me-1"></i>Dashboard
+            </a>
 
             <form method="POST" action="{{ route('logout') }}" style="margin:0;">
               @csrf

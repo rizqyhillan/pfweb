@@ -70,10 +70,10 @@
                   {{-- Sudah login: arahkan ke dashboard sesuai role --}}
                   @php
                     $heroDash = match(Auth::user()->role) {
-                      'dokter' => route('doctor.dashboard'),
-                      'kasir'  => route('karyawan.dashboard'),
-                      'admin'  => route('admin.dashboard'),
-                      default  => route('home'),
+                      'admin'    => route('admin.dashboard'),
+                      'doctor'   => route('doctor.dashboard'),
+                      'karyawan' => route('karyawan.dashboard'),
+                      default    => route('home'),
                     };
                   @endphp
                   <a href="{{ $heroDash }}" class="btn btn-primary">

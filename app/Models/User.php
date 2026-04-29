@@ -18,5 +18,15 @@ class User extends Authenticatable
     // Accessor agar Auth::user()->name tetap jalan
     public function getNameAttribute() { return $this->nama; }
 
-    public function hewan() { return $this->hasMany(Pet::class, 'id_pemilik'); }
+    // Relationships
+    public function hewan()       { return $this->hasMany(Pet::class, 'id_pemilik'); }
+    public function rekamMedis()   { return $this->hasMany(MedicalRecord::class, 'id_dokter'); }
+    public function jadwalDokter() { return $this->hasMany(DoctorSchedule::class, 'id_dokter'); }
+    public function transaksi()    { return $this->hasMany(Transaction::class, 'id_kasir'); }
+
+    // Alias
+    public function pets()            { return $this->hewan(); }
+    public function medicalRecords()  { return $this->rekamMedis(); }
+    public function schedules()       { return $this->jadwalDokter(); }
+    public function transactions()    { return $this->transaksi(); }
 }

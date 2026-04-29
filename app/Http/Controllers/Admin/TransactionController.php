@@ -20,7 +20,7 @@ class TransactionController extends Controller
 
     public function create()
     {
-        $customers = User::where('role', 'pemilik')->get();
+        $customers = User::where('role', 'admin')->get();
         $products = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
         $services = Service::where('is_aktif', true)->get();
         return view('admin.transactions.create', compact('customers', 'products', 'services'));

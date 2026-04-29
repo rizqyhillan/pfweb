@@ -17,7 +17,7 @@ class MedicalRecordController extends Controller
     public function create()
     {
         $pets = Pet::with('owner')->get();
-        $doctors = User::where('role', 'dokter')->get();
+        $doctors = User::where('role', 'doctor')->get();
         return view('admin.medical-records.create', compact('pets', 'doctors'));
     }
 
@@ -25,7 +25,7 @@ class MedicalRecordController extends Controller
     {
         $v = $request->validate([
             'id_hewan' => 'required|exists:hewan,id',
-            'id_dokter' => 'nullable|exists:users,id',
+            'id_dokter' => 'required|exists:users,id',
             'diagnosa' => 'nullable|string',
             'tindakan' => 'nullable|string',
             'resep' => 'nullable|string',
@@ -46,7 +46,7 @@ class MedicalRecordController extends Controller
     public function edit(MedicalRecord $medical_record)
     {
         $pets = Pet::with('owner')->get();
-        $doctors = User::where('role', 'dokter')->get();
+        $doctors = User::where('role', 'doctor')->get();
         return view('admin.medical-records.edit', compact('medical_record', 'pets', 'doctors'));
     }
 
@@ -54,7 +54,7 @@ class MedicalRecordController extends Controller
     {
         $v = $request->validate([
             'id_hewan' => 'required|exists:hewan,id',
-            'id_dokter' => 'nullable|exists:users,id',
+            'id_dokter' => 'required|exists:users,id',
             'diagnosa' => 'nullable|string',
             'tindakan' => 'nullable|string',
             'resep' => 'nullable|string',

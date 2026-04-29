@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PawPet') }} Admin</title>
+    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PawPet') }} {{ Auth::check() ? ucfirst(Auth::user()->role) : 'Admin' }}</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('admin-assets/img/favicon/favicon.ico') }}" />
@@ -41,7 +41,13 @@
       <div class="layout-container">
 
         <!-- Sidebar Menu -->
-        @include('admin.partials.sidebar')
+        @if(Auth::check() && Auth::user()->role === 'doctor')
+          @include('doctor.partials.sidebar')
+        @elseif(Auth::check() && Auth::user()->role === 'karyawan')
+          @include('karyawan.partials.sidebar')
+        @else
+          @include('admin.partials.sidebar')
+        @endif
 
         <!-- Layout container -->
         <div class="layout-page">

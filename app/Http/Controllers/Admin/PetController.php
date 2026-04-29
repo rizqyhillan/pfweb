@@ -15,7 +15,7 @@ class PetController extends Controller
 
     public function create()
     {
-        $owners = User::where('role', 'pemilik')->get();
+        $owners = User::where('role', 'admin')->get();
         return view('admin.pets.create', compact('owners'));
     }
 
@@ -36,7 +36,7 @@ class PetController extends Controller
 
     public function edit(Pet $pet)
     {
-        $owners = User::where('role', 'pemilik')->get();
+        $owners = User::where('role', 'admin')->get();
         return view('admin.pets.edit', compact('pet', 'owners'));
     }
 

@@ -40,7 +40,7 @@ class RegisteredUserController extends Controller
             'nama' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pemilik',
+            'role' => 'admin',
             'is_aktif' => true,
         ]);
 
@@ -48,7 +48,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Pemilik (customer) diarahkan ke homepage, bukan admin panel
-        return redirect()->route('home');
+        return redirect()->route('admin.dashboard');
     }
 }

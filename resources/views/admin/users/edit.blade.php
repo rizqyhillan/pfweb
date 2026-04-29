@@ -15,7 +15,7 @@
       <div class="col-md-4"><label class="form-label">Password (kosongkan jika tidak ganti)</label><input type="password" class="form-control" name="password" /></div>
       <div class="col-md-4"><label class="form-label">Role *</label>
         <select class="form-select" name="role" required>
-          @foreach(['admin'=>'Admin','dokter'=>'Dokter','pemilik'=>'Pemilik','kasir'=>'Kasir'] as $k=>$v)<option value="{{ $k }}" {{ old('role', $user->role) == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
+          @foreach(['admin'=>'Admin','doctor'=>'Doctor','karyawan'=>'Karyawan'] as $k=>$v)<option value="{{ $k }}" {{ old('role', $user->role) == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
         </select></div>
       <div class="col-md-4"><label class="form-label">No. HP</label><input type="text" class="form-control" name="no_hp" value="{{ old('no_hp', $user->no_hp) }}" /></div>
     </div>

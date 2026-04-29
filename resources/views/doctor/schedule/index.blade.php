@@ -1,0 +1,84 @@
+@extends('layouts.admin')
+
+@section('title', 'Jadwal Saya')
+
+@section('content')
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-2">Jadwal Praktik</h5>
+        <p class="card-text text-muted">
+          Berikut adalah jadwal praktik mingguan Anda. Hubungi admin klinik jika Anda perlu mengubah jadwal ini.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+@php
+  $hariUrut = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  $hariIni  = now()->locale('id')->isoFormat('dddd');
+  $grouped = $schedules->groupBy('hari');
+@endphp
+
+@if($schedules->isEmpty())
+  <div class="row">
+    <div class="col-12 text-center py-5">
+      <i class="bx bx-calendar-x mb-3 text-muted" style="font-size: 4rem;"></i>
+      <h4>Belum Ada Jadwal</h4>
+      <p class="text-muted">Anda belum memiliki jadwal praktik yang terdaftar di sistem.</p>
+    </div>
+  </div>
+@else
+  <div class="row">
+    @foreach($hariUrut as $hari)
+      @php $schsHari = $grouped->get($hari, collect()); @endphp
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 {{ $hari === $hariIni ? 'border border-primary shadow-sm' : '' }}">
+          <div class="card-header {{ $hari === $hariIni ? 'bg-label-primary' : 'bg-lighter' }} d-flex justify-content-between align-items-center py-3">
+            <h6 class="m-0 {{ $hari === $hariIni ? 'text-primary' : '' }}">
+              <i class="bx bx-calendar me-1"></i> {{ $hari }}
+            </h6>
+            @if($hari === $hariIni)
+              <span class="badge bg-primary">Hari Ini</span>
+            @endif
+          </div>
+          <div class="card-body pt-3">
+            @if($schsHari->isEmpty())
+              <div class="text-center text-muted py-3">
+                <small>Libur / Tidak ada jadwal</small>
+              </div>
+            @else
+              <ul class="p-0 m-0">
+                @foreach($schsHari as $sch)
+                  <li class="d-flex mb-3 align-items-center">
+                    <div class="avatar flex-shrink-0 me-3">
+                      <span class="avatar-initial rounded {{ $sch->is_aktif ? 'bg-label-success' : 'bg-label-secondary' }}">
+                        <i class="bx bx-time"></i>
+                      </span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                      <div class="me-2">
+                        <h6 class="mb-0">
+                          {{ \Carbon\Carbon::parse($sch->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($sch->jam_selesai)->format('H:i') }}
+                        </h6>
+                        <small class="text-muted">Kuota: {{ $sch->kuota }}</small>
+                      </div>
+                      <div class="user-progress">
+                        <span class="badge {{ $sch->is_aktif ? 'bg-label-success' : 'bg-label-secondary' }}">
+                          {{ $sch->is_aktif ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                @endforeach
+              </ul>
+            @endif
+          </div>
+        </div>
+      </div>
+    @endforeach
+  </div>
+@endif
+@endsection

@@ -31,10 +31,10 @@ class AuthenticatedSessionController extends Controller
         $role = Auth::user()->role;
 
         return match($role) {
-            'dokter' => redirect()->route('doctor.dashboard'),
-            'kasir'  => redirect()->route('karyawan.dashboard'),
-            'admin'  => redirect()->route('admin.dashboard'),
-            default  => redirect()->route('home'), // pemilik/customer → landing page
+            'admin'    => redirect()->route('admin.dashboard'),
+            'doctor'   => redirect()->route('doctor.dashboard'),
+            'karyawan' => redirect()->route('karyawan.dashboard'),
+            default    => redirect()->route('home'),
         };
     }
 
