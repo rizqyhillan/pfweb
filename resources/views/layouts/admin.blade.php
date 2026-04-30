@@ -28,6 +28,52 @@
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('admin-assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
+    <!-- PawPet Orange Accent Override -->
+    <style>
+      :root {
+        --bs-primary: #f59e0b !important;
+        --bs-primary-rgb: 245, 158, 11 !important;
+      }
+      .bg-primary, .btn-primary {
+        background-color: #f59e0b !important;
+        border-color: #f59e0b !important;
+      }
+      .btn-primary:hover, .btn-primary:focus {
+        background-color: #d97706 !important;
+        border-color: #d97706 !important;
+      }
+      .text-primary { color: #f59e0b !important; }
+      .menu-vertical .menu-item.active > .menu-link {
+        background-color: rgba(245, 158, 11, 0.16) !important;
+        color: #f59e0b !important;
+      }
+      .menu-vertical .menu-item.active > .menu-link .menu-icon {
+        color: #f59e0b !important;
+      }
+      .menu-vertical .menu-item .menu-link:hover {
+        color: #f59e0b !important;
+      }
+      .form-check-input:checked {
+        background-color: #f59e0b !important;
+        border-color: #f59e0b !important;
+      }
+      a { color: #d97706; }
+      a:hover { color: #f59e0b; }
+      .page-item.active .page-link {
+        background-color: #f59e0b !important;
+        border-color: #f59e0b !important;
+      }
+      .nav-pills .nav-link.active {
+        background-color: #f59e0b !important;
+      }
+      .progress-bar {
+        background-color: #f59e0b !important;
+      }
+      .app-brand-text {
+        color: #92400e !important;
+      }
+    </style>
+
     @yield('page-css')
 
     <!-- Helpers -->
