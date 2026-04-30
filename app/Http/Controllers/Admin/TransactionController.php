@@ -50,8 +50,10 @@ class TransactionController extends Controller
             $hasP = !empty($request->product_ids);
             $hasS = !empty($request->service_ids);
             $jenis = 'campuran';
-            if ($hasP && !$hasS) $jenis = 'barang';
-            if ($hasS && !$hasP) $jenis = 'layanan';
+            if ($hasP && !$hasS)
+                $jenis = 'barang';
+            if ($hasS && !$hasP)
+                $jenis = 'layanan';
 
             $diskon = $request->diskon ?? 0;
 
@@ -60,8 +62,11 @@ class TransactionController extends Controller
                 'id_kasir' => auth()->id(),
                 'kode_transaksi' => 'TRX-' . date('Ymd') . '-' . str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
                 'jenis' => $jenis,
-                'subtotal' => 0, 'diskon' => $diskon, 'total' => 0,
-                'jumlah_bayar' => $request->jumlah_bayar, 'kembalian' => 0,
+                'subtotal' => 0,
+                'diskon' => $diskon,
+                'total' => 0,
+                'jumlah_bayar' => $request->jumlah_bayar,
+                'kembalian' => 0,
                 'metode_bayar' => $request->metode_bayar,
                 'status' => 'lunas',
                 'catatan' => $request->catatan,
