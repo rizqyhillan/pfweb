@@ -8,6 +8,9 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Data Pasien (Hewan)</h5>
+        <a href="{{ route('doctor.patients.create') }}" class="btn btn-primary">
+          <i class="bx bx-plus me-1"></i> Tambah Pasien
+        </a>
       </div>
       <div class="card-body">
         <div class="table-responsive text-nowrap">
@@ -20,6 +23,7 @@
                 <th>Umur / Berat</th>
                 <th>Pemilik</th>
                 <th>Catatan</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -46,10 +50,19 @@
                       {{ $pet->catatan ?: '-' }}
                     </span>
                   </td>
+                  <td>
+                    <div class="d-flex">
+                      <a href="{{ route('doctor.patients.edit', $pet) }}" class="btn btn-sm btn-icon btn-primary me-2" title="Edit"><i class="bx bx-edit"></i></a>
+                      <form action="{{ route('doctor.patients.destroy', $pet) }}" method="POST" onsubmit="return confirm('Yakin hapus data pasien ini?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
+                      </form>
+                    </div>
+                  </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted">Belum ada data pasien terdaftar.</td>
+                  <td colspan="7" class="text-center text-muted">Belum ada data pasien terdaftar.</td>
                 </tr>
               @endforelse
             </tbody>

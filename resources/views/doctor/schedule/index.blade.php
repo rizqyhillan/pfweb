@@ -7,10 +7,17 @@
   <div class="col-12">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title mb-2">Jadwal Praktik</h5>
-        <p class="card-text text-muted">
-          Berikut adalah jadwal praktik mingguan Anda. Hubungi admin klinik jika Anda perlu mengubah jadwal ini.
-        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-title mb-2">Jadwal Praktik</h5>
+            <p class="card-text text-muted">
+              Berikut adalah jadwal praktik mingguan Anda. Anda dapat mengatur jadwal ini secara mandiri.
+            </p>
+          </div>
+          <a href="{{ route('doctor.schedule.create') }}" class="btn btn-primary">
+            <i class="bx bx-plus me-1"></i> Tambah Jadwal
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -66,9 +73,16 @@
                         <small class="text-muted">Kuota: {{ $sch->kuota }}</small>
                       </div>
                       <div class="user-progress">
-                        <span class="badge {{ $sch->is_aktif ? 'bg-label-success' : 'bg-label-secondary' }}">
+                        <span class="badge {{ $sch->is_aktif ? 'bg-label-success' : 'bg-label-secondary' }} d-block mb-2">
                           {{ $sch->is_aktif ? 'Aktif' : 'Nonaktif' }}
                         </span>
+                        <div class="d-flex justify-content-end gap-1">
+                          <a href="{{ route('doctor.schedule.edit', $sch) }}" class="btn btn-xs btn-icon btn-primary" title="Edit"><i class="bx bx-edit"></i></a>
+                          <form action="{{ route('doctor.schedule.destroy', $sch) }}" method="POST" onsubmit="return confirm('Yakin hapus jadwal ini?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-xs btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </li>

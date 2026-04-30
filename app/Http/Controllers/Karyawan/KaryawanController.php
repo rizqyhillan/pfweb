@@ -83,80 +83,92 @@ class KaryawanController extends Controller
      */
     public function storeTransaction(Request $request)
     {
-        $validated = $request->validate([
-            'id_pelanggan'  => 'required|exists:users,id',
-            'jenis'         => 'required|in:produk,layanan,campuran',
-            'metode_bayar'  => 'required|in:cash,transfer,qris',
-            'catatan'       => 'nullable|string',
-            'items'         => 'required|array|min:1',
-            'items.*.type'  => 'required|in:product,service',
-            'items.*.id'    => 'required|integer',
-            'items.*.qty'   => 'required|integer|min:1',
+        $request->validate([
+            'id_pelanggan' => 'required|exists:users,id',
+            'metode_bayar' => 'required|in:cash,transfer,ewallet,qris',
+            'diskon' => 'nullable|numeric|min:0',
+            'jumlah_bayar' => 'required|numeric|min:0',
+            'catatan' => 'nullable|string',
+            'product_ids' => 'nullable|array',
+            'product_ids.*' => 'exists:barang,id',
+            'product_qtys' => 'nullable|array',
+            'product_qtys.*' => 'integer|min:1',
+            'service_ids' => 'nullable|array',
+            'service_ids.*' => 'exists:layanan,id',
+            'service_qtys' => 'nullable|array',
+            'service_qtys.*' => 'integer|min:1',
         ]);
 
         DB::beginTransaction();
         try {
             $subtotal = 0;
-
-            // Hitung subtotal
-            foreach ($validated['items'] as $item) {
-                if ($item['type'] === 'product') {
-                    $product = Product::findOrFail($item['id']);
-                    $subtotal += $product->harga * $item['qty'];
-                } else {
-                    $service = Service::findOrFail($item['id']);
-                    $subtotal += $service->harga * $item['qty'];
-                }
+            $hasP = !empty($request->product_ids);
+            $hasS = !empty($request->service_ids);
+            
+            $jenis = 'campuran';
+            if ($hasP && !$hasS) {
+                $jenis = 'barang';
+            } elseif ($hasS && !$hasP) {
+                $jenis = 'layanan';
             }
 
-            // Buat transaksi
-            $transaction = Transaction::create([
-                'id_pelanggan'   => $validated['id_pelanggan'],
-                'id_kasir'       => Auth::id(),
-                'kode_transaksi' => 'TRX-' . now()->format('Ymd') . '-' . str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
-                'jenis'          => $validated['jenis'],
-                'subtotal'       => $subtotal,
-                'diskon'         => 0,
-                'total'          => $subtotal,
-                'jumlah_bayar'   => $subtotal,
-                'kembalian'      => 0,
-                'metode_bayar'   => $validated['metode_bayar'],
-                'status'         => 'paid',
-                'catatan'        => $validated['catatan'] ?? null,
-                'tanggal'        => now(),
+            $diskon = $request->diskon ?? 0;
+
+            $trx = Transaction::create([
+                'id_pelanggan' => $request->id_pelanggan,
+                'id_kasir' => Auth::id(),
+                'kode_transaksi' => 'TRX-' . date('Ymd') . '-' . str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
+                'jenis' => $jenis,
+                'subtotal' => 0,
+                'diskon' => $diskon,
+                'total' => 0,
+                'jumlah_bayar' => $request->jumlah_bayar,
+                'kembalian' => 0,
+                'metode_bayar' => $request->metode_bayar,
+                'status' => 'paid',
+                'catatan' => $request->catatan,
+                'tanggal' => now(),
             ]);
 
-            // Simpan detail items & update stok produk
-            foreach ($validated['items'] as $item) {
-                if ($item['type'] === 'product') {
-                    $product = Product::findOrFail($item['id']);
-                    $transaction->barang()->create([
-                        'id_barang'  => $product->id,
-                        'jumlah'     => $item['qty'],
-                        'harga'      => $product->harga,
-                        'subtotal'   => $product->harga * $item['qty'],
+            if ($hasP) {
+                foreach ($request->product_ids as $i => $pid) {
+                    $p = Product::find($pid);
+                    $qty = $request->product_qtys[$i] ?? 1;
+                    $sub = $p->harga * $qty;
+                    $subtotal += $sub;
+                    $trx->barang()->create([
+                        'id_barang' => $pid, 
+                        'jumlah' => $qty, 
+                        'harga_satuan' => $p->harga, 
+                        'subtotal' => $sub
                     ]);
-                    $product->decrement('stok', $item['qty']);
-                } else {
-                    $service = Service::findOrFail($item['id']);
-                    $transaction->layanan()->create([
-                        'id_layanan' => $service->id,
-                        'jumlah'     => $item['qty'],
-                        'harga'      => $service->harga,
-                        'subtotal'   => $service->harga * $item['qty'],
+                    $p->decrement('stok', $qty);
+                }
+            }
+            if ($hasS) {
+                foreach ($request->service_ids as $i => $sid) {
+                    $s = Service::find($sid);
+                    $qty = $request->service_qtys[$i] ?? 1;
+                    $sub = $s->harga * $qty;
+                    $subtotal += $sub;
+                    $trx->layanan()->create([
+                        'id_layanan' => $sid, 
+                        'jumlah' => $qty, 
+                        'harga_satuan' => $s->harga, 
+                        'subtotal' => $sub
                     ]);
                 }
             }
 
+            $total = $subtotal - $diskon;
+            $kembalian = max(0, $request->jumlah_bayar - $total);
+            $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
+
             DB::commit();
-
-            return redirect()->route('karyawan.transactions')
-                ->with('success', 'Transaksi ' . $transaction->kode_transaksi . ' berhasil dibuat.');
-
+            return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()
-                ->with('error', 'Gagal membuat transaksi: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 

@@ -8,6 +8,9 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Daftar Transaksi</h5>
+        <a href="{{ route('karyawan.transactions.create') }}" class="btn btn-primary">
+          <i class="bx bx-store me-1"></i> Buka POS Kasir
+        </a>
       </div>
       <div class="card-body">
         <div class="table-responsive text-nowrap">

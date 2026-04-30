@@ -37,12 +37,60 @@ class DoctorController extends Controller
     }
 
     /**
-     * Daftar semua pasien (hewan) — READ ONLY.
+     * Daftar semua pasien (hewan)
      */
     public function patients()
     {
         $pets = Pet::with('owner')->latest()->paginate(15);
         return view('doctor.patients.index', compact('pets'));
+    }
+
+    public function createPatient()
+    {
+        $owners = \App\Models\User::where('role', 'customer')->get();
+        return view('doctor.patients.create', compact('owners'));
+    }
+
+    public function storePatient(Request $request)
+    {
+        $validated = $request->validate([
+            'id_pemilik' => 'required|exists:users,id',
+            'nama_hewan' => 'required|string|max:100',
+            'jenis'      => 'required|in:kucing,anjing,burung,reptil,lainnya',
+            'ras'        => 'nullable|string|max:50',
+            'umur'       => 'nullable|integer|min:0',
+            'berat'      => 'nullable|numeric|min:0',
+            'catatan'    => 'nullable|string',
+        ]);
+        Pet::create($validated);
+        return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil ditambahkan.');
+    }
+
+    public function editPatient(Pet $pet)
+    {
+        $owners = \App\Models\User::where('role', 'customer')->get();
+        return view('doctor.patients.edit', compact('pet', 'owners'));
+    }
+
+    public function updatePatient(Request $request, Pet $pet)
+    {
+        $validated = $request->validate([
+            'id_pemilik' => 'required|exists:users,id',
+            'nama_hewan' => 'required|string|max:100',
+            'jenis'      => 'required|in:kucing,anjing,burung,reptil,lainnya',
+            'ras'        => 'nullable|string|max:50',
+            'umur'       => 'nullable|integer|min:0',
+            'berat'      => 'nullable|numeric|min:0',
+            'catatan'    => 'nullable|string',
+        ]);
+        $pet->update($validated);
+        return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil diperbarui.');
+    }
+
+    public function deletePatient(Pet $pet)
+    {
+        $pet->delete();
+        return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil dihapus.');
     }
 
     // ========================================
@@ -149,7 +197,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Jadwal praktek dokter — READ ONLY.
+     * Jadwal praktek dokter
      */
     public function schedule()
     {
@@ -158,5 +206,58 @@ class DoctorController extends Controller
             ->get();
 
         return view('doctor.schedule.index', compact('schedules'));
+    }
+
+    public function createSchedule()
+    {
+        return view('doctor.schedule.create');
+    }
+
+    public function storeSchedule(Request $request)
+    {
+        $validated = $request->validate([
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai'   => 'required',
+            'jam_selesai' => 'required',
+            'kuota'       => 'required|integer|min:1',
+            'is_aktif'    => 'boolean'
+        ]);
+
+        $validated['id_dokter'] = Auth::id();
+        $validated['is_aktif']  = $request->has('is_aktif');
+
+        DoctorSchedule::create($validated);
+        return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil ditambahkan.');
+    }
+
+    public function editSchedule(DoctorSchedule $schedule)
+    {
+        if ($schedule->id_dokter !== Auth::id()) abort(403);
+        return view('doctor.schedule.edit', compact('schedule'));
+    }
+
+    public function updateSchedule(Request $request, DoctorSchedule $schedule)
+    {
+        if ($schedule->id_dokter !== Auth::id()) abort(403);
+
+        $validated = $request->validate([
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'jam_mulai'   => 'required',
+            'jam_selesai' => 'required',
+            'kuota'       => 'required|integer|min:1',
+            'is_aktif'    => 'boolean'
+        ]);
+
+        $validated['is_aktif'] = $request->has('is_aktif');
+
+        $schedule->update($validated);
+        return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil diperbarui.');
+    }
+
+    public function deleteSchedule(DoctorSchedule $schedule)
+    {
+        if ($schedule->id_dokter !== Auth::id()) abort(403);
+        $schedule->delete();
+        return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil dihapus.');
     }
 }

@@ -8,6 +8,9 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Riwayat Rekam Medis Saya</h5>
+        <a href="{{ route('doctor.medical-records.create') }}" class="btn btn-primary">
+          <i class="bx bx-plus me-1"></i> Tambah Rekam Medis
+        </a>
       </div>
       <div class="card-body">
         <div class="table-responsive text-nowrap">
@@ -20,6 +23,7 @@
                 <th>Diagnosa</th>
                 <th>Tindakan</th>
                 <th>Tanggal</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -42,10 +46,19 @@
                     </span>
                   </td>
                   <td>{{ \Carbon\Carbon::parse($rec->tanggal)->format('d/m/Y') }}</td>
+                  <td>
+                    <div class="d-flex">
+                      <a href="{{ route('doctor.medical-records.edit', $rec) }}" class="btn btn-sm btn-icon btn-primary me-2" title="Edit"><i class="bx bx-edit"></i></a>
+                      <form action="{{ route('doctor.medical-records.destroy', $rec) }}" method="POST" onsubmit="return confirm('Yakin hapus rekam medis ini?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
+                      </form>
+                    </div>
+                  </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted">Belum ada riwayat rekam medis.</td>
+                  <td colspan="7" class="text-center text-muted">Belum ada riwayat rekam medis.</td>
                 </tr>
               @endforelse
             </tbody>

@@ -77,7 +77,17 @@ Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->g
     Route::get('/', function () { return redirect()->route('doctor.dashboard'); });
     Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
     Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');
+    Route::get('/patients/create', [DoctorController::class, 'createPatient'])->name('patients.create');
+    Route::post('/patients', [DoctorController::class, 'storePatient'])->name('patients.store');
+    Route::get('/patients/{pet}/edit', [DoctorController::class, 'editPatient'])->name('patients.edit');
+    Route::put('/patients/{pet}', [DoctorController::class, 'updatePatient'])->name('patients.update');
+    Route::delete('/patients/{pet}', [DoctorController::class, 'deletePatient'])->name('patients.destroy');
     Route::get('/schedule', [DoctorController::class, 'schedule'])->name('schedule');
+    Route::get('/schedule/create', [DoctorController::class, 'createSchedule'])->name('schedule.create');
+    Route::post('/schedule', [DoctorController::class, 'storeSchedule'])->name('schedule.store');
+    Route::get('/schedule/{schedule}/edit', [DoctorController::class, 'editSchedule'])->name('schedule.edit');
+    Route::put('/schedule/{schedule}', [DoctorController::class, 'updateSchedule'])->name('schedule.update');
+    Route::delete('/schedule/{schedule}', [DoctorController::class, 'deleteSchedule'])->name('schedule.destroy');
 
     // Medical Records — CRUD
     Route::get('/medical-records', [DoctorController::class, 'medicalRecords'])->name('medical-records');

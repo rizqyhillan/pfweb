@@ -27,10 +27,10 @@
     <!-- Kasir & Transaksi -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Kasir</span></li>
 
-    <li class="menu-item {{ request()->routeIs('karyawan.transactions') ? 'active' : '' }}">
+    <li class="menu-item {{ request()->routeIs('karyawan.transactions*') ? 'active' : '' }}">
       <a href="{{ route('karyawan.transactions') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-money"></i>
-        <div class="text-truncate">Transaksi</div>
+        <div class="text-truncate">Kasir / POS</div>
       </a>
     </li>
 

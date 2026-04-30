@@ -61,9 +61,6 @@
                   <a href="{{ route('appointment') }}" class="btn btn-primary">
                     <i class="bi bi-calendar-check me-1"></i>Booking Sekarang
                   </a>
-                  <a href="{{ route('register') }}" class="btn btn-outline">
-                    <i class="bi bi-person-plus me-1"></i>Daftar Gratis
-                  </a>
                 @endguest
 
                 @auth
