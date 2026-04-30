@@ -31,14 +31,6 @@
                onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
               <i class="bi bi-person me-1"></i>Login
             </a>
-            <a href="{{ route('register') }}"
-               style="padding:.42rem 1.1rem;background:var(--accent-color);color:#fff;
-                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
-                      border:2px solid var(--accent-color);transition:all .2s;"
-               onmouseover="this.style.opacity='.88';"
-               onmouseout="this.style.opacity='1';">
-              <i class="bi bi-person-plus me-1"></i>Daftar
-            </a>
           @endguest
 
           @auth
