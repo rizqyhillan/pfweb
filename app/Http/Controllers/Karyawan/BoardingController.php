@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Karyawan;
 use App\Http\Controllers\Controller;
 use App\Models\Boarding;
 use App\Models\Pet;
@@ -12,14 +12,14 @@ class BoardingController extends Controller
     public function index()
     {
         $boardings = Boarding::with(['hewan.owner', 'kamar'])->latest()->paginate(15);
-        return view('admin.boardings.index', compact('boardings'));
+        return view('karyawan.boardings.index', compact('boardings'));
     }
 
     public function create()
     {
         $pets = Pet::with('owner')->get();
         $rooms = Room::where('status', 'tersedia')->get();
-        return view('admin.boardings.create', compact('pets', 'rooms'));
+        return view('karyawan.boardings.create', compact('pets', 'rooms'));
     }
 
     public function store(Request $request)
@@ -40,14 +40,14 @@ class BoardingController extends Controller
         }
         $v['status'] = 'pending';
         Boarding::create($v);
-        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp ' . number_format($v['total_biaya'], 0, ',', '.'));
+        return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp ' . number_format($v['total_biaya'], 0, ',', '.'));
     }
 
     public function edit(Boarding $boarding)
     {
         $pets = Pet::with('owner')->get();
         $rooms = Room::get();
-        return view('admin.boardings.edit', compact('boarding', 'pets', 'rooms'));
+        return view('karyawan.boardings.edit', compact('boarding', 'pets', 'rooms'));
     }
 
     public function update(Request $request, Boarding $boarding)
@@ -76,13 +76,13 @@ class BoardingController extends Controller
         } elseif ($v['status'] === 'aktif') {
             Room::where('id', $v['id_kamar'])->update(['status' => 'terisi']);
         }
-        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil diperbarui.');
+        return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil diperbarui.');
     }
 
     public function destroy(Boarding $boarding)
     {
         Room::where('id', $boarding->id_kamar)->update(['status' => 'tersedia']);
         $boarding->delete();
-        return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil dihapus.');
+        return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dihapus.');
     }
 }

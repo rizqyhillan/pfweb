@@ -24,125 +24,120 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Bersihkan Data (Opsional jika ingin fresh)
-        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        // DB::table('users')->truncate();
-        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
         $pw = Hash::make('password');
 
-        // 1. Seed Users
+        // 1. Seed Users (Akun Inti + Customers)
         $admin = User::firstOrCreate(['email' => 'admin@pawpet.com'], [
             'nama' => 'Admin Utama', 'password' => $pw, 'role' => 'admin', 'no_hp' => '081200000001', 'is_aktif' => true
         ]);
-        $dokter = User::firstOrCreate(['email' => 'dokter@pawpet.com'], [
-            'nama' => 'Drh. Setiawan', 'password' => $pw, 'role' => 'dokter', 'no_hp' => '081200000002', 'is_aktif' => true
+        $doctor = User::firstOrCreate(['email' => 'dokter@pawpet.com'], [
+            'nama' => 'Drh. Setiawan', 'password' => $pw, 'role' => 'doctor', 'no_hp' => '081200000002', 'is_aktif' => true
         ]);
         $kasir = User::firstOrCreate(['email' => 'kasir@pawpet.com'], [
-            'nama' => 'Mbak Kasir', 'password' => $pw, 'role' => 'kasir', 'no_hp' => '081200000003', 'is_aktif' => true
-        ]);
-        $owner1 = User::firstOrCreate(['email' => 'owner1@gmail.com'], [
-            'nama' => 'Budi Santoso', 'password' => $pw, 'role' => 'pemilik', 'no_hp' => '081200000004', 'is_aktif' => true, 'alamat' => 'Jl. Merdeka No 1'
-        ]);
-        $owner2 = User::firstOrCreate(['email' => 'owner2@gmail.com'], [
-            'nama' => 'Siti Aminah', 'password' => $pw, 'role' => 'pemilik', 'no_hp' => '081200000005', 'is_aktif' => true, 'alamat' => 'Jl. Sudirman No 2'
+            'nama' => 'Mbak Kasir', 'password' => $pw, 'role' => 'karyawan', 'no_hp' => '081200000003', 'is_aktif' => true
         ]);
 
-        // 2. Seed Kamar
-        $kamarA = Room::firstOrCreate(['nama_kamar' => 'Kandang A1'], ['tipe' => 'kecil', 'harga_per_hari' => 50000, 'kapasitas' => 1, 'status' => 'tersedia']);
-        $kamarB = Room::firstOrCreate(['nama_kamar' => 'Kandang B1'], ['tipe' => 'sedang', 'harga_per_hari' => 75000, 'kapasitas' => 1, 'status' => 'tersedia']);
-        $kamarC = Room::firstOrCreate(['nama_kamar' => 'Kamar VVIP'], ['tipe' => 'besar', 'harga_per_hari' => 150000, 'kapasitas' => 2, 'status' => 'tersedia']);
-
-        // 3. Seed Supplier
-        $sup1 = Supplier::firstOrCreate(['nama_supplier' => 'PT Whiskas Indo'], ['kontak' => '081234567890', 'email' => 'info@whiskas.co.id', 'alamat' => 'Jakarta']);
-        $sup2 = Supplier::firstOrCreate(['nama_supplier' => 'Royal Canin Dist'], ['kontak' => '081298765432', 'email' => 'sales@rc.co.id', 'alamat' => 'Bandung']);
-
-        // 4. Seed Product & Batches & Stock
-        $prod1 = Product::firstOrCreate(['nama_barang' => 'Whiskas Tuna 1kg'], [
-            'kategori' => 'Makanan Kucing', 'harga' => 65000, 'stok' => 20, 'satuan' => 'Pcs', 'is_aktif' => true
-        ]);
-        $batch1 = ProductBatch::firstOrCreate(['no_batch' => 'BATCH-W-01'], [
-            'id_barang' => $prod1->id, 'id_supplier' => $sup1->id, 'harga_beli' => 50000, 'jumlah_masuk' => 20, 'sisa_stok' => 20, 
-            'tanggal_masuk' => now()->subDays(10), 'tanggal_expired' => now()->addYears(1)
-        ]);
-        StockCard::firstOrCreate(['referensi' => 'Modal Awal W-01'], [
-            'id_barang' => $prod1->id, 'id_batch' => $batch1->id, 'tanggal' => now()->subDays(10), 'jenis_mutasi' => 'masuk', 
-            'jumlah' => 20, 'saldo' => 20, 'harga_satuan' => 50000
-        ]);
-
-        $prod2 = Product::firstOrCreate(['nama_barang' => 'Royal Canin Kitten 2kg'], [
-            'kategori' => 'Makanan Kucing', 'harga' => 250000, 'stok' => 10, 'satuan' => 'Pcs', 'is_aktif' => true
-        ]);
-        $batch2 = ProductBatch::firstOrCreate(['no_batch' => 'BATCH-RC-01'], [
-            'id_barang' => $prod2->id, 'id_supplier' => $sup2->id, 'harga_beli' => 200000, 'jumlah_masuk' => 10, 'sisa_stok' => 10, 
-            'tanggal_masuk' => now()->subDays(5), 'tanggal_expired' => now()->addYears(1)
-        ]);
-        StockCard::firstOrCreate(['referensi' => 'Modal Awal RC-01'], [
-            'id_barang' => $prod2->id, 'id_batch' => $batch2->id, 'tanggal' => now()->subDays(5), 'jenis_mutasi' => 'masuk', 
-            'jumlah' => 10, 'saldo' => 10, 'harga_satuan' => 200000
-        ]);
-
-        // 5. Seed Services
-        $srv1 = Service::firstOrCreate(['nama_layanan' => 'Konsultasi Umum'], [
-            'jenis_layanan' => 'konsultasi', 'harga' => 100000, 'durasi_menit' => 30, 'id_dokter' => $dokter->id, 'is_aktif' => true
-        ]);
-        $srv2 = Service::firstOrCreate(['nama_layanan' => 'Vaksinasi Rabies'], [
-            'jenis_layanan' => 'vaksinasi', 'harga' => 150000, 'durasi_menit' => 15, 'id_dokter' => $dokter->id, 'is_aktif' => true
-        ]);
-        $srv3 = Service::firstOrCreate(['nama_layanan' => 'Grooming Basic'], [
-            'jenis_layanan' => 'grooming', 'harga' => 80000, 'durasi_menit' => 60, 'id_dokter' => null, 'is_aktif' => true
-        ]);
-
-        // 6. Seed Pets
-        $pet1 = Pet::firstOrCreate(['nama_hewan' => 'Milo'], [
-            'id_pemilik' => $owner1->id, 'jenis' => 'Kucing', 'ras' => 'Persia', 'umur' => '2 Tahun', 'berat' => 4.5
-        ]);
-        $pet2 = Pet::firstOrCreate(['nama_hewan' => 'Belly'], [
-            'id_pemilik' => $owner1->id, 'jenis' => 'Anjing', 'ras' => 'Pomeranian', 'umur' => '1 Tahun', 'berat' => 3.2
-        ]);
-        $pet3 = Pet::firstOrCreate(['nama_hewan' => 'Oreo'], [
-            'id_pemilik' => $owner2->id, 'jenis' => 'Kucing', 'ras' => 'Domestik', 'umur' => '3 Bulan', 'berat' => 1.5
-        ]);
-
-        // 7. Seed Boardings
-        Boarding::firstOrCreate(['id_hewan' => $pet2->id, 'id_kamar' => $kamarB->id], [
-            'tanggal_masuk' => now()->subDays(2), 'tanggal_rencana_keluar' => now()->addDays(3),
-            'status' => 'aktif', 'total_biaya' => $kamarB->harga_per_hari * 5, 'catatan_titip' => 'Bawa makanan sendiri'
-        ]);
-        $kamarB->update(['status' => 'terisi']);
-
-        // 8. Seed Medical Records
-        MedicalRecord::firstOrCreate(['id_hewan' => $pet1->id], [
-            'id_dokter' => $dokter->id, 'diagnosa' => 'Flu Ringan', 'tindakan' => 'Suntik Vitamin', 
-            'resep' => 'Vitamin 1x sehari', 'berat_saat_itu' => 4.5, 'tanggal' => now()->subDays(1)
-        ]);
-
-        // 9. Seed Transactions
-        $trx = Transaction::firstOrCreate(['kode_transaksi' => 'TRX-'.date('Ymd').'-0001'], [
-            'id_pelanggan' => $owner2->id, 'id_kasir' => $kasir->id, 'jenis' => 'campuran',
-            'subtotal' => 215000, 'diskon' => 15000, 'total' => 200000, 'jumlah_bayar' => 200000, 'kembalian' => 0,
-            'metode_bayar' => 'cash', 'status' => 'lunas', 'tanggal' => now()
-        ]);
-        
-        // Trx Product (Whiskas 1kg x1 = 65000)
-        TransactionProduct::firstOrCreate(['id_transaksi' => $trx->id, 'id_barang' => $prod1->id], [
-            'jumlah' => 1, 'harga_satuan' => 65000, 'subtotal' => 65000
-        ]);
-        // Kurangi stok barang & batch
-        if($prod1->stok == 20) {
-            $prod1->decrement('stok', 1);
-            $batch1->decrement('sisa_stok', 1);
-            StockCard::create([
-                'id_barang' => $prod1->id, 'id_batch' => $batch1->id, 'tanggal' => now(), 'jenis_mutasi' => 'keluar', 
-                'jumlah' => 1, 'saldo' => 19, 'harga_satuan' => 0, 'referensi' => $trx->kode_transaksi
+        $customers = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $customers[] = User::firstOrCreate(['email' => "customer$i@pawpet.com"], [
+                'nama' => "Pelanggan $i", 'password' => $pw, 'role' => 'customer', 'no_hp' => "08130000000$i", 'is_aktif' => true
             ]);
         }
 
-        // Trx Service (Vaksinasi x1 = 150000)
-        TransactionService::firstOrCreate(['id_transaksi' => $trx->id, 'id_layanan' => $srv2->id], [
-            'jumlah' => 1, 'harga_satuan' => 150000, 'subtotal' => 150000
-        ]);
+        // 2. Suppliers
+        $suppliers = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $suppliers[] = Supplier::firstOrCreate(['nama_supplier' => "Supplier $i"], [
+                'kontak' => "08140000000$i", 'alamat' => "Jalan Supplier $i, Kota $i"
+            ]);
+        }
 
-        echo "Seeding completed successfully!\n";
+        // 3. Rooms
+        $rooms = [];
+        $tipeKamar = ['standar', 'vip', 'standar', 'vip', 'standar'];
+        for ($i = 1; $i <= 5; $i++) {
+            $rooms[] = Room::firstOrCreate(['nama_kamar' => "Kamar $i"], [
+                'tipe' => $tipeKamar[$i - 1], 'harga_per_hari' => ($tipeKamar[$i - 1] == 'vip' ? 100000 : 50000), 'status' => 'tersedia'
+            ]);
+        }
+
+        // 4. Services
+        $services = [];
+        $namaLayanan = ['Vaksinasi Kucing', 'Grooming Anjing', 'Pemeriksaan Umum', 'Operasi Minor', 'Scaling Gigi'];
+        for ($i = 0; $i < 5; $i++) {
+            $services[] = Service::firstOrCreate(['nama_layanan' => $namaLayanan[$i]], [
+                'deskripsi' => "Layanan " . $namaLayanan[$i], 'harga' => 50000 + ($i * 25000), 'id_dokter' => $doctor->id, 'is_aktif' => true
+            ]);
+        }
+
+        // 5. Products & Batches
+        $products = [];
+        $namaProduk = ['Whiskas Tuna 1kg', 'Royal Canin Kitten', 'Shampoo Kucing', 'Kalung Anjing', 'Vitamin Bulu'];
+        for ($i = 0; $i < 5; $i++) {
+            $product = Product::firstOrCreate(['nama_barang' => $namaProduk[$i]], [
+                'kategori' => 'makanan', 'harga' => 20000 + ($i * 15000), 'stok' => 50, 'is_aktif' => true
+            ]);
+            $products[] = $product;
+            
+            $batch = ProductBatch::create([
+                'id_barang' => $product->id, 'id_supplier' => $suppliers[$i]->id, 'no_batch' => "BCH-2026-" . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
+                'jumlah_masuk' => 50, 'sisa_stok' => 50, 'harga_beli' => $product->harga * 0.7, 'tanggal_masuk' => now()->subDays(10), 'keterangan' => 'Stok Awal'
+            ]);
+            StockCard::create([
+                'id_barang' => $product->id, 'id_batch' => $batch->id, 'tanggal' => now()->subDays(10), 'jenis_mutasi' => 'masuk',
+                'jumlah' => 50, 'saldo' => 50, 'harga_satuan' => $batch->harga_beli, 'referensi' => $batch->no_batch, 'keterangan' => 'Stok Awal'
+            ]);
+        }
+
+        // 6. Pets
+        $pets = [];
+        $jenisHewan = ['kucing', 'anjing', 'kucing', 'kelinci', 'burung'];
+        for ($i = 0; $i < 5; $i++) {
+            $pets[] = Pet::firstOrCreate(['nama_hewan' => "Hewan $i"], [
+                'id_pemilik' => $customers[$i]->id, 'jenis' => $jenisHewan[$i], 'ras' => 'Mix', 'umur' => '1 Tahun', 'berat' => 4.5 + $i, 'catatan' => 'Sehat'
+            ]);
+        }
+
+        // 7. Medical Records
+        for ($i = 0; $i < 5; $i++) {
+            MedicalRecord::create([
+                'id_hewan' => $pets[$i]->id, 'id_dokter' => $doctor->id, 'diagnosa' => "Demam Ringan $i", 'tindakan' => "Pemberian Vitamin $i",
+                'resep' => "Obat $i", 'berat_saat_itu' => $pets[$i]->berat, 'tanggal' => now()->subDays(5 - $i)
+            ]);
+        }
+
+        // 8. Boardings
+        for ($i = 0; $i < 5; $i++) {
+            Boarding::create([
+                'id_hewan' => $pets[$i]->id, 'id_kamar' => $rooms[$i]->id, 'tanggal_masuk' => now()->addDays($i), 'tanggal_rencana_keluar' => now()->addDays($i + 2),
+                'status' => 'pending', 'total_biaya' => $rooms[$i]->harga_per_hari * 2
+            ]);
+        }
+
+        // 9. Doctor Schedules
+        $hari = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+        for ($i = 0; $i < 5; $i++) {
+            \App\Models\DoctorSchedule::create([
+                'id_dokter' => $doctor->id, 'hari' => $hari[$i], 'jam_mulai' => '09:00:00', 'jam_selesai' => '15:00:00', 'is_aktif' => true
+            ]);
+        }
+
+        // 10. Transactions
+        for ($i = 0; $i < 5; $i++) {
+            $trx = Transaction::create([
+                'id_pelanggan' => $customers[$i]->id, 'id_kasir' => $kasir->id, 'kode_transaksi' => 'TRX-' . date('Ymd') . '-00' . ($i + 1),
+                'jenis' => 'campuran', 'subtotal' => 0, 'diskon' => 0, 'total' => 0, 'jumlah_bayar' => 0, 'kembalian' => 0,
+                'metode_bayar' => 'cash', 'status' => 'lunas', 'tanggal' => now()->subDays(5 - $i)
+            ]);
+
+            $p = $products[$i];
+            $trx->barang()->create(['id_barang' => $p->id, 'jumlah' => 1, 'harga_satuan' => $p->harga, 'subtotal' => $p->harga]);
+            $s = $services[$i];
+            $trx->layanan()->create(['id_layanan' => $s->id, 'jumlah' => 1, 'harga_satuan' => $s->harga, 'subtotal' => $s->harga]);
+            
+            $trx->update(['subtotal' => $p->harga + $s->harga, 'total' => $p->harga + $s->harga, 'jumlah_bayar' => $p->harga + $s->harga + 10000, 'kembalian' => 10000]);
+        }
+
+        echo "Seeding completed: Semua tabel telah diisi minimal 5 data dummy.\n";
     }
 }

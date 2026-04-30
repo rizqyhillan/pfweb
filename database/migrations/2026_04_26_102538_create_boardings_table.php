@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->date('tanggal_keluar')->nullable();
             $table->text('catatan_titip')->nullable();
             $table->text('catatan_jemput')->nullable();
-            $table->enum('status', ['aktif', 'selesai', 'batal'])->default('aktif');
+            $table->enum('status', ['pending', 'aktif', 'selesai', 'batal'])->default('pending');
             $table->decimal('total_biaya', 14, 2)->default(0.00);
             $table->timestamps();
         });

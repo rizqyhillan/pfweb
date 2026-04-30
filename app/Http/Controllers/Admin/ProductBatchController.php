@@ -31,9 +31,14 @@ class ProductBatchController extends Controller
             'harga_beli' => 'required|numeric|min:0',
             'jumlah_masuk' => 'required|integer|min:1',
             'tanggal_masuk' => 'required|date',
-            'tanggal_expired' => 'nullable|date|after:tanggal_masuk',
+            'tanggal_expired' => 'nullable|date', // Removed after:tanggal_masuk which often causes strict errors
             'keterangan' => 'nullable|string|max:255',
         ]);
+        
+        if (empty($v['no_batch'])) {
+            $v['no_batch'] = 'BCH-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+        }
+
         $v['sisa_stok'] = $v['jumlah_masuk'];
         $batch = ProductBatch::create($v);
         Product::where('id', $v['id_barang'])->increment('stok', $v['jumlah_masuk']);

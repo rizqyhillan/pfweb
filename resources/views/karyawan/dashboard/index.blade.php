@@ -118,8 +118,8 @@
                   <td>{{ $trx->pelanggan->nama ?? '-' }}</td>
                   <td>Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
                   <td>
-                    @if($trx->status === 'paid')
-                      <span class="badge bg-label-success">Paid</span>
+                    @if($trx->status === 'lunas')
+                      <span class="badge bg-label-success">Lunas</span>
                     @elseif($trx->status === 'pending')
                       <span class="badge bg-label-warning">Pending</span>
                     @else

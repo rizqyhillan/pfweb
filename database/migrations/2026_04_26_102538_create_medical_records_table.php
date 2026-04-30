@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->text('diagnosa')->nullable();
             $table->text('tindakan')->nullable();
             $table->text('resep')->nullable();
-            $table->decimal('berat_saat_itu', 5, 2)->nullable();
+            $table->decimal('berat_saat_itu', 8, 2)->nullable();
             $table->text('catatan')->nullable();
             $table->dateTime('tanggal')->useCurrent();
             $table->timestamps();

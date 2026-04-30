@@ -25,7 +25,7 @@
     </li>
 
     <!-- Kasir & Transaksi -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Kasir</span></li>
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Layanan & Kasir</span></li>
 
     <li class="menu-item {{ request()->routeIs('karyawan.transactions*') ? 'active' : '' }}">
       <a href="{{ route('karyawan.transactions') }}" class="menu-link">
@@ -34,7 +34,14 @@
       </a>
     </li>
 
-    <!-- Produk & Layanan -->
+    <li class="menu-item {{ request()->routeIs('karyawan.boardings*') ? 'active' : '' }}">
+      <a href="{{ route('karyawan.boardings.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-home-heart"></i>
+        <div class="text-truncate">Penitipan Hewan</div>
+      </a>
+    </li>
+
+    <!-- Produk & Informasi -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Produk & Layanan</span></li>
 
     <li class="menu-item {{ request()->routeIs('karyawan.products') ? 'active' : '' }}">

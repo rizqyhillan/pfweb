@@ -22,7 +22,7 @@ class KaryawanController extends Controller
         $totalServices      = Service::where('is_aktif', true)->count();
         $todayTransactions  = Transaction::whereDate('tanggal', today())->count();
         $todayRevenue       = Transaction::whereDate('tanggal', today())
-                                ->where('status', 'paid')->sum('total');
+                                ->where('status', 'lunas')->sum('total');
 
         $recentTransactions = Transaction::with(['pelanggan', 'kasir'])
             ->latest('tanggal')->take(5)->get();
@@ -125,7 +125,7 @@ class KaryawanController extends Controller
                 'jumlah_bayar' => $request->jumlah_bayar,
                 'kembalian' => 0,
                 'metode_bayar' => $request->metode_bayar,
-                'status' => 'paid',
+                'status' => 'lunas',
                 'catatan' => $request->catatan,
                 'tanggal' => now(),
             ]);
@@ -172,17 +172,23 @@ class KaryawanController extends Controller
         }
     }
 
+    public function showTransaction(Transaction $transaction)
+    {
+        $transaction->load(['pelanggan', 'kasir', 'barang.barang', 'layanan.layanan']);
+        return view('karyawan.transactions.show', compact('transaction'));
+    }
+
     /**
      * Laporan ringkasan.
      */
     public function reports()
     {
-        $totalRevenue      = Transaction::where('status', 'paid')->sum('total');
-        $monthlyRevenue    = Transaction::where('status', 'paid')
+        $totalRevenue      = Transaction::where('status', 'lunas')->sum('total');
+        $monthlyRevenue    = Transaction::where('status', 'lunas')
             ->whereMonth('tanggal', now()->month)
             ->whereYear('tanggal', now()->year)->sum('total');
         $totalTransactions = Transaction::count();
-        $paidTransactions  = Transaction::where('status', 'paid')->count();
+        $paidTransactions  = Transaction::where('status', 'lunas')->count();
 
         return view('karyawan.reports.index', compact(
             'totalRevenue', 'monthlyRevenue', 'totalTransactions', 'paidTransactions'

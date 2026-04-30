@@ -7,15 +7,15 @@ return new class extends Migration {
     public function up(): void
     {
         // Step 1: Expand enum to include ALL values (old + new)
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','dokter','pemilik','kasir','doctor','karyawan') DEFAULT 'admin'");
+        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','dokter','pemilik','kasir','doctor','karyawan','customer') DEFAULT 'admin'");
 
         // Step 2: Rename old role values to new ones
-        DB::table('users')->where('role', 'pemilik')->update(['role' => 'admin']);
+        DB::table('users')->where('role', 'pemilik')->update(['role' => 'customer']);
         DB::table('users')->where('role', 'dokter')->update(['role' => 'doctor']);
         DB::table('users')->where('role', 'kasir')->update(['role' => 'karyawan']);
 
         // Step 3: Shrink enum to only new values
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','doctor','karyawan') DEFAULT 'admin'");
+        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','doctor','karyawan','customer') DEFAULT 'admin'");
     }
 
     public function down(): void

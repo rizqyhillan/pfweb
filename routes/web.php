@@ -110,6 +110,10 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::get('/transactions', [KaryawanController::class, 'transactions'])->name('transactions');
     Route::get('/transactions/create', [KaryawanController::class, 'createTransaction'])->name('transactions.create');
     Route::post('/transactions', [KaryawanController::class, 'storeTransaction'])->name('transactions.store');
+    Route::get('/transactions/{transaction}', [KaryawanController::class, 'showTransaction'])->name('transactions.show');
+
+    // Boardings - CRUD for Karyawan
+    Route::resource('boardings', \App\Http\Controllers\Karyawan\BoardingController::class);
 });
 
 require __DIR__.'/auth.php';
