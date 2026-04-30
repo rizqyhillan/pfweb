@@ -15,7 +15,7 @@ class ServiceController extends Controller
 
     public function create()
     {
-        $doctors = User::where('role', 'doctor')->get();
+        $doctors = User::where('role', 'dokter')->get();
         return view('admin.services.create', compact('doctors'));
     }
 
@@ -36,7 +36,7 @@ class ServiceController extends Controller
 
     public function edit(Service $service)
     {
-        $doctors = User::where('role', 'doctor')->get();
+        $doctors = User::where('role', 'dokter')->get();
         return view('admin.services.edit', compact('service', 'doctors'));
     }
 

@@ -87,7 +87,7 @@
       <div class="layout-container">
 
         <!-- Sidebar Menu -->
-        @if(Auth::check() && Auth::user()->role === 'doctor')
+        @if(Auth::check() && Auth::user()->role === 'dokter')
           @include('doctor.partials.sidebar')
         @elseif(Auth::check() && Auth::user()->role === 'karyawan')
           @include('karyawan.partials.sidebar')

@@ -17,7 +17,7 @@ class MedicalRecordController extends Controller
     public function create()
     {
         $pets = Pet::with('owner')->get();
-        $doctors = User::where('role', 'doctor')->get();
+        $doctors = User::where('role', 'dokter')->get();
         return view('admin.medical-records.create', compact('pets', 'doctors'));
     }
 
@@ -46,7 +46,7 @@ class MedicalRecordController extends Controller
     public function edit(MedicalRecord $medical_record)
     {
         $pets = Pet::with('owner')->get();
-        $doctors = User::where('role', 'doctor')->get();
+        $doctors = User::where('role', 'dokter')->get();
         return view('admin.medical-records.edit', compact('medical_record', 'pets', 'doctors'));
     }
 

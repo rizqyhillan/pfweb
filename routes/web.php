@@ -44,7 +44,7 @@ Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 Route::get('/dashboard', function () {
     return match(Auth::user()->role) {
         'admin'    => redirect()->route('admin.dashboard'),
-        'doctor'   => redirect()->route('doctor.dashboard'),
+        'dokter'   => redirect()->route('doctor.dashboard'),
         'karyawan' => redirect()->route('karyawan.dashboard'),
         default    => redirect()->route('home'),
     };
@@ -73,7 +73,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 // Doctor Routes — hanya role 'doctor'
-Route::middleware(['auth', 'role:doctor'])->prefix('doctor')->name('doctor.')->group(function () {
+Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->group(function () {
     Route::get('/', function () { return redirect()->route('doctor.dashboard'); });
     Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
     Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');

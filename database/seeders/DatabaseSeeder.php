@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Admin Utama', 'password' => $pw, 'role' => 'admin', 'no_hp' => '081200000001', 'is_aktif' => true
         ]);
         $doctor = User::firstOrCreate(['email' => 'dokter@pawpet.com'], [
-            'nama' => 'Drh. Setiawan', 'password' => $pw, 'role' => 'doctor', 'no_hp' => '081200000002', 'is_aktif' => true
+            'nama' => 'Drh. Setiawan', 'password' => $pw, 'role' => 'dokter', 'no_hp' => '081200000002', 'is_aktif' => true
         ]);
         $kasir = User::firstOrCreate(['email' => 'kasir@pawpet.com'], [
             'nama' => 'Mbak Kasir', 'password' => $pw, 'role' => 'karyawan', 'no_hp' => '081200000003', 'is_aktif' => true
@@ -54,10 +54,10 @@ class DatabaseSeeder extends Seeder
 
         // 3. Rooms
         $rooms = [];
-        $tipeKamar = ['standar', 'vip', 'standar', 'vip', 'standar'];
+        $tipeKamar = ['kecil', 'sedang', 'besar', 'kecil', 'sedang'];
         for ($i = 1; $i <= 5; $i++) {
             $rooms[] = Room::firstOrCreate(['nama_kamar' => "Kamar $i"], [
-                'tipe' => $tipeKamar[$i - 1], 'harga_per_hari' => ($tipeKamar[$i - 1] == 'vip' ? 100000 : 50000), 'status' => 'tersedia'
+                'tipe' => $tipeKamar[$i - 1], 'harga_per_hari' => ($tipeKamar[$i - 1] == 'kecil' ? 50000 : ($tipeKamar[$i - 1] == 'sedang' ? 100000 : 150000)), 'status' => 'tersedia'
             ]);
         }
 

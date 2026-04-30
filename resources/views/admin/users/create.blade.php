@@ -16,7 +16,7 @@
       <div class="col-md-4"><label class="form-label">Konfirmasi Password</label><input type="password" class="form-control" name="password_confirmation" /></div>
       <div class="col-md-4"><label class="form-label">Role *</label>
         <select class="form-select" name="role" required>
-          @foreach(['admin'=>'Admin','doctor'=>'Doctor','karyawan'=>'Karyawan'] as $k=>$v)<option value="{{ $k }}" {{ old('role') == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
+          @foreach(['admin'=>'Admin','dokter'=>'Dokter','karyawan'=>'Karyawan'] as $k=>$v)<option value="{{ $k }}" {{ old('role') == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
         </select></div>
     </div>
     <div class="row mb-6">

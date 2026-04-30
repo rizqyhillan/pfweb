@@ -38,7 +38,7 @@
             @php
               $dashRoute = match(Auth::user()->role) {
                 'admin'    => route('admin.dashboard'),
-                'doctor'   => route('doctor.dashboard'),
+                'dokter'   => route('doctor.dashboard'),
                 'karyawan' => route('karyawan.dashboard'),
                 default    => route('home'),
               };
