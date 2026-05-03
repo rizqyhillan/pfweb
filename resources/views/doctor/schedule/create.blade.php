@@ -10,13 +10,13 @@
     <div class="row mb-6">
       <div class="col-md-3"><label class="form-label">Hari *</label>
         <select class="form-select" name="hari" required>
-            <option value="Senin">Senin</option>
-            <option value="Selasa">Selasa</option>
-            <option value="Rabu">Rabu</option>
-            <option value="Kamis">Kamis</option>
-            <option value="Jumat">Jumat</option>
-            <option value="Sabtu">Sabtu</option>
-            <option value="Minggu">Minggu</option>
+            <option value="senin" {{ old('hari') == 'senin' ? 'selected' : '' }}>Senin</option>
+            <option value="selasa" {{ old('hari') == 'selasa' ? 'selected' : '' }}>Selasa</option>
+            <option value="rabu" {{ old('hari') == 'rabu' ? 'selected' : '' }}>Rabu</option>
+            <option value="kamis" {{ old('hari') == 'kamis' ? 'selected' : '' }}>Kamis</option>
+            <option value="jumat" {{ old('hari') == 'jumat' ? 'selected' : '' }}>Jumat</option>
+            <option value="sabtu" {{ old('hari') == 'sabtu' ? 'selected' : '' }}>Sabtu</option>
+            <option value="minggu" {{ old('hari') == 'minggu' ? 'selected' : '' }}>Minggu</option>
         </select>
       </div>
       <div class="col-md-3"><label class="form-label">Jam Mulai *</label><input type="time" class="form-control" name="jam_mulai" value="{{ old('jam_mulai', '08:00') }}" required /></div>
@@ -24,7 +24,7 @@
       <div class="col-md-3"><label class="form-label">Kuota *</label><input type="number" class="form-control" name="kuota" value="{{ old('kuota', 10) }}" min="1" required /></div>
     </div>
     <div class="mb-6 form-check">
-      <input type="checkbox" class="form-check-input" id="is_aktif" name="is_aktif" value="1" checked>
+      <input type="checkbox" class="form-check-input" id="is_aktif" name="is_aktif" value="1" {{ old('is_aktif', true) ? 'checked' : '' }}>
       <label class="form-check-label" for="is_aktif">Aktifkan Jadwal Ini</label>
     </div>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>

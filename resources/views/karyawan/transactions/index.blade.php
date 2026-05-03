@@ -13,6 +13,14 @@
         </a>
       </div>
       <div class="card-body">
+
+        @if(session('success'))
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        @endif
+
         <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
@@ -25,6 +33,7 @@
                 <th>Metode</th>
                 <th>Status</th>
                 <th>Tanggal</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -37,19 +46,24 @@
                   <td>Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
                   <td>{{ ucfirst($trx->metode_bayar ?? '-') }}</td>
                   <td>
-                    @if($trx->status === 'paid')
-                      <span class="badge bg-label-success">Paid</span>
+                    @if($trx->status === 'lunas')
+                      <span class="badge bg-label-success">Lunas</span>
                     @elseif($trx->status === 'pending')
                       <span class="badge bg-label-warning">Pending</span>
                     @else
-                      <span class="badge bg-label-danger">{{ ucfirst($trx->status ?? '-') }}</span>
+                      <span class="badge bg-label-danger">{{ ucfirst($trx->status ?? 'Batal') }}</span>
                     @endif
                   </td>
                   <td>{{ $trx->tanggal ? $trx->tanggal->format('d/m/Y') : '-' }}</td>
+                  <td>
+                    <a href="{{ route('karyawan.transactions.show', $trx) }}" class="btn btn-sm btn-icon btn-info" title="Detail">
+                      <i class="bx bx-show"></i>
+                    </a>
+                  </td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted">Belum ada data transaksi.</td>
+                  <td colspan="9" class="text-center text-muted">Belum ada data transaksi.</td>
                 </tr>
               @endforelse
             </tbody>

@@ -3,10 +3,18 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Penitipan Baru</h4>
-  <a href="{{ route('admin.boardings.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+  <a href="{{ route('karyawan.boardings.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
+
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 <div class="card"><div class="card-body">
-  <form action="{{ route('admin.boardings.store') }}" method="POST">@csrf
+  <form action="{{ route('karyawan.boardings.store') }}" method="POST">@csrf
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Hewan *</label>
         <select class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih Hewan --</option>

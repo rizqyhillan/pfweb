@@ -8,6 +8,11 @@ class Transaction extends Model
     protected $fillable = ['id_pelanggan', 'id_kasir', 'kode_transaksi', 'jenis', 'subtotal', 'diskon', 'total', 'jumlah_bayar', 'kembalian', 'metode_bayar', 'status', 'catatan', 'tanggal'];
     protected $casts = ['subtotal' => 'decimal:2', 'diskon' => 'decimal:2', 'total' => 'decimal:2', 'jumlah_bayar' => 'decimal:2', 'kembalian' => 'decimal:2', 'tanggal' => 'datetime'];
 
+    // Default status when creating
+    protected $attributes = [
+        'status' => 'pending',
+    ];
+
     public function pelanggan()
     {
         return $this->belongsTo(User::class, 'id_pelanggan');

@@ -5,9 +5,15 @@
 @section('content')
   <div class="d-flex justify-content-between align-items-center mb-6">
     <h4 class="mb-0">Data Boarding (Penitipan)</h4>
-    <a href="{{ route('admin.boardings.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Boarding
-      Baru</a>
+    <a href="{{ route('karyawan.boardings.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Boarding Baru</a>
   </div>
+
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  @endif
 
   <div class="card">
     <div class="table-responsive text-nowrap">
@@ -29,29 +35,31 @@
           @forelse($boardings as $boarding)
             <tr>
               <td>{{ $loop->iteration + ($boardings->currentPage() - 1) * $boardings->perPage() }}</td>
-              <td><strong>{{ $boarding->pet->name ?? '-' }}</strong></td>
-              <td>{{ $boarding->pet->owner->name ?? '-' }}</td>
-              <td>{{ $boarding->room->name ?? '-' }}</td>
-              <td>{{ $boarding->check_in_date ? $boarding->check_in_date->format('d/m/Y') : '-' }}</td>
-              <td>{{ $boarding->planned_check_out_date ? $boarding->planned_check_out_date->format('d/m/Y') : '-' }}</td>
+              <td><strong>{{ $boarding->hewan->nama_hewan ?? '-' }}</strong></td>
+              <td>{{ $boarding->hewan->owner->nama ?? '-' }}</td>
+              <td>{{ $boarding->kamar->nama_kamar ?? '-' }}</td>
+              <td>{{ $boarding->tanggal_masuk ? $boarding->tanggal_masuk->format('d/m/Y') : '-' }}</td>
+              <td>{{ $boarding->tanggal_rencana_keluar ? $boarding->tanggal_rencana_keluar->format('d/m/Y') : '-' }}</td>
               <td>
-                @if($boarding->status === 'active')
+                @if($boarding->status === 'aktif')
                   <span class="badge bg-label-primary">Aktif</span>
-                @elseif($boarding->status === 'completed')
+                @elseif($boarding->status === 'selesai')
                   <span class="badge bg-label-success">Selesai</span>
+                @elseif($boarding->status === 'pending')
+                  <span class="badge bg-label-warning">Pending</span>
                 @else
-                  <span class="badge bg-label-danger">Dibatalkan</span>
+                  <span class="badge bg-label-danger">Batal</span>
                 @endif
               </td>
-              <td>Rp {{ number_format($boarding->total_cost, 0, ',', '.') }}</td>
+              <td>Rp {{ number_format($boarding->total_biaya, 0, ',', '.') }}</td>
               <td>
                 <div class="dropdown">
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                       class="icon-base bx bx-dots-vertical-rounded"></i></button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ route('admin.boardings.edit', $boarding) }}"><i
+                    <a class="dropdown-item" href="{{ route('karyawan.boardings.edit', $boarding) }}"><i
                         class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-                    <form action="{{ route('admin.boardings.destroy', $boarding) }}" method="POST"
+                    <form action="{{ route('karyawan.boardings.destroy', $boarding) }}" method="POST"
                       onsubmit="return confirm('Yakin hapus data ini?')">
                       @csrf @method('DELETE')
                       <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>

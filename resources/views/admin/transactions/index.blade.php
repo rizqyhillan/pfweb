@@ -9,6 +9,13 @@
       Baru</a>
   </div>
 
+  @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  @endif
+
   <div class="card">
     <div class="table-responsive text-nowrap">
       <table class="table">
@@ -16,7 +23,7 @@
           <tr>
             <th>#</th>
             <th>Kode</th>
-            <th>Customer</th>
+            <th>Pelanggan</th>
             <th>Kasir</th>
             <th>Tipe</th>
             <th>Total</th>
@@ -30,27 +37,29 @@
           @forelse($transactions as $trx)
             <tr>
               <td>{{ $loop->iteration + ($transactions->currentPage() - 1) * $transactions->perPage() }}</td>
-              <td><strong>{{ $trx->transaction_code }}</strong></td>
-              <td>{{ $trx->customer->name ?? '-' }}</td>
-              <td>{{ $trx->cashier->name ?? '-' }}</td>
-              <td><span class="badge bg-label-info">{{ ucfirst($trx->type) }}</span></td>
+              <td><strong>{{ $trx->kode_transaksi }}</strong></td>
+              <td>{{ $trx->pelanggan->nama ?? '-' }}</td>
+              <td>{{ $trx->kasir->nama ?? '-' }}</td>
+              <td><span class="badge bg-label-info">{{ ucfirst($trx->jenis) }}</span></td>
               <td>Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
-              <td>{{ ucfirst($trx->payment_method) }}</td>
+              <td>{{ ucfirst($trx->metode_bayar) }}</td>
               <td>
-                @if($trx->status === 'paid')
-                  <span class="badge bg-label-success">Paid</span>
+                @if($trx->status === 'lunas')
+                  <span class="badge bg-label-success">Lunas</span>
                 @elseif($trx->status === 'pending')
                   <span class="badge bg-label-warning">Pending</span>
                 @else
-                  <span class="badge bg-label-danger">Cancelled</span>
+                  <span class="badge bg-label-danger">Batal</span>
                 @endif
               </td>
-              <td>{{ $trx->date ? $trx->date->format('d/m/Y H:i') : '-' }}</td>
+              <td>{{ $trx->tanggal ? $trx->tanggal->format('d/m/Y H:i') : '-' }}</td>
               <td>
                 <div class="dropdown">
                   <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
                       class="icon-base bx bx-dots-vertical-rounded"></i></button>
                   <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ route('admin.transactions.show', $trx) }}"><i
+                        class="icon-base bx bx-show me-1"></i> Detail</a>
                     <form action="{{ route('admin.transactions.destroy', $trx) }}" method="POST"
                       onsubmit="return confirm('Yakin hapus transaksi ini?')">
                       @csrf @method('DELETE')
