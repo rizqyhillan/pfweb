@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use App\Models\MedicalRecord;
 use App\Models\Pet;
 use App\Models\User;
+use App\Exports\MedicalRecordsExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class MedicalRecordController extends Controller
@@ -70,5 +73,30 @@ class MedicalRecordController extends Controller
     {
         $medical_record->delete();
         return redirect()->route('admin.medical-records.index')->with('success', 'Rekam medis berhasil dihapus.');
+    }
+
+    public function exportExcel()
+    {
+    return Excel::download(new MedicalRecordsExport, 'rekam-medis.xlsx');
+    }
+
+    public function exportPdf($hewanId)
+    {
+    $records = MedicalRecord::with(['hewan.owner', 'dokter'])
+        ->where('id_hewan', $hewanId)
+        ->get();
+
+    if ($records->isEmpty()) {
+        abort(404, 'Data tidak ditemukan');
+    }
+
+    $hewan = $records->first()->hewan;
+
+    $pdf = Pdf::loadView('admin.medical-records.pdf', [
+        'records' => $records,
+        'hewan' => $hewan
+    ]);
+
+    return $pdf->download('rekam-medis-' . $hewan->nama_hewan . '.pdf');
     }
 }

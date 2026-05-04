@@ -116,6 +116,15 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::resource('boardings', \App\Http\Controllers\Karyawan\BoardingController::class);
 });
 
+// Export Medical Records to Excel and pdf
+Route::get('/admin/medical-records/export/excel', 
+    [MedicalRecordController::class, 'exportExcel']
+)->name('admin.medical-records.export.excel');
+
+Route::get('/admin/medical-records/{hewan}/export-pdf', 
+    [MedicalRecordController::class, 'exportPdf']
+)->name('admin.medical-records.export.pdf');
+
 require __DIR__.'/auth.php';
 
 // Fallback Route (404)

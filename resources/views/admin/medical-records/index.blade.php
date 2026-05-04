@@ -1,10 +1,20 @@
 @extends('layouts.admin')
 @section('title', 'Rekam Medis')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-6">
+<div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="mb-0">Rekam Medis</h4>
-  <a href="{{ route('admin.medical-records.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Rekam Medis</a>
+
+  <div class="d-flex gap-2">
+    <a href="{{ route('admin.medical-records.create') }}" class="btn btn-primary">
+      <i class="bx bx-plus me-1"></i> Tambah Rekam Medis
+    </a>
+
+    <a href="{{ route('admin.medical-records.export.excel') }}" class="btn btn-success">
+      <i class="bx bx-download me-1"></i> Export Excel
+    </a>
+  </div>
 </div>
+
 <div class="card">
   <div class="table-responsive text-nowrap">
     <table class="table">
@@ -24,10 +34,26 @@
           <td>
             <div class="dropdown">
               <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ route('admin.medical-records.show', $r) }}"><i class="icon-base bx bx-show me-1"></i> Detail</a>
-                <a class="dropdown-item" href="{{ route('admin.medical-records.edit', $r) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-                <form action="{{ route('admin.medical-records.destroy', $r) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+             <div class="dropdown-menu">
+                <a class="dropdown-item" 
+                  href="{{ route('admin.medical-records.export.pdf', $r->hewan->id) }}">
+                    <i class="bx bx-file me-1"></i> Export PDF
+                </a>
+
+                <a class="dropdown-item" href="{{ route('admin.medical-records.show', $r) }}">
+                    <i class="icon-base bx bx-show me-1"></i> Detail
+                </a>
+
+                <a class="dropdown-item" href="{{ route('admin.medical-records.edit', $r) }}">
+                  <i class="icon-base bx bx-edit-alt me-1"></i> Edit
+                </a>
+
+              <form action="{{ route('admin.medical-records.destroy', $r) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
+                @csrf @method('DELETE')
+                  <button class="dropdown-item text-danger">
+                    <i class="icon-base bx bx-trash me-1"></i> Hapus
+                  </button>
+                </form>
               </div>
             </div>
           </td>
