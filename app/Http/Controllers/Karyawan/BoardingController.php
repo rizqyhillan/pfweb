@@ -6,6 +6,8 @@ use App\Models\Pet;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BoardingCreated;
 
 class BoardingController extends Controller
 {
@@ -39,7 +41,20 @@ class BoardingController extends Controller
             $v['total_biaya'] = $room->harga_per_hari * $days;
         }
         $v['status'] = 'pending';
-        Boarding::create($v);
+        $boarding = Boarding::create($v);
+
+        // Send Email Safely
+        try {
+            $boarding->load('hewan.owner');
+            $owner = $boarding->hewan->owner ?? null;
+            if ($owner && $owner->email) {
+                Mail::to($owner->email)->send(new BoardingCreated($boarding));
+                \Illuminate\Support\Facades\Log::info('Boarding email sent to: ' . $owner->email);
+            }
+        } catch (\Exception $mailEx) {
+            \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+        }
+
         return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp ' . number_format($v['total_biaya'], 0, ',', '.'));
     }
 

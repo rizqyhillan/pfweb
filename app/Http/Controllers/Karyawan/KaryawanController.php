@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransactionCreated;
 
 class KaryawanController extends Controller
 {
@@ -168,6 +170,19 @@ class KaryawanController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
+
+            // Send Email Safely
+            try {
+                $trx->load('pelanggan');
+                $customer = $trx->pelanggan;
+                if ($customer && $customer->email) {
+                    Mail::to($customer->email)->send(new TransactionCreated($trx));
+                    \Illuminate\Support\Facades\Log::info('Transaction email sent to: ' . $customer->email);
+                }
+            } catch (\Exception $mailEx) {
+                \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+            }
+
             return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
