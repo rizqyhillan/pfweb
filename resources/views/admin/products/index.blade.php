@@ -6,11 +6,14 @@
   <a href="{{ route('admin.products.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Barang</a>
 </div>
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama Barang</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Satuan</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>#</th><th>Gambar</th><th>Nama Barang</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Satuan</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($products as $p)
     <tr>
       <td>{{ $loop->iteration + ($products->currentPage() - 1) * $products->perPage() }}</td>
+      <td>
+        <img src="{{ $p->image_url }}" alt="{{ $p->nama_barang }}" width="50" height="50" style="object-fit:cover; border-radius:6px;" />
+      </td>
       <td><strong>{{ $p->nama_barang }}</strong></td>
       <td>{{ $p->kategori ?? '-' }}</td>
       <td>Rp {{ number_format($p->harga, 0, ',', '.') }}</td>
@@ -28,7 +31,7 @@
       </td>
     </tr>
     @empty
-    <tr><td colspan="8" class="text-center text-muted py-4">Belum ada data barang</td></tr>
+    <tr><td colspan="9" class="text-center text-muted py-4">Belum ada data barang</td></tr>
     @endforelse
   </tbody>
 </table></div>

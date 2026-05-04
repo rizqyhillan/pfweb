@@ -16,6 +16,7 @@
             <thead>
               <tr>
                 <th>No</th>
+                <th>Gambar</th>
                 <th>Nama Produk</th>
                 <th>Kategori</th>
                 <th>Harga</th>
@@ -27,6 +28,9 @@
               @forelse($products as $product)
                 <tr>
                   <td>{{ $loop->iteration + $products->firstItem() - 1 }}</td>
+                  <td>
+                    <img src="{{ $product->image_url }}" alt="{{ $product->nama_barang }}" width="50" height="50" style="object-fit:cover; border-radius:6px;" />
+                  </td>
                   <td><strong>{{ $product->nama_barang }}</strong></td>
                   <td>{{ ucfirst($product->kategori ?? '-') }}</td>
                   <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
@@ -43,7 +47,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted">Belum ada data produk.</td>
+                  <td colspan="7" class="text-center text-muted">Belum ada data produk.</td>
                 </tr>
               @endforelse
             </tbody>
