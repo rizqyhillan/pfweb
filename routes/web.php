@@ -118,6 +118,7 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::resource('boardings', \App\Http\Controllers\Karyawan\BoardingController::class);
 });
 
+
 require __DIR__.'/auth.php';
 
 // Fallback Route (404)

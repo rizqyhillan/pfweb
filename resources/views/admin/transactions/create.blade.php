@@ -270,5 +270,47 @@
         
         document.getElementById('posForm').submit();
     }
+
+    // ==========================================
+    // REAL-TIME via Laravel Reverb (Echo)
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.Echo !== 'undefined') {
+            console.log('✅ Echo connected. Listening on pos-updates...');
+
+            window.Echo.channel('pos-updates')
+                .listen('.product-stock-updated', (e) => {
+                    console.log('📦 Stock updated:', e);
+                    let options = document.querySelectorAll('#product_select option');
+                    options.forEach(opt => {
+                        if(opt.value == e.product.id) {
+                            opt.setAttribute('data-stock', e.product.stok);
+                            opt.innerHTML = `${e.product.nama_barang} - Rp ${formatRp(e.product.harga)} (Stok: ${e.product.stok})`;
+                        }
+                    });
+                    
+                    let changed = false;
+                    cart.forEach(item => {
+                        if(item.type === 'product' && item.id == e.product.id) {
+                            item.maxStock = e.product.stok;
+                            if (item.qty > item.maxStock) {
+                                item.qty = Math.max(0, item.maxStock);
+                                changed = true;
+                            }
+                        }
+                    });
+                    if(changed) {
+                        renderCart();
+                        PawPetRealtime.showToast('Stok Berubah', `Stok "${e.product.nama_barang}" berubah menjadi ${e.product.stok}. Keranjang disesuaikan.`, 'warning');
+                    }
+                })
+                .listen('.low-stock-alert', (e) => {
+                    console.log('⚠️ Low stock:', e);
+                    PawPetRealtime.showToast('⚠️ Stok Menipis!', `"${e.product.nama_barang}" hanya tersisa ${e.product.stok} unit!`, 'danger');
+                });
+        } else {
+            console.error('❌ Echo not available');
+        }
+    });
 </script>
 @endsection

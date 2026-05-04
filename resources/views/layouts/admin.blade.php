@@ -79,6 +79,8 @@
     <!-- Helpers -->
     <script src="{{ asset('admin-assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('admin-assets/js/config.js') }}"></script>
+    
+    @vite(['resources/js/app.js'])
   </head>
 
   <body>
@@ -158,6 +160,36 @@
 
     <!-- Main JS -->
     <script src="{{ asset('admin-assets/js/main.js') }}"></script>
+
+    <!-- Real-time Toast Notification Container -->
+    <div id="realtime-toast-container" style="position:fixed;top:20px;right:20px;z-index:99999;max-width:400px;"></div>
+
+    <script>
+      // Global real-time notification helper
+      window.PawPetRealtime = {
+          showToast: function(title, message, type) {
+              type = type || 'info';
+              let colors = {info: '#0ea5e9', success: '#22c55e', warning: '#f59e0b', danger: '#ef4444'};
+              let icons  = {info: 'bx-info-circle', success: 'bx-check-circle', warning: 'bx-error', danger: 'bx-x-circle'};
+              let container = document.getElementById('realtime-toast-container');
+              let toast = document.createElement('div');
+              toast.style.cssText = 'background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:16px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;animation:slideIn .3s ease;border-left:4px solid '+colors[type]+';min-width:300px;';
+              toast.innerHTML = `
+                <i class="bx ${icons[type]}" style="font-size:24px;color:${colors[type]};margin-top:2px;"></i>
+                <div style="flex:1;">
+                  <strong style="display:block;margin-bottom:2px;font-size:14px;">${title}</strong>
+                  <span style="font-size:13px;color:#666;">${message}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#999;">&times;</button>
+              `;
+              container.appendChild(toast);
+              setTimeout(() => { if(toast.parentElement) toast.remove(); }, 8000);
+          }
+      };
+    </script>
+    <style>
+      @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
 
     @yield('page-js')
   </body>

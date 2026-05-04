@@ -83,6 +83,11 @@ class TransactionController extends Controller
                     $subtotal += $sub;
                     TransactionProduct::create(['id_transaksi' => $trx->id, 'id_barang' => $pid, 'jumlah' => $qty, 'harga_satuan' => $p->harga, 'subtotal' => $sub]);
                     $p->decrement('stok', $qty);
+                    $p->refresh();
+                    event(new \App\Events\ProductStockUpdated($p));
+                    if ($p->stok <= 10) {
+                        event(new \App\Events\LowStockAlert($p));
+                    }
                 }
             }
             if ($hasS) {
@@ -100,6 +105,7 @@ class TransactionController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
+            event(new \App\Events\TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
 
             // Send Email Safely
             try {
