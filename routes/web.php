@@ -105,6 +105,8 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::get('/products', [KaryawanController::class, 'products'])->name('products');
     Route::get('/services', [KaryawanController::class, 'services'])->name('services');
     Route::get('/reports', [KaryawanController::class, 'reports'])->name('reports');
+    Route::get('/reports/export-pdf', [KaryawanController::class, 'exportPdf'])->name('reports.export-pdf');
+    Route::get('/reports/export-excel', [KaryawanController::class, 'exportExcel'])->name('reports.export-excel');
 
     // Transactions — READ + CREATE
     Route::get('/transactions', [KaryawanController::class, 'transactions'])->name('transactions');
@@ -116,7 +118,7 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::resource('boardings', \App\Http\Controllers\Karyawan\BoardingController::class);
 });
 
-// Export Medical Records to Excel and pdf
+// Export Medical Records to Excel dan PDF
 Route::get('/admin/medical-records/export/excel', 
     [MedicalRecordController::class, 'exportExcel']
 )->name('admin.medical-records.export.excel');

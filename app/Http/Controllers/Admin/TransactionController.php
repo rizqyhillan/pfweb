@@ -9,6 +9,8 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransactionCreated;
 
 class TransactionController extends Controller
 {
@@ -20,7 +22,7 @@ class TransactionController extends Controller
 
     public function create()
     {
-        $customers = User::where('role', 'admin')->get();
+        $customers = User::where('role', 'customer')->get();
         $products = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
         $services = Service::where('is_aktif', true)->get();
         return view('admin.transactions.create', compact('customers', 'products', 'services'));
@@ -81,6 +83,11 @@ class TransactionController extends Controller
                     $subtotal += $sub;
                     TransactionProduct::create(['id_transaksi' => $trx->id, 'id_barang' => $pid, 'jumlah' => $qty, 'harga_satuan' => $p->harga, 'subtotal' => $sub]);
                     $p->decrement('stok', $qty);
+                    $p->refresh();
+                    event(new \App\Events\ProductStockUpdated($p));
+                    if ($p->stok <= 10) {
+                        event(new \App\Events\LowStockAlert($p));
+                    }
                 }
             }
             if ($hasS) {
@@ -98,6 +105,20 @@ class TransactionController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
+            event(new \App\Events\TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+
+            // Send Email Safely
+            try {
+                $trx->load('pelanggan');
+                $customer = $trx->pelanggan;
+                if ($customer && $customer->email) {
+                    Mail::to($customer->email)->send(new TransactionCreated($trx));
+                    \Illuminate\Support\Facades\Log::info('Transaction email sent to: ' . $customer->email);
+                }
+            } catch (\Exception $mailEx) {
+                \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+            }
+
             return redirect()->route('admin.transactions.show', $trx)->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();

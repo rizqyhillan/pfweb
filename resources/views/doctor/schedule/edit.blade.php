@@ -10,8 +10,8 @@
     <div class="row mb-6">
       <div class="col-md-3"><label class="form-label">Hari *</label>
         <select class="form-select" name="hari" required>
-            @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $h)
-            <option value="{{ $h }}" {{ old('hari', $schedule->hari) == $h ? 'selected' : '' }}>{{ $h }}</option>
+            @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'] as $h)
+            <option value="{{ $h }}" {{ old('hari', $schedule->hari) == $h ? 'selected' : '' }}>{{ ucfirst($h) }}</option>
             @endforeach
         </select>
       </div>

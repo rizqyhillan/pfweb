@@ -20,8 +20,13 @@ class DoctorController extends Controller
 
         $totalPatients    = Pet::count();
         $myRecords        = MedicalRecord::where('id_dokter', $doctor->id)->count();
+
+        // Map Carbon dayOfWeekIso (1=Mon..7=Sun) to DB enum values
+        $hariMap = [1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu', 7 => 'minggu'];
+        $hariIni = $hariMap[now()->dayOfWeekIso] ?? '';
+
         $todaySchedules   = DoctorSchedule::where('id_dokter', $doctor->id)
-            ->where('hari', now()->locale('id')->isoFormat('dddd'))
+            ->where('hari', $hariIni)
             ->where('is_aktif', true)
             ->get();
 
@@ -202,7 +207,7 @@ class DoctorController extends Controller
     public function schedule()
     {
         $schedules = DoctorSchedule::where('id_dokter', Auth::id())
-            ->orderByRaw("FIELD(hari, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu')")
+            ->orderByRaw("FIELD(hari, 'senin','selasa','rabu','kamis','jumat','sabtu','minggu')")
             ->get();
 
         return view('doctor.schedule.index', compact('schedules'));
@@ -216,15 +221,14 @@ class DoctorController extends Controller
     public function storeSchedule(Request $request)
     {
         $validated = $request->validate([
-            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
             'jam_mulai'   => 'required',
             'jam_selesai' => 'required',
             'kuota'       => 'required|integer|min:1',
-            'is_aktif'    => 'boolean'
         ]);
 
         $validated['id_dokter'] = Auth::id();
-        $validated['is_aktif']  = $request->has('is_aktif');
+        $validated['is_aktif']  = $request->boolean('is_aktif');
 
         DoctorSchedule::create($validated);
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil ditambahkan.');
@@ -241,14 +245,13 @@ class DoctorController extends Controller
         if ($schedule->id_dokter !== Auth::id()) abort(403);
 
         $validated = $request->validate([
-            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+            'hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
             'jam_mulai'   => 'required',
             'jam_selesai' => 'required',
             'kuota'       => 'required|integer|min:1',
-            'is_aktif'    => 'boolean'
         ]);
 
-        $validated['is_aktif'] = $request->has('is_aktif');
+        $validated['is_aktif'] = $request->boolean('is_aktif');
 
         $schedule->update($validated);
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil diperbarui.');
@@ -261,3 +264,4 @@ class DoctorController extends Controller
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil dihapus.');
     }
 }
+

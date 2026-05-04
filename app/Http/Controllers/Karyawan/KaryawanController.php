@@ -7,9 +7,14 @@ use App\Models\Product;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Exports\TransactionExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransactionCreated;
 
 class KaryawanController extends Controller
 {
@@ -71,7 +76,7 @@ class KaryawanController extends Controller
      */
     public function createTransaction()
     {
-        $customers = User::where('role', 'admin')->get();
+        $customers = User::where('role', 'customer')->get();
         $products  = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
         $services  = Service::where('is_aktif', true)->get();
 
@@ -85,7 +90,7 @@ class KaryawanController extends Controller
     {
         $request->validate([
             'id_pelanggan' => 'required|exists:users,id',
-            'metode_bayar' => 'required|in:cash,transfer,ewallet,qris',
+            'metode_bayar' => 'required|in:cash,transfer,ewallet',
             'diskon' => 'nullable|numeric|min:0',
             'jumlah_bayar' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
@@ -143,6 +148,11 @@ class KaryawanController extends Controller
                         'subtotal' => $sub
                     ]);
                     $p->decrement('stok', $qty);
+                    $p->refresh();
+                    event(new \App\Events\ProductStockUpdated($p));
+                    if ($p->stok <= 10) {
+                        event(new \App\Events\LowStockAlert($p));
+                    }
                 }
             }
             if ($hasS) {
@@ -165,6 +175,20 @@ class KaryawanController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
+            event(new \App\Events\TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+
+            // Send Email Safely
+            try {
+                $trx->load('pelanggan');
+                $customer = $trx->pelanggan;
+                if ($customer && $customer->email) {
+                    Mail::to($customer->email)->send(new TransactionCreated($trx));
+                    \Illuminate\Support\Facades\Log::info('Transaction email sent to: ' . $customer->email);
+                }
+            } catch (\Exception $mailEx) {
+                \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+            }
+
             return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
@@ -178,20 +202,85 @@ class KaryawanController extends Controller
         return view('karyawan.transactions.show', compact('transaction'));
     }
 
+    // ========================================
+    // REPORTS — VIEW + EXPORT PDF + EXPORT EXCEL
+    // ========================================
+
     /**
      * Laporan ringkasan.
      */
-    public function reports()
+    public function reports(Request $request)
     {
-        $totalRevenue      = Transaction::where('status', 'lunas')->sum('total');
+        $startDate = $request->start_date;
+        $endDate   = $request->end_date;
+
+        $query = Transaction::query();
+
+        if ($startDate) {
+            $query->whereDate('tanggal', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('tanggal', '<=', $endDate);
+        }
+
+        $totalRevenue      = (clone $query)->where('status', 'lunas')->sum('total');
         $monthlyRevenue    = Transaction::where('status', 'lunas')
             ->whereMonth('tanggal', now()->month)
             ->whereYear('tanggal', now()->year)->sum('total');
-        $totalTransactions = Transaction::count();
-        $paidTransactions  = Transaction::where('status', 'lunas')->count();
+        $totalTransactions = (clone $query)->count();
+        $paidTransactions  = (clone $query)->where('status', 'lunas')->count();
 
         return view('karyawan.reports.index', compact(
-            'totalRevenue', 'monthlyRevenue', 'totalTransactions', 'paidTransactions'
+            'totalRevenue', 'monthlyRevenue', 'totalTransactions', 'paidTransactions',
+            'startDate', 'endDate'
         ));
+    }
+
+    /**
+     * Export laporan transaksi ke PDF.
+     */
+    public function exportPdf(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate   = $request->end_date;
+
+        $query = Transaction::with(['pelanggan', 'kasir'])->latest('tanggal');
+
+        if ($startDate) {
+            $query->whereDate('tanggal', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('tanggal', '<=', $endDate);
+        }
+
+        $transactions     = $query->get();
+        $totalTransactions = $transactions->count();
+        $paidTransactions  = $transactions->where('status', 'lunas')->count();
+        $totalRevenue      = $transactions->where('status', 'lunas')->sum('total');
+        $totalSubtotal     = $transactions->where('status', 'lunas')->sum('subtotal');
+        $totalDiskon       = $transactions->where('status', 'lunas')->sum('diskon');
+
+        $pdf = Pdf::loadView('karyawan.reports.pdf', compact(
+            'transactions', 'totalTransactions', 'paidTransactions',
+            'totalRevenue', 'totalSubtotal', 'totalDiskon',
+            'startDate', 'endDate'
+        ));
+
+        $pdf->setPaper('A4', 'landscape');
+
+        $filename = 'laporan-transaksi-' . now()->format('Y-m-d-His') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export laporan transaksi ke Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate   = $request->end_date;
+
+        $filename = 'laporan-transaksi-' . now()->format('Y-m-d-His') . '.xlsx';
+        return Excel::download(new TransactionExport($startDate, $endDate), $filename);
     }
 }

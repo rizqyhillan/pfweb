@@ -13,4 +13,9 @@ class Pet extends Model
 
     public function owner() { return $this->belongsTo(User::class, 'id_pemilik'); }
     public function rekamMedis() { return $this->hasMany(MedicalRecord::class, 'id_hewan'); }
+    public function penitipan() { return $this->hasMany(Boarding::class, 'id_hewan'); }
+
+    // Alias
+    public function medicalRecords() { return $this->rekamMedis(); }
+    public function boardings() { return $this->penitipan(); }
 }

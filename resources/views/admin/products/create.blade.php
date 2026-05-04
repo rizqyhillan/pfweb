@@ -6,7 +6,7 @@
   <a href="{{ route('admin.products.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
-  <form action="{{ route('admin.products.store') }}" method="POST">@csrf
+  <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Nama Barang *</label><input type="text" class="form-control @error('nama_barang') is-invalid @enderror" name="nama_barang" value="{{ old('nama_barang') }}" required />@error('nama_barang')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-3"><label class="form-label">Kategori</label><input type="text" class="form-control" name="kategori" value="{{ old('kategori') }}" /></div>
@@ -16,6 +16,14 @@
       <div class="col-md-3"><label class="form-label">Stok *</label><input type="number" class="form-control" name="stok" value="{{ old('stok', 0) }}" required /></div>
       <div class="col-md-3"><label class="form-label">Satuan</label><input type="text" class="form-control" name="satuan" value="{{ old('satuan', 'pcs') }}" /></div>
       <div class="col-md-6"><label class="form-label">Deskripsi</label><textarea class="form-control" name="deskripsi" rows="2">{{ old('deskripsi') }}</textarea></div>
+    </div>
+    <div class="row mb-6">
+      <div class="col-md-6">
+        <label class="form-label">Gambar Produk</label>
+        <input type="file" class="form-control @error('image') is-invalid @enderror" name="image" accept="image/jpeg,image/png" />
+        <small class="text-muted">Format: JPG, JPEG, PNG. Maks 2MB.</small>
+        @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
     </div>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>

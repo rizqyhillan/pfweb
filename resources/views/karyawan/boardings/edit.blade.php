@@ -3,10 +3,18 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Edit Penitipan</h4>
-  <a href="{{ route('admin.boardings.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+  <a href="{{ route('karyawan.boardings.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
+
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 <div class="card"><div class="card-body">
-  <form action="{{ route('admin.boardings.update', $boarding) }}" method="POST">@csrf @method('PUT')
+  <form action="{{ route('karyawan.boardings.update', $boarding) }}" method="POST">@csrf @method('PUT')
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Hewan *</label>
         <select class="form-select" name="id_hewan" required>
@@ -56,7 +64,7 @@ function calculateCost() {
         document.getElementById('total_biaya').value = diffDays * price;
     } else if(roomSelect.value) {
         let price = roomSelect.options[roomSelect.selectedIndex].getAttribute('data-price');
-        document.getElementById('total_biaya').value = price; // at least 1 day
+        document.getElementById('total_biaya').value = price;
     }
 }
 function toggleManualCost() {

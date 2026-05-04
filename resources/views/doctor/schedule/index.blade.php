@@ -24,8 +24,9 @@
 </div>
 
 @php
-  $hariUrut = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-  $hariIni  = now()->locale('id')->isoFormat('dddd');
+  $hariUrut = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+  $hariMap = [1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu', 7 => 'minggu'];
+  $hariIni  = $hariMap[now()->dayOfWeekIso] ?? '';
   $grouped = $schedules->groupBy('hari');
 @endphp
 
@@ -45,7 +46,7 @@
         <div class="card h-100 {{ $hari === $hariIni ? 'border border-primary shadow-sm' : '' }}">
           <div class="card-header {{ $hari === $hariIni ? 'bg-label-primary' : 'bg-lighter' }} d-flex justify-content-between align-items-center py-3">
             <h6 class="m-0 {{ $hari === $hariIni ? 'text-primary' : '' }}">
-              <i class="bx bx-calendar me-1"></i> {{ $hari }}
+              <i class="bx bx-calendar me-1"></i> {{ ucfirst($hari) }}
             </h6>
             @if($hari === $hariIni)
               <span class="badge bg-primary">Hari Ini</span>
