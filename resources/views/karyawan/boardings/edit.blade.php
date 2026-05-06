@@ -6,12 +6,8 @@
   <a href="{{ route('karyawan.boardings.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 
-@if(session('error'))
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
+
+
 
 <div class="card"><div class="card-body">
   <form action="{{ route('karyawan.boardings.update', $boarding) }}" method="POST">@csrf @method('PUT')

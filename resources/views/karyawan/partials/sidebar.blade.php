@@ -58,15 +58,6 @@
       </a>
     </li>
 
-    <!-- Laporan -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Laporan</span></li>
-
-    <li class="menu-item {{ request()->routeIs('karyawan.reports') ? 'active' : '' }}">
-      <a href="{{ route('karyawan.reports') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
-        <div class="text-truncate">Laporan</div>
-      </a>
-    </li>
 
     <!-- Lainnya -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Lainnya</span></li>

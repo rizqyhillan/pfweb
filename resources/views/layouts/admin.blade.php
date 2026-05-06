@@ -108,20 +108,56 @@
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
 
-              {{-- Flash Messages --}}
-              @if(session('success'))
-                <div class="alert alert-success alert-dismissible" role="alert">
-                  {{ session('success') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              @endif
+              {{-- SweetAlert2 Flash Messages & Delete Confirmation --}}
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+              <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                  @if(session('success'))
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Berhasil!',
+                      text: '{!! addslashes(session('success')) !!}',
+                      timer: 3000,
+                      showConfirmButton: false
+                    });
+                  @endif
 
-              @if(session('error'))
-                <div class="alert alert-danger alert-dismissible" role="alert">
-                  {{ session('error') }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              @endif
+                  @if(session('error'))
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Gagal!',
+                      text: '{!! addslashes(session('error')) !!}',
+                    });
+                  @endif
+
+                  // Global Delete Confirmation Interceptor
+                  document.addEventListener('submit', function(e) {
+                    if (e.target && e.target.tagName === 'FORM') {
+                      let isDeleteForm = e.target.querySelector('input[name="_method"][value="DELETE"]');
+                      let hasConfirm = e.target.getAttribute('onsubmit') && e.target.getAttribute('onsubmit').includes('confirm');
+                      
+                      if (isDeleteForm || hasConfirm) {
+                        e.preventDefault();
+                        Swal.fire({
+                          title: 'Apakah Anda yakin?',
+                          text: "Data yang dihapus tidak dapat dikembalikan!",
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonColor: '#d33',
+                          cancelButtonColor: '#6c757d',
+                          confirmButtonText: 'Ya, hapus!',
+                          cancelButtonText: 'Batal'
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            e.target.removeAttribute('onsubmit'); // Remove native confirm if exists
+                            e.target.submit();
+                          }
+                        });
+                      }
+                    }
+                  });
+                });
+              </script>
 
               @yield('content')
             </div>

@@ -6,12 +6,8 @@
     <a href="{{ route('admin.stock-cards.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Catat Mutasi</a>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
+
+
 
 <div class="card mb-4">
     <div class="card-body">

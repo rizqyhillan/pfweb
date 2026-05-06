@@ -20,7 +20,7 @@
           <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{{ route('admin.suppliers.edit', $s) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-            <form action="{{ route('admin.suppliers.destroy', $s) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <form action="{{ route('admin.suppliers.destroy', $s) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
           </div>
         </div>
       </td>

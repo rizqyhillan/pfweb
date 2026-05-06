@@ -49,7 +49,7 @@
                   <td>
                     <div class="d-flex">
                       <a href="{{ route('doctor.medical-records.edit', $rec) }}" class="btn btn-sm btn-icon btn-primary me-2" title="Edit"><i class="bx bx-edit"></i></a>
-                      <form action="{{ route('doctor.medical-records.destroy', $rec) }}" method="POST" onsubmit="return confirm('Yakin hapus rekam medis ini?')">
+                      <form action="{{ route('doctor.medical-records.destroy', $rec) }}" method="POST">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
                       </form>

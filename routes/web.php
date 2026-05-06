@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MedicalRecordController;
 use App\Http\Controllers\Admin\PetController;
 use App\Http\Controllers\Admin\ProductBatchController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StockCardController;
@@ -83,6 +84,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('users/page/{page}', [UserController::class, 'index'])->name('users.page');
     Route::get('product-batches/page/{page}', [ProductBatchController::class, 'index'])->name('product-batches.page');
     Route::get('stock-cards/page/{page}', [StockCardController::class, 'index'])->name('stock-cards.page');
+
+    // Reports
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
+    Route::get('reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export-excel');
 });
 
 // Doctor Routes — hanya role 'doctor'
@@ -125,9 +131,6 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::get('/products/page/{page}', [KaryawanController::class, 'products'])->name('products.page');
     Route::get('/services', [KaryawanController::class, 'services'])->name('services');
     Route::get('/services/page/{page}', [KaryawanController::class, 'services'])->name('services.page');
-    Route::get('/reports', [KaryawanController::class, 'reports'])->name('reports');
-    Route::get('/reports/export-pdf', [KaryawanController::class, 'exportPdf'])->name('reports.export-pdf');
-    Route::get('/reports/export-excel', [KaryawanController::class, 'exportExcel'])->name('reports.export-excel');
 
     // Transactions — READ + CREATE
     Route::get('/transactions', [KaryawanController::class, 'transactions'])->name('transactions');

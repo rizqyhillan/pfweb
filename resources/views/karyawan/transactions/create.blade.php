@@ -6,9 +6,8 @@
     <a href="{{ route('karyawan.transactions') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 
-@if(session('error'))
-<div class="alert alert-danger">{{ session('error') }}</div>
-@endif
+
+
 
 <form action="{{ route('karyawan.transactions.store') }}" method="POST" id="posForm">
     @csrf
@@ -57,6 +56,17 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            <!-- Receipt Section (hidden initially) -->
+            <div class="card mb-4 d-none" id="receiptCard">
+                <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 text-white"><i class="bx bx-receipt me-2"></i>Struk Pembayaran</h5>
+                    <button type="button" class="btn btn-light btn-sm" onclick="printReceipt()"><i class="bx bx-printer me-1"></i> Print</button>
+                </div>
+                <div class="card-body" id="receiptBody">
+                    <!-- Receipt content injected via JS -->
                 </div>
             </div>
         </div>
@@ -116,7 +126,9 @@
                         <textarea class="form-control" name="catatan" rows="2">{{ old('catatan') }}</textarea>
                     </div>
 
-                    <button type="button" class="btn btn-success w-100 btn-lg" onclick="submitPOS()"><i class="bx bx-check-circle me-1"></i> Proses Pembayaran</button>
+                    <button type="button" class="btn btn-success w-100 btn-lg" id="btnSubmitPOS" onclick="submitPOS()"><i class="bx bx-check-circle me-1"></i> Proses Pembayaran</button>
+                    
+                    <a href="{{ route('karyawan.transactions.create') }}" class="btn btn-outline-primary w-100 btn-lg mt-3 d-none" id="btnNewTransaction"><i class="bx bx-plus me-1"></i> Transaksi Baru</a>
                 </div>
             </div>
         </div>
@@ -146,7 +158,7 @@
         
         if (existing) {
             if (type === 'product' && existing.qty >= maxStock) {
-                alert('Stok tidak mencukupi!');
+                Swal.fire({ icon: 'warning', title: 'Stok Habis', text: 'Stok tidak mencukupi!', timer: 2000, showConfirmButton: false });
                 return;
             }
             existing.qty++;
@@ -169,7 +181,7 @@
         
         let item = cart[index];
         if (item.type === 'product' && newQty > item.maxStock) {
-            alert('Maksimal stok adalah ' + item.maxStock);
+            Swal.fire({ icon: 'warning', title: 'Batas Stok', text: 'Maksimal stok adalah ' + item.maxStock, timer: 2000, showConfirmButton: false });
             newQty = item.maxStock;
         }
         
@@ -255,7 +267,7 @@
 
     function submitPOS() {
         if(cart.length === 0) {
-            alert('Keranjang belanja masih kosong!');
+            Swal.fire({ icon: 'info', title: 'Keranjang Kosong', text: 'Tambahkan barang atau layanan terlebih dahulu!' });
             return;
         }
         
@@ -264,11 +276,141 @@
         let bayar = parseFloat(document.getElementById('input_bayar').value) || 0;
         
         if(bayar < total) {
-            alert('Jumlah uang bayar kurang dari total belanja!');
+            Swal.fire({ icon: 'warning', title: 'Pembayaran Kurang', text: 'Jumlah uang bayar kurang dari total belanja!' });
             return;
         }
+
+        let btn = document.getElementById('btnSubmitPOS');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
         
-        document.getElementById('posForm').submit();
+        let formData = new FormData(document.getElementById('posForm'));
+
+        fetch('{{ route("karyawan.transactions.store") }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-secondary');
+                btn.innerHTML = '<i class="bx bx-check-circle me-1"></i> Pembayaran Berhasil';
+                document.getElementById('btnNewTransaction').classList.remove('d-none');
+
+                // Disable all form inputs
+                document.querySelectorAll('#posForm select, #posForm input, #posForm textarea').forEach(el => el.disabled = true);
+
+                Swal.fire({ icon: 'success', title: 'Pembayaran Berhasil!', text: 'Transaksi telah diproses.', timer: 2500, showConfirmButton: false });
+                showReceipt(data.transaction, data.kembalian);
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-check-circle me-1"></i> Proses Pembayaran';
+                Swal.fire({ icon: 'error', title: 'Gagal!', text: data.message || 'Terjadi kesalahan.' });
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-check-circle me-1"></i> Proses Pembayaran';
+            Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal menghubungi server.' });
+            console.error(err);
+        });
+    }
+
+    function showReceipt(trx, kembalian) {
+        let receiptCard = document.getElementById('receiptCard');
+        let receiptBody = document.getElementById('receiptBody');
+
+        let itemsHtml = '';
+        if(trx.barang && trx.barang.length > 0) {
+            trx.barang.forEach(item => {
+                itemsHtml += `<tr>
+                    <td>${item.barang ? item.barang.nama_barang : '-'}</td>
+                    <td class="text-center">${item.jumlah}</td>
+                    <td class="text-end">Rp ${formatRp(item.harga_satuan)}</td>
+                    <td class="text-end">Rp ${formatRp(item.subtotal)}</td>
+                </tr>`;
+            });
+        }
+        if(trx.layanan && trx.layanan.length > 0) {
+            trx.layanan.forEach(item => {
+                itemsHtml += `<tr>
+                    <td>${item.layanan ? item.layanan.nama_layanan : '-'}</td>
+                    <td class="text-center">${item.jumlah}</td>
+                    <td class="text-end">Rp ${formatRp(item.harga_satuan)}</td>
+                    <td class="text-end">Rp ${formatRp(item.subtotal)}</td>
+                </tr>`;
+            });
+        }
+
+        let dateStr = trx.tanggal ? new Date(trx.tanggal).toLocaleString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '-';
+
+        receiptBody.innerHTML = `
+            <div id="receiptPrintArea">
+                <div class="text-center mb-3">
+                    <h5 class="mb-1">🐾 PawPet Clinic</h5>
+                    <small class="text-muted">Struk Pembayaran</small>
+                </div>
+                <hr>
+                <div class="row mb-2">
+                    <div class="col-6"><small class="text-muted">Kode:</small><br><strong>${trx.kode_transaksi}</strong></div>
+                    <div class="col-6 text-end"><small class="text-muted">Tanggal:</small><br><strong>${dateStr}</strong></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6"><small class="text-muted">Pelanggan:</small><br>${trx.pelanggan ? trx.pelanggan.nama : '-'}</div>
+                    <div class="col-6 text-end"><small class="text-muted">Kasir:</small><br>${trx.kasir ? trx.kasir.nama : '-'}</div>
+                </div>
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr><th>Item</th><th class="text-center">Qty</th><th class="text-end">Harga</th><th class="text-end">Subtotal</th></tr>
+                    </thead>
+                    <tbody>${itemsHtml}</tbody>
+                </table>
+                <table class="table table-sm mb-0">
+                    <tr><td class="text-end border-0">Subtotal:</td><td class="text-end border-0 fw-bold" width="150">Rp ${formatRp(trx.subtotal)}</td></tr>
+                    <tr><td class="text-end border-0">Diskon:</td><td class="text-end border-0 fw-bold">Rp ${formatRp(trx.diskon)}</td></tr>
+                    <tr class="table-primary"><td class="text-end fw-bold">TOTAL:</td><td class="text-end fw-bold">Rp ${formatRp(trx.total)}</td></tr>
+                    <tr><td class="text-end border-0">Bayar (${trx.metode_bayar}):</td><td class="text-end border-0 fw-bold">Rp ${formatRp(trx.jumlah_bayar)}</td></tr>
+                    <tr class="table-success"><td class="text-end fw-bold">Kembalian:</td><td class="text-end fw-bold">Rp ${formatRp(kembalian)}</td></tr>
+                </table>
+                <hr>
+                <p class="text-center text-muted mb-0"><small>Terima kasih telah berkunjung ke PawPet Clinic!</small></p>
+            </div>
+        `;
+
+        receiptCard.classList.remove('d-none');
+        receiptCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function printReceipt() {
+        let printContent = document.getElementById('receiptPrintArea').innerHTML;
+        let printWindow = window.open('', '_blank', 'width=400,height=600');
+        let printHtml = '<html><head><title>Struk PawPet<\/title>'
+            + '<style>'
+            + 'body { font-family: "Segoe UI", sans-serif; font-size: 12px; padding: 15px; max-width: 380px; margin: 0 auto; }'
+            + 'table { width: 100%; border-collapse: collapse; }'
+            + 'th, td { padding: 4px 6px; font-size: 11px; }'
+            + '.table-bordered th, .table-bordered td { border: 1px solid #ddd; }'
+            + '.text-center { text-align: center; }'
+            + '.text-end { text-align: right; }'
+            + '.text-muted { color: #888; }'
+            + '.fw-bold { font-weight: bold; }'
+            + '.table-primary td { background: #e3f2fd; }'
+            + '.table-success td { background: #e8f5e9; }'
+            + '.table-light th { background: #f8f9fa; }'
+            + 'hr { border: 1px dashed #ccc; }'
+            + '.mb-0 { margin-bottom: 0; } .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; }'
+            + '.row { display: flex; } .col-6 { width: 50%; }'
+            + 'small { font-size: 10px; }'
+            + '<\/style><\/head><body>' + printContent + '<\/body><\/html>';
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(function() { printWindow.print(); printWindow.close(); }, 300);
     }
 
     // ==========================================
@@ -280,6 +422,7 @@
 
             window.Echo.channel('pos-updates')
                 .listen('.product-stock-updated', (e) => {
+                    console.log('📦 Stock updated:', e);
                     let options = document.querySelectorAll('#product_select option');
                     options.forEach(opt => {
                         if(opt.value == e.product.id) {
@@ -304,8 +447,11 @@
                     }
                 })
                 .listen('.low-stock-alert', (e) => {
+                    console.log('⚠️ Low stock:', e);
                     PawPetRealtime.showToast('⚠️ Stok Menipis!', `"${e.product.nama_barang}" hanya tersisa ${e.product.stok} unit!`, 'danger');
                 });
+        } else {
+            console.error('❌ Echo not available');
         }
     });
 </script>

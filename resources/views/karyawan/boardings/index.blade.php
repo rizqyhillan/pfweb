@@ -8,12 +8,8 @@
     <a href="{{ route('karyawan.boardings.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Boarding Baru</a>
   </div>
 
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  @endif
+
+
 
   <div class="card">
     <div class="table-responsive text-nowrap">
@@ -59,8 +55,7 @@
                   <div class="dropdown-menu">
                     <a class="dropdown-item" href="{{ route('karyawan.boardings.edit', $boarding) }}"><i
                         class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-                    <form action="{{ route('karyawan.boardings.destroy', $boarding) }}" method="POST"
-                      onsubmit="return confirm('Yakin hapus data ini?')">
+                    <form action="{{ route('karyawan.boardings.destroy', $boarding) }}" method="POST">
                       @csrf @method('DELETE')
                       <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
                     </form>

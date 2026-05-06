@@ -157,9 +157,13 @@ class KaryawanController extends Controller
                     ]);
                     $p->decrement('stok', $qty);
                     $p->refresh();
-                    event(new ProductStockUpdated($p));
-                    if ($p->stok <= 10) {
-                        event(new LowStockAlert($p));
+                    try {
+                        event(new ProductStockUpdated($p));
+                        if ($p->stok <= 10) {
+                            event(new LowStockAlert($p));
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Broadcast failed: '.$e->getMessage());
                     }
                 }
             }
@@ -183,7 +187,12 @@ class KaryawanController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
-            event(new TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+
+            try {
+                event(new TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+            } catch (\Exception $e) {
+                Log::warning('Broadcast failed: '.$e->getMessage());
+            }
 
             // Send Email Safely
             try {
@@ -197,9 +206,22 @@ class KaryawanController extends Controller
                 Log::error('Mail failed: '.$mailEx->getMessage());
             }
 
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transaksi berhasil!',
+                    'transaction' => $trx->load(['pelanggan', 'kasir', 'barang.barang', 'layanan.layanan']),
+                    'kembalian' => $kembalian,
+                ]);
+            }
+
             return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp '.number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Gagal: '.$e->getMessage()], 422);
+            }
 
             return back()->withInput()->with('error', 'Gagal: '.$e->getMessage());
         }

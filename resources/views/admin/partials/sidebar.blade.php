@@ -109,6 +109,13 @@
       </a>
     </li>
 
+    <li class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.reports.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+        <div class="text-truncate">Laporan</div>
+      </a>
+    </li>
+
     <!-- Manajemen -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Manajemen</span></li>
 

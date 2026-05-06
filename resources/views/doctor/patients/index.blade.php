@@ -53,7 +53,7 @@
                   <td>
                     <div class="d-flex">
                       <a href="{{ route('doctor.patients.edit', $pet) }}" class="btn btn-sm btn-icon btn-primary me-2" title="Edit"><i class="bx bx-edit"></i></a>
-                      <form action="{{ route('doctor.patients.destroy', $pet) }}" method="POST" onsubmit="return confirm('Yakin hapus data pasien ini?')">
+                      <form action="{{ route('doctor.patients.destroy', $pet) }}" method="POST">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
                       </form>

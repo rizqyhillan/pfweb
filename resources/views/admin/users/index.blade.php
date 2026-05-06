@@ -22,7 +22,7 @@
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{{ route('admin.users.edit', $user) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
             @if($user->id !== auth()->id())
-            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <form action="{{ route('admin.users.destroy', $user) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
             @endif
           </div>
         </div>

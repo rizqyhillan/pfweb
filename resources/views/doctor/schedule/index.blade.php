@@ -79,7 +79,7 @@
                         </span>
                         <div class="d-flex justify-content-end gap-1">
                           <a href="{{ route('doctor.schedule.edit', $sch) }}" class="btn btn-xs btn-icon btn-primary" title="Edit"><i class="bx bx-edit"></i></a>
-                          <form action="{{ route('doctor.schedule.destroy', $sch) }}" method="POST" onsubmit="return confirm('Yakin hapus jadwal ini?')">
+                          <form action="{{ route('doctor.schedule.destroy', $sch) }}" method="POST">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-xs btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
                           </form>

@@ -6,12 +6,8 @@
     <a href="{{ route('admin.product-batches.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Batch</a>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
+
+
 
 <div class="card">
     <div class="table-responsive text-nowrap">
@@ -63,7 +59,7 @@
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('admin.product-batches.edit', $batch) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-                                <form action="{{ route('admin.product-batches.destroy', $batch) }}" method="POST" onsubmit="return confirm('Yakin hapus? Stok barang akan disesuaikan kembali.')">
+                                <form action="{{ route('admin.product-batches.destroy', $batch) }}" method="POST">
                                     @csrf @method('DELETE')
                                     <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
                                 </form>
