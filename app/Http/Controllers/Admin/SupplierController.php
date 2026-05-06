@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -8,7 +10,8 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::latest()->paginate(15);
+        $suppliers = Supplier::latest()->pathPaginate(15, url('admin/suppliers/page'));
+
         return view('admin.suppliers.index', compact('suppliers'));
     }
 
@@ -26,6 +29,7 @@ class SupplierController extends Controller
             'alamat' => 'nullable|string',
         ]);
         Supplier::create($v);
+
         return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
     }
 
@@ -43,12 +47,14 @@ class SupplierController extends Controller
             'alamat' => 'nullable|string',
         ]);
         $supplier->update($v);
+
         return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil diperbarui.');
     }
 
     public function destroy(Supplier $supplier)
     {
         $supplier->delete();
+
         return redirect()->route('admin.suppliers.index')->with('success', 'Supplier berhasil dihapus.');
     }
 }

@@ -1,19 +1,23 @@
 <?php
+
 namespace App\Http\Controllers\Karyawan;
+
 use App\Http\Controllers\Controller;
+use App\Mail\BoardingCreated;
 use App\Models\Boarding;
 use App\Models\Pet;
 use App\Models\Room;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\BoardingCreated;
 
 class BoardingController extends Controller
 {
     public function index()
     {
-        $boardings = Boarding::with(['hewan.owner', 'kamar'])->latest()->paginate(15);
+        $boardings = Boarding::with(['hewan.owner', 'kamar'])->latest()->pathPaginate(15, url('karyawan/boardings/page'));
+
         return view('karyawan.boardings.index', compact('boardings'));
     }
 
@@ -21,6 +25,7 @@ class BoardingController extends Controller
     {
         $pets = Pet::with('owner')->get();
         $rooms = Room::where('status', 'tersedia')->get();
+
         return view('karyawan.boardings.create', compact('pets', 'rooms'));
     }
 
@@ -49,19 +54,20 @@ class BoardingController extends Controller
             $owner = $boarding->hewan->owner ?? null;
             if ($owner && $owner->email) {
                 Mail::to($owner->email)->send(new BoardingCreated($boarding));
-                \Illuminate\Support\Facades\Log::info('Boarding email sent to: ' . $owner->email);
+                Log::info('Boarding email sent to: '.$owner->email);
             }
         } catch (\Exception $mailEx) {
-            \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+            Log::error('Mail failed: '.$mailEx->getMessage());
         }
 
-        return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp ' . number_format($v['total_biaya'], 0, ',', '.'));
+        return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp '.number_format($v['total_biaya'], 0, ',', '.'));
     }
 
     public function edit(Boarding $boarding)
     {
         $pets = Pet::with('owner')->get();
         $rooms = Room::get();
+
         return view('karyawan.boardings.edit', compact('boarding', 'pets', 'rooms'));
     }
 
@@ -91,6 +97,7 @@ class BoardingController extends Controller
         } elseif ($v['status'] === 'aktif') {
             Room::where('id', $v['id_kamar'])->update(['status' => 'terisi']);
         }
+
         return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil diperbarui.');
     }
 
@@ -98,6 +105,7 @@ class BoardingController extends Controller
     {
         Room::where('id', $boarding->id_kamar)->update(['status' => 'tersedia']);
         $boarding->delete();
+
         return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dihapus.');
     }
 }

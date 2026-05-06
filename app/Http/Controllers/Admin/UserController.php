@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -8,7 +10,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->paginate(15);
+        $users = User::latest()->pathPaginate(15, url('admin/users/page'));
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -30,6 +33,7 @@ class UserController extends Controller
         $v['password'] = bcrypt($v['password']);
         $v['is_aktif'] = 1;
         User::create($v);
+
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
@@ -42,7 +46,7 @@ class UserController extends Controller
     {
         $v = $request->validate([
             'nama' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
+            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
             'role' => 'required|in:admin,dokter,karyawan',
             'no_hp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string',
@@ -52,12 +56,14 @@ class UserController extends Controller
         }
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
         $user->update($v);
+
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
+
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

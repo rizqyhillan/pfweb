@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers\Karyawan;
 
+use App\Events\LowStockAlert;
+use App\Events\ProductStockUpdated;
+use App\Events\TransactionCreatedRealtime;
+use App\Exports\TransactionExport;
 use App\Http\Controllers\Controller;
+use App\Mail\TransactionCreated;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Exports\TransactionExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TransactionCreated;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KaryawanController extends Controller
 {
@@ -23,11 +27,11 @@ class KaryawanController extends Controller
      */
     public function dashboard()
     {
-        $totalProducts      = Product::where('is_aktif', true)->count();
-        $totalServices      = Service::where('is_aktif', true)->count();
-        $todayTransactions  = Transaction::whereDate('tanggal', today())->count();
-        $todayRevenue       = Transaction::whereDate('tanggal', today())
-                                ->where('status', 'lunas')->sum('total');
+        $totalProducts = Product::where('is_aktif', true)->count();
+        $totalServices = Service::where('is_aktif', true)->count();
+        $todayTransactions = Transaction::whereDate('tanggal', today())->count();
+        $todayRevenue = Transaction::whereDate('tanggal', today())
+            ->where('status', 'lunas')->sum('total');
 
         $recentTransactions = Transaction::with(['pelanggan', 'kasir'])
             ->latest('tanggal')->take(5)->get();
@@ -43,7 +47,8 @@ class KaryawanController extends Controller
      */
     public function products()
     {
-        $products = Product::latest()->paginate(15);
+        $products = Product::latest()->pathPaginate(15, url('karyawan/products/page'));
+
         return view('karyawan.products.index', compact('products'));
     }
 
@@ -53,7 +58,8 @@ class KaryawanController extends Controller
     public function services()
     {
         $services = Service::with('dokter')
-            ->where('is_aktif', true)->latest()->paginate(15);
+            ->where('is_aktif', true)->latest()->pathPaginate(15, url('karyawan/services/page'));
+
         return view('karyawan.services.index', compact('services'));
     }
 
@@ -67,7 +73,9 @@ class KaryawanController extends Controller
     public function transactions()
     {
         $transactions = Transaction::with(['pelanggan', 'kasir'])
-            ->latest('tanggal')->paginate(15);
+            ->latest('tanggal')
+            ->pathPaginate(15, url('karyawan/transactions/page'));
+
         return view('karyawan.transactions.index', compact('transactions'));
     }
 
@@ -77,8 +85,8 @@ class KaryawanController extends Controller
     public function createTransaction()
     {
         $customers = User::where('role', 'customer')->get();
-        $products  = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
-        $services  = Service::where('is_aktif', true)->get();
+        $products = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
+        $services = Service::where('is_aktif', true)->get();
 
         return view('karyawan.transactions.create', compact('customers', 'products', 'services'));
     }
@@ -107,13 +115,13 @@ class KaryawanController extends Controller
         DB::beginTransaction();
         try {
             $subtotal = 0;
-            $hasP = !empty($request->product_ids);
-            $hasS = !empty($request->service_ids);
-            
+            $hasP = ! empty($request->product_ids);
+            $hasS = ! empty($request->service_ids);
+
             $jenis = 'campuran';
-            if ($hasP && !$hasS) {
+            if ($hasP && ! $hasS) {
                 $jenis = 'barang';
-            } elseif ($hasS && !$hasP) {
+            } elseif ($hasS && ! $hasP) {
                 $jenis = 'layanan';
             }
 
@@ -122,7 +130,7 @@ class KaryawanController extends Controller
             $trx = Transaction::create([
                 'id_pelanggan' => $request->id_pelanggan,
                 'id_kasir' => Auth::id(),
-                'kode_transaksi' => 'TRX-' . date('Ymd') . '-' . str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
+                'kode_transaksi' => 'TRX-'.date('Ymd').'-'.str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
                 'jenis' => $jenis,
                 'subtotal' => 0,
                 'diskon' => $diskon,
@@ -142,16 +150,16 @@ class KaryawanController extends Controller
                     $sub = $p->harga * $qty;
                     $subtotal += $sub;
                     $trx->barang()->create([
-                        'id_barang' => $pid, 
-                        'jumlah' => $qty, 
-                        'harga_satuan' => $p->harga, 
-                        'subtotal' => $sub
+                        'id_barang' => $pid,
+                        'jumlah' => $qty,
+                        'harga_satuan' => $p->harga,
+                        'subtotal' => $sub,
                     ]);
                     $p->decrement('stok', $qty);
                     $p->refresh();
-                    event(new \App\Events\ProductStockUpdated($p));
+                    event(new ProductStockUpdated($p));
                     if ($p->stok <= 10) {
-                        event(new \App\Events\LowStockAlert($p));
+                        event(new LowStockAlert($p));
                     }
                 }
             }
@@ -162,10 +170,10 @@ class KaryawanController extends Controller
                     $sub = $s->harga * $qty;
                     $subtotal += $sub;
                     $trx->layanan()->create([
-                        'id_layanan' => $sid, 
-                        'jumlah' => $qty, 
-                        'harga_satuan' => $s->harga, 
-                        'subtotal' => $sub
+                        'id_layanan' => $sid,
+                        'jumlah' => $qty,
+                        'harga_satuan' => $s->harga,
+                        'subtotal' => $sub,
                     ]);
                 }
             }
@@ -175,7 +183,7 @@ class KaryawanController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
-            event(new \App\Events\TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+            event(new TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
 
             // Send Email Safely
             try {
@@ -183,22 +191,24 @@ class KaryawanController extends Controller
                 $customer = $trx->pelanggan;
                 if ($customer && $customer->email) {
                     Mail::to($customer->email)->send(new TransactionCreated($trx));
-                    \Illuminate\Support\Facades\Log::info('Transaction email sent to: ' . $customer->email);
+                    Log::info('Transaction email sent to: '.$customer->email);
                 }
             } catch (\Exception $mailEx) {
-                \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+                Log::error('Mail failed: '.$mailEx->getMessage());
             }
 
-            return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
+            return redirect()->route('karyawan.transactions')->with('success', 'Transaksi berhasil! Kembalian: Rp '.number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
+
+            return back()->withInput()->with('error', 'Gagal: '.$e->getMessage());
         }
     }
 
     public function showTransaction(Transaction $transaction)
     {
         $transaction->load(['pelanggan', 'kasir', 'barang.barang', 'layanan.layanan']);
+
         return view('karyawan.transactions.show', compact('transaction'));
     }
 
@@ -212,7 +222,7 @@ class KaryawanController extends Controller
     public function reports(Request $request)
     {
         $startDate = $request->start_date;
-        $endDate   = $request->end_date;
+        $endDate = $request->end_date;
 
         $query = Transaction::query();
 
@@ -223,12 +233,12 @@ class KaryawanController extends Controller
             $query->whereDate('tanggal', '<=', $endDate);
         }
 
-        $totalRevenue      = (clone $query)->where('status', 'lunas')->sum('total');
-        $monthlyRevenue    = Transaction::where('status', 'lunas')
+        $totalRevenue = (clone $query)->where('status', 'lunas')->sum('total');
+        $monthlyRevenue = Transaction::where('status', 'lunas')
             ->whereMonth('tanggal', now()->month)
             ->whereYear('tanggal', now()->year)->sum('total');
         $totalTransactions = (clone $query)->count();
-        $paidTransactions  = (clone $query)->where('status', 'lunas')->count();
+        $paidTransactions = (clone $query)->where('status', 'lunas')->count();
 
         return view('karyawan.reports.index', compact(
             'totalRevenue', 'monthlyRevenue', 'totalTransactions', 'paidTransactions',
@@ -242,7 +252,7 @@ class KaryawanController extends Controller
     public function exportPdf(Request $request)
     {
         $startDate = $request->start_date;
-        $endDate   = $request->end_date;
+        $endDate = $request->end_date;
 
         $query = Transaction::with(['pelanggan', 'kasir'])->latest('tanggal');
 
@@ -253,12 +263,12 @@ class KaryawanController extends Controller
             $query->whereDate('tanggal', '<=', $endDate);
         }
 
-        $transactions     = $query->get();
+        $transactions = $query->get();
         $totalTransactions = $transactions->count();
-        $paidTransactions  = $transactions->where('status', 'lunas')->count();
-        $totalRevenue      = $transactions->where('status', 'lunas')->sum('total');
-        $totalSubtotal     = $transactions->where('status', 'lunas')->sum('subtotal');
-        $totalDiskon       = $transactions->where('status', 'lunas')->sum('diskon');
+        $paidTransactions = $transactions->where('status', 'lunas')->count();
+        $totalRevenue = $transactions->where('status', 'lunas')->sum('total');
+        $totalSubtotal = $transactions->where('status', 'lunas')->sum('subtotal');
+        $totalDiskon = $transactions->where('status', 'lunas')->sum('diskon');
 
         $pdf = Pdf::loadView('karyawan.reports.pdf', compact(
             'transactions', 'totalTransactions', 'paidTransactions',
@@ -268,7 +278,8 @@ class KaryawanController extends Controller
 
         $pdf->setPaper('A4', 'landscape');
 
-        $filename = 'laporan-transaksi-' . now()->format('Y-m-d-His') . '.pdf';
+        $filename = 'laporan-transaksi-'.now()->format('Y-m-d-His').'.pdf';
+
         return $pdf->download($filename);
     }
 
@@ -278,9 +289,10 @@ class KaryawanController extends Controller
     public function exportExcel(Request $request)
     {
         $startDate = $request->start_date;
-        $endDate   = $request->end_date;
+        $endDate = $request->end_date;
 
-        $filename = 'laporan-transaksi-' . now()->format('Y-m-d-His') . '.xlsx';
+        $filename = 'laporan-transaksi-'.now()->format('Y-m-d-His').'.xlsx';
+
         return Excel::download(new TransactionExport($startDate, $endDate), $filename);
     }
 }

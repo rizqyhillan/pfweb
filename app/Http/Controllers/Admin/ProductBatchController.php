@@ -1,17 +1,21 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-use App\Models\ProductBatch;
 use App\Models\Product;
-use App\Models\Supplier;
+use App\Models\ProductBatch;
 use App\Models\StockCard;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductBatchController extends Controller
 {
     public function index()
     {
-        $batches = ProductBatch::with(['barang', 'supplier'])->latest('tanggal_masuk')->paginate(15);
+        $batches = ProductBatch::with(['barang', 'supplier'])->latest('tanggal_masuk')->pathPaginate(15, url('admin/product-batches/page'));
+
         return view('admin.product-batches.index', compact('batches'));
     }
 
@@ -19,6 +23,7 @@ class ProductBatchController extends Controller
     {
         $products = Product::where('is_aktif', true)->get();
         $suppliers = Supplier::all();
+
         return view('admin.product-batches.create', compact('products', 'suppliers'));
     }
 
@@ -34,9 +39,9 @@ class ProductBatchController extends Controller
             'tanggal_expired' => 'nullable|date', // Removed after:tanggal_masuk which often causes strict errors
             'keterangan' => 'nullable|string|max:255',
         ]);
-        
+
         if (empty($v['no_batch'])) {
-            $v['no_batch'] = 'BCH-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+            $v['no_batch'] = 'BCH-'.date('Ymd').'-'.strtoupper(Str::random(4));
         }
 
         $v['sisa_stok'] = $v['jumlah_masuk'];
@@ -48,9 +53,10 @@ class ProductBatchController extends Controller
             'tanggal' => $v['tanggal_masuk'], 'jenis_mutasi' => 'masuk',
             'jumlah' => $v['jumlah_masuk'], 'saldo' => $product->stok,
             'harga_satuan' => $v['harga_beli'],
-            'referensi' => 'Batch #' . ($v['no_batch'] ?? $batch->id),
+            'referensi' => 'Batch #'.($v['no_batch'] ?? $batch->id),
             'keterangan' => 'Penerimaan barang',
         ]);
+
         return redirect()->route('admin.product-batches.index')->with('success', 'Batch produk berhasil ditambahkan.');
     }
 
@@ -58,6 +64,7 @@ class ProductBatchController extends Controller
     {
         $products = Product::where('is_aktif', true)->get();
         $suppliers = Supplier::all();
+
         return view('admin.product-batches.edit', compact('product_batch', 'products', 'suppliers'));
     }
 
@@ -75,6 +82,7 @@ class ProductBatchController extends Controller
             'keterangan' => 'nullable|string|max:255',
         ]);
         $product_batch->update($v);
+
         return redirect()->route('admin.product-batches.index')->with('success', 'Batch produk berhasil diperbarui.');
     }
 
@@ -82,6 +90,7 @@ class ProductBatchController extends Controller
     {
         Product::where('id', $product_batch->id_barang)->decrement('stok', $product_batch->sisa_stok);
         $product_batch->delete();
+
         return redirect()->route('admin.product-batches.index')->with('success', 'Batch produk berhasil dihapus.');
     }
 }

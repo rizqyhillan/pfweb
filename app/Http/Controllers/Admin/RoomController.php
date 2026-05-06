@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -8,7 +10,8 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $rooms = Room::latest()->paginate(15);
+        $rooms = Room::latest()->pathPaginate(15, url('admin/rooms/page'));
+
         return view('admin.rooms.index', compact('rooms'));
     }
 
@@ -28,6 +31,7 @@ class RoomController extends Controller
         ]);
         $v['status'] = 'tersedia';
         Room::create($v);
+
         return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil ditambahkan.');
     }
 
@@ -47,12 +51,14 @@ class RoomController extends Controller
             'keterangan' => 'nullable|string',
         ]);
         $room->update($v);
+
         return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil diperbarui.');
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
+
         return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil dihapus.');
     }
 }

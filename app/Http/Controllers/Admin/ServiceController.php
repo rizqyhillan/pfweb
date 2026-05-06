@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\User;
@@ -9,13 +11,15 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::with('dokter')->latest()->paginate(15);
+        $services = Service::with('dokter')->latest()->pathPaginate(15, url('admin/services/page'));
+
         return view('admin.services.index', compact('services'));
     }
 
     public function create()
     {
         $doctors = User::where('role', 'dokter')->get();
+
         return view('admin.services.create', compact('doctors'));
     }
 
@@ -31,12 +35,14 @@ class ServiceController extends Controller
         ]);
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 1;
         Service::create($v);
+
         return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil ditambahkan.');
     }
 
     public function edit(Service $service)
     {
         $doctors = User::where('role', 'dokter')->get();
+
         return view('admin.services.edit', compact('service', 'doctors'));
     }
 
@@ -52,12 +58,14 @@ class ServiceController extends Controller
         ]);
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
         $service->update($v);
+
         return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil diperbarui.');
     }
 
     public function destroy(Service $service)
     {
         $service->delete();
+
         return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil dihapus.');
     }
 }

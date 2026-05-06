@@ -1,19 +1,22 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
+use App\Exports\MedicalRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Models\MedicalRecord;
 use App\Models\Pet;
 use App\Models\User;
-use App\Exports\MedicalRecordsExport;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MedicalRecordController extends Controller
 {
     public function index()
     {
-        $records = MedicalRecord::with(['hewan.owner', 'dokter'])->latest('tanggal')->paginate(15);
+        $records = MedicalRecord::with(['hewan.owner', 'dokter'])->latest('tanggal')->pathPaginate(15, url('admin/medical-records/page'));
+
         return view('admin.medical-records.index', compact('records'));
     }
 
@@ -21,6 +24,7 @@ class MedicalRecordController extends Controller
     {
         $pets = Pet::with('owner')->get();
         $doctors = User::where('role', 'dokter')->get();
+
         return view('admin.medical-records.create', compact('pets', 'doctors'));
     }
 
@@ -37,12 +41,14 @@ class MedicalRecordController extends Controller
             'tanggal' => 'required|date',
         ]);
         MedicalRecord::create($v);
+
         return redirect()->route('admin.medical-records.index')->with('success', 'Rekam medis berhasil ditambahkan.');
     }
 
     public function show(MedicalRecord $medical_record)
     {
         $medical_record->load(['hewan.owner', 'dokter']);
+
         return view('admin.medical-records.show', compact('medical_record'));
     }
 
@@ -50,6 +56,7 @@ class MedicalRecordController extends Controller
     {
         $pets = Pet::with('owner')->get();
         $doctors = User::where('role', 'dokter')->get();
+
         return view('admin.medical-records.edit', compact('medical_record', 'pets', 'doctors'));
     }
 
@@ -66,37 +73,39 @@ class MedicalRecordController extends Controller
             'tanggal' => 'required|date',
         ]);
         $medical_record->update($v);
+
         return redirect()->route('admin.medical-records.index')->with('success', 'Rekam medis berhasil diperbarui.');
     }
 
     public function destroy(MedicalRecord $medical_record)
     {
         $medical_record->delete();
+
         return redirect()->route('admin.medical-records.index')->with('success', 'Rekam medis berhasil dihapus.');
     }
 
     public function exportExcel()
     {
-    return Excel::download(new MedicalRecordsExport, 'rekam-medis.xlsx');
+        return Excel::download(new MedicalRecordsExport, 'rekam-medis.xlsx');
     }
 
     public function exportPdf($hewanId)
     {
-    $records = MedicalRecord::with(['hewan.owner', 'dokter'])
-        ->where('id_hewan', $hewanId)
-        ->get();
+        $records = MedicalRecord::with(['hewan.owner', 'dokter'])
+            ->where('id_hewan', $hewanId)
+            ->get();
 
-    if ($records->isEmpty()) {
-        abort(404, 'Data tidak ditemukan');
-    }
+        if ($records->isEmpty()) {
+            abort(404, 'Data tidak ditemukan');
+        }
 
-    $hewan = $records->first()->hewan;
+        $hewan = $records->first()->hewan;
 
-    $pdf = Pdf::loadView('admin.medical-records.pdf', [
-        'records' => $records,
-        'hewan' => $hewan
-    ]);
+        $pdf = Pdf::loadView('admin.medical-records.pdf', [
+            'records' => $records,
+            'hewan' => $hewan,
+        ]);
 
-    return $pdf->download('rekam-medis-' . $hewan->nama_hewan . '.pdf');
+        return $pdf->download('rekam-medis-'.$hewan->nama_hewan.'.pdf');
     }
 }

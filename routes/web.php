@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\PetController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ServiceController;
-use App\Http\Controllers\Admin\TransactionController;
-use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\BoardingController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MedicalRecordController;
-use App\Http\Controllers\Admin\SupplierController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PetController;
 use App\Http\Controllers\Admin\ProductBatchController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StockCardController;
+use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Karyawan\KaryawanController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Dynamic Pages (using Controller)
 Route::controller(PageController::class)->group(function () {
@@ -42,11 +42,11 @@ Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 
 // Breeze default /dashboard — redirect berdasarkan role
 Route::get('/dashboard', function () {
-    return match(Auth::user()->role) {
-        'admin'    => redirect()->route('admin.dashboard'),
-        'dokter'   => redirect()->route('doctor.dashboard'),
+    return match (Auth::user()->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'dokter' => redirect()->route('doctor.dashboard'),
         'karyawan' => redirect()->route('karyawan.dashboard'),
-        default    => redirect()->route('home'),
+        default => redirect()->route('home'),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -70,13 +70,29 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('users', UserController::class);
     Route::resource('product-batches', ProductBatchController::class);
     Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
+
+    // Path-based pagination routes
+    Route::get('pets/page/{page}', [PetController::class, 'index'])->name('pets.page');
+    Route::get('products/page/{page}', [ProductController::class, 'index'])->name('products.page');
+    Route::get('services/page/{page}', [ServiceController::class, 'index'])->name('services.page');
+    Route::get('transactions/page/{page}', [TransactionController::class, 'index'])->name('transactions.page');
+    Route::get('rooms/page/{page}', [RoomController::class, 'index'])->name('rooms.page');
+    Route::get('boardings/page/{page}', [BoardingController::class, 'index'])->name('boardings.page');
+    Route::get('medical-records/page/{page}', [MedicalRecordController::class, 'index'])->name('medical-records.page');
+    Route::get('suppliers/page/{page}', [SupplierController::class, 'index'])->name('suppliers.page');
+    Route::get('users/page/{page}', [UserController::class, 'index'])->name('users.page');
+    Route::get('product-batches/page/{page}', [ProductBatchController::class, 'index'])->name('product-batches.page');
+    Route::get('stock-cards/page/{page}', [StockCardController::class, 'index'])->name('stock-cards.page');
 });
 
 // Doctor Routes — hanya role 'doctor'
 Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->group(function () {
-    Route::get('/', function () { return redirect()->route('doctor.dashboard'); });
+    Route::get('/', function () {
+        return redirect()->route('doctor.dashboard');
+    });
     Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
     Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');
+    Route::get('/patients/page/{page}', [DoctorController::class, 'patients'])->name('patients.page');
     Route::get('/patients/create', [DoctorController::class, 'createPatient'])->name('patients.create');
     Route::post('/patients', [DoctorController::class, 'storePatient'])->name('patients.store');
     Route::get('/patients/{pet}/edit', [DoctorController::class, 'editPatient'])->name('patients.edit');
@@ -91,6 +107,7 @@ Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->g
 
     // Medical Records — CRUD
     Route::get('/medical-records', [DoctorController::class, 'medicalRecords'])->name('medical-records');
+    Route::get('/medical-records/page/{page}', [DoctorController::class, 'medicalRecords'])->name('medical-records.page');
     Route::get('/medical-records/create', [DoctorController::class, 'createMedicalRecord'])->name('medical-records.create');
     Route::post('/medical-records', [DoctorController::class, 'storeMedicalRecord'])->name('medical-records.store');
     Route::get('/medical-records/{medical_record}/edit', [DoctorController::class, 'editMedicalRecord'])->name('medical-records.edit');
@@ -100,30 +117,36 @@ Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->g
 
 // Karyawan Routes — hanya role 'karyawan'
 Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan.')->group(function () {
-    Route::get('/', function () { return redirect()->route('karyawan.dashboard'); });
+    Route::get('/', function () {
+        return redirect()->route('karyawan.dashboard');
+    });
     Route::get('/dashboard', [KaryawanController::class, 'dashboard'])->name('dashboard');
     Route::get('/products', [KaryawanController::class, 'products'])->name('products');
+    Route::get('/products/page/{page}', [KaryawanController::class, 'products'])->name('products.page');
     Route::get('/services', [KaryawanController::class, 'services'])->name('services');
+    Route::get('/services/page/{page}', [KaryawanController::class, 'services'])->name('services.page');
     Route::get('/reports', [KaryawanController::class, 'reports'])->name('reports');
     Route::get('/reports/export-pdf', [KaryawanController::class, 'exportPdf'])->name('reports.export-pdf');
     Route::get('/reports/export-excel', [KaryawanController::class, 'exportExcel'])->name('reports.export-excel');
 
     // Transactions — READ + CREATE
     Route::get('/transactions', [KaryawanController::class, 'transactions'])->name('transactions');
+    Route::get('/transactions/page/{page}', [KaryawanController::class, 'transactions'])->name('transactions.page');
     Route::get('/transactions/create', [KaryawanController::class, 'createTransaction'])->name('transactions.create');
     Route::post('/transactions', [KaryawanController::class, 'storeTransaction'])->name('transactions.store');
     Route::get('/transactions/{transaction}', [KaryawanController::class, 'showTransaction'])->name('transactions.show');
 
     // Boardings - CRUD for Karyawan
-    Route::resource('boardings', \App\Http\Controllers\Karyawan\BoardingController::class);
+    Route::resource('boardings', App\Http\Controllers\Karyawan\BoardingController::class);
+    Route::get('boardings/page/{page}', [App\Http\Controllers\Karyawan\BoardingController::class, 'index'])->name('boardings.page');
 });
 
 // Export Medical Records to Excel dan PDF
-Route::get('/admin/medical-records/export/excel', 
+Route::get('/admin/medical-records/export/excel',
     [MedicalRecordController::class, 'exportExcel']
 )->name('admin.medical-records.export.excel');
 
-Route::get('/admin/medical-records/{hewan}/export-pdf', 
+Route::get('/admin/medical-records/{hewan}/export-pdf',
     [MedicalRecordController::class, 'exportPdf']
 )->name('admin.medical-records.export.pdf');
 

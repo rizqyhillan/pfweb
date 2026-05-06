@@ -1,22 +1,31 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
+use App\Events\LowStockAlert;
+use App\Events\ProductStockUpdated;
+use App\Events\TransactionCreatedRealtime;
 use App\Http\Controllers\Controller;
+use App\Mail\TransactionCreated;
+use App\Models\Product;
+use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\TransactionProduct;
 use App\Models\TransactionService;
-use App\Models\Product;
-use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TransactionCreated;
 
 class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['pelanggan', 'kasir'])->latest('tanggal')->paginate(15);
+        $transactions = Transaction::with(['pelanggan', 'kasir'])
+            ->latest('tanggal')
+            ->pathPaginate(15, url('admin/transactions/page'));
+
         return view('admin.transactions.index', compact('transactions'));
     }
 
@@ -25,6 +34,7 @@ class TransactionController extends Controller
         $customers = User::where('role', 'customer')->get();
         $products = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
         $services = Service::where('is_aktif', true)->get();
+
         return view('admin.transactions.create', compact('customers', 'products', 'services'));
     }
 
@@ -49,20 +59,22 @@ class TransactionController extends Controller
         DB::beginTransaction();
         try {
             $subtotal = 0;
-            $hasP = !empty($request->product_ids);
-            $hasS = !empty($request->service_ids);
+            $hasP = ! empty($request->product_ids);
+            $hasS = ! empty($request->service_ids);
             $jenis = 'campuran';
-            if ($hasP && !$hasS)
+            if ($hasP && ! $hasS) {
                 $jenis = 'barang';
-            if ($hasS && !$hasP)
+            }
+            if ($hasS && ! $hasP) {
                 $jenis = 'layanan';
+            }
 
             $diskon = $request->diskon ?? 0;
 
             $trx = Transaction::create([
                 'id_pelanggan' => $request->id_pelanggan,
                 'id_kasir' => auth()->id(),
-                'kode_transaksi' => 'TRX-' . date('Ymd') . '-' . str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
+                'kode_transaksi' => 'TRX-'.date('Ymd').'-'.str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
                 'jenis' => $jenis,
                 'subtotal' => 0,
                 'diskon' => $diskon,
@@ -84,9 +96,9 @@ class TransactionController extends Controller
                     TransactionProduct::create(['id_transaksi' => $trx->id, 'id_barang' => $pid, 'jumlah' => $qty, 'harga_satuan' => $p->harga, 'subtotal' => $sub]);
                     $p->decrement('stok', $qty);
                     $p->refresh();
-                    event(new \App\Events\ProductStockUpdated($p));
+                    event(new ProductStockUpdated($p));
                     if ($p->stok <= 10) {
-                        event(new \App\Events\LowStockAlert($p));
+                        event(new LowStockAlert($p));
                     }
                 }
             }
@@ -105,7 +117,7 @@ class TransactionController extends Controller
             $trx->update(['subtotal' => $subtotal, 'total' => $total, 'kembalian' => $kembalian]);
 
             DB::commit();
-            event(new \App\Events\TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+            event(new TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
 
             // Send Email Safely
             try {
@@ -113,22 +125,24 @@ class TransactionController extends Controller
                 $customer = $trx->pelanggan;
                 if ($customer && $customer->email) {
                     Mail::to($customer->email)->send(new TransactionCreated($trx));
-                    \Illuminate\Support\Facades\Log::info('Transaction email sent to: ' . $customer->email);
+                    Log::info('Transaction email sent to: '.$customer->email);
                 }
             } catch (\Exception $mailEx) {
-                \Illuminate\Support\Facades\Log::error('Mail failed: ' . $mailEx->getMessage());
+                Log::error('Mail failed: '.$mailEx->getMessage());
             }
 
-            return redirect()->route('admin.transactions.show', $trx)->with('success', 'Transaksi berhasil! Kembalian: Rp ' . number_format($kembalian, 0, ',', '.'));
+            return redirect()->route('admin.transactions.show', $trx)->with('success', 'Transaksi berhasil! Kembalian: Rp '.number_format($kembalian, 0, ',', '.'));
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
+
+            return back()->withInput()->with('error', 'Gagal: '.$e->getMessage());
         }
     }
 
     public function show(Transaction $transaction)
     {
         $transaction->load(['pelanggan', 'kasir', 'barang.barang', 'layanan.layanan']);
+
         return view('admin.transactions.show', compact('transaction'));
     }
 
@@ -138,6 +152,7 @@ class TransactionController extends Controller
             Product::where('id', $item->id_barang)->increment('stok', $item->jumlah);
         }
         $transaction->delete();
+
         return redirect()->route('admin.transactions.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 }

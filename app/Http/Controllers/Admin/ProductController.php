@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -9,7 +11,8 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(15);
+        $products = Product::latest()->pathPaginate(15, url('admin/products/page'));
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -39,6 +42,7 @@ class ProductController extends Controller
             : null;
 
         Product::create($v);
+
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
@@ -74,6 +78,7 @@ class ProductController extends Controller
         }
 
         $product->update($v);
+
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
@@ -84,6 +89,7 @@ class ProductController extends Controller
             Storage::disk('public')->delete($product->image);
         }
         $product->delete();
+
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }

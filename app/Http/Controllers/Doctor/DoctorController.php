@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pet;
-use App\Models\MedicalRecord;
 use App\Models\DoctorSchedule;
+use App\Models\MedicalRecord;
+use App\Models\Pet;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,14 +19,14 @@ class DoctorController extends Controller
     {
         $doctor = Auth::user();
 
-        $totalPatients    = Pet::count();
-        $myRecords        = MedicalRecord::where('id_dokter', $doctor->id)->count();
+        $totalPatients = Pet::count();
+        $myRecords = MedicalRecord::where('id_dokter', $doctor->id)->count();
 
         // Map Carbon dayOfWeekIso (1=Mon..7=Sun) to DB enum values
         $hariMap = [1 => 'senin', 2 => 'selasa', 3 => 'rabu', 4 => 'kamis', 5 => 'jumat', 6 => 'sabtu', 7 => 'minggu'];
         $hariIni = $hariMap[now()->dayOfWeekIso] ?? '';
 
-        $todaySchedules   = DoctorSchedule::where('id_dokter', $doctor->id)
+        $todaySchedules = DoctorSchedule::where('id_dokter', $doctor->id)
             ->where('hari', $hariIni)
             ->where('is_aktif', true)
             ->get();
@@ -46,13 +47,15 @@ class DoctorController extends Controller
      */
     public function patients()
     {
-        $pets = Pet::with('owner')->latest()->paginate(15);
+        $pets = Pet::with('owner')->latest()->pathPaginate(15, url('doctor/patients/page'));
+
         return view('doctor.patients.index', compact('pets'));
     }
 
     public function createPatient()
     {
-        $owners = \App\Models\User::where('role', 'customer')->get();
+        $owners = User::where('role', 'customer')->get();
+
         return view('doctor.patients.create', compact('owners'));
     }
 
@@ -61,19 +64,21 @@ class DoctorController extends Controller
         $validated = $request->validate([
             'id_pemilik' => 'required|exists:users,id',
             'nama_hewan' => 'required|string|max:100',
-            'jenis'      => 'required|in:kucing,anjing,burung,reptil,lainnya',
-            'ras'        => 'nullable|string|max:50',
-            'umur'       => 'nullable|integer|min:0',
-            'berat'      => 'nullable|numeric|min:0',
-            'catatan'    => 'nullable|string',
+            'jenis' => 'required|in:kucing,anjing,burung,reptil,lainnya',
+            'ras' => 'nullable|string|max:50',
+            'umur' => 'nullable|integer|min:0',
+            'berat' => 'nullable|numeric|min:0',
+            'catatan' => 'nullable|string',
         ]);
         Pet::create($validated);
+
         return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil ditambahkan.');
     }
 
     public function editPatient(Pet $pet)
     {
-        $owners = \App\Models\User::where('role', 'customer')->get();
+        $owners = User::where('role', 'customer')->get();
+
         return view('doctor.patients.edit', compact('pet', 'owners'));
     }
 
@@ -82,19 +87,21 @@ class DoctorController extends Controller
         $validated = $request->validate([
             'id_pemilik' => 'required|exists:users,id',
             'nama_hewan' => 'required|string|max:100',
-            'jenis'      => 'required|in:kucing,anjing,burung,reptil,lainnya',
-            'ras'        => 'nullable|string|max:50',
-            'umur'       => 'nullable|integer|min:0',
-            'berat'      => 'nullable|numeric|min:0',
-            'catatan'    => 'nullable|string',
+            'jenis' => 'required|in:kucing,anjing,burung,reptil,lainnya',
+            'ras' => 'nullable|string|max:50',
+            'umur' => 'nullable|integer|min:0',
+            'berat' => 'nullable|numeric|min:0',
+            'catatan' => 'nullable|string',
         ]);
         $pet->update($validated);
+
         return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil diperbarui.');
     }
 
     public function deletePatient(Pet $pet)
     {
         $pet->delete();
+
         return redirect()->route('doctor.patients')->with('success', 'Data pasien berhasil dihapus.');
     }
 
@@ -110,7 +117,7 @@ class DoctorController extends Controller
         $records = MedicalRecord::with(['hewan.owner'])
             ->where('id_dokter', Auth::id())
             ->latest('tanggal')
-            ->paginate(15);
+            ->pathPaginate(15, url('doctor/medical-records/page'));
 
         return view('doctor.medical-records.index', compact('records'));
     }
@@ -121,6 +128,7 @@ class DoctorController extends Controller
     public function createMedicalRecord()
     {
         $pets = Pet::with('owner')->get();
+
         return view('doctor.medical-records.create', compact('pets'));
     }
 
@@ -130,13 +138,13 @@ class DoctorController extends Controller
     public function storeMedicalRecord(Request $request)
     {
         $validated = $request->validate([
-            'id_hewan'      => 'required|exists:hewan,id',
-            'diagnosa'      => 'required|string',
-            'tindakan'      => 'nullable|string',
-            'resep'         => 'nullable|string',
-            'berat_saat_itu'=> 'nullable|numeric|min:0',
-            'catatan'       => 'nullable|string',
-            'tanggal'       => 'required|date',
+            'id_hewan' => 'required|exists:hewan,id',
+            'diagnosa' => 'required|string',
+            'tindakan' => 'nullable|string',
+            'resep' => 'nullable|string',
+            'berat_saat_itu' => 'nullable|numeric|min:0',
+            'catatan' => 'nullable|string',
+            'tanggal' => 'required|date',
         ]);
 
         $validated['id_dokter'] = Auth::id();
@@ -158,6 +166,7 @@ class DoctorController extends Controller
         }
 
         $pets = Pet::with('owner')->get();
+
         return view('doctor.medical-records.edit', compact('medical_record', 'pets'));
     }
 
@@ -171,13 +180,13 @@ class DoctorController extends Controller
         }
 
         $validated = $request->validate([
-            'id_hewan'      => 'required|exists:hewan,id',
-            'diagnosa'      => 'required|string',
-            'tindakan'      => 'nullable|string',
-            'resep'         => 'nullable|string',
-            'berat_saat_itu'=> 'nullable|numeric|min:0',
-            'catatan'       => 'nullable|string',
-            'tanggal'       => 'required|date',
+            'id_hewan' => 'required|exists:hewan,id',
+            'diagnosa' => 'required|string',
+            'tindakan' => 'nullable|string',
+            'resep' => 'nullable|string',
+            'berat_saat_itu' => 'nullable|numeric|min:0',
+            'catatan' => 'nullable|string',
+            'tanggal' => 'required|date',
         ]);
 
         $medical_record->update($validated);
@@ -221,47 +230,56 @@ class DoctorController extends Controller
     public function storeSchedule(Request $request)
     {
         $validated = $request->validate([
-            'hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
-            'jam_mulai'   => 'required',
+            'hari' => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
+            'jam_mulai' => 'required',
             'jam_selesai' => 'required',
-            'kuota'       => 'required|integer|min:1',
+            'kuota' => 'required|integer|min:1',
         ]);
 
         $validated['id_dokter'] = Auth::id();
-        $validated['is_aktif']  = $request->boolean('is_aktif');
+        $validated['is_aktif'] = $request->boolean('is_aktif');
 
         DoctorSchedule::create($validated);
+
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil ditambahkan.');
     }
 
     public function editSchedule(DoctorSchedule $schedule)
     {
-        if ($schedule->id_dokter !== Auth::id()) abort(403);
+        if ($schedule->id_dokter !== Auth::id()) {
+            abort(403);
+        }
+
         return view('doctor.schedule.edit', compact('schedule'));
     }
 
     public function updateSchedule(Request $request, DoctorSchedule $schedule)
     {
-        if ($schedule->id_dokter !== Auth::id()) abort(403);
+        if ($schedule->id_dokter !== Auth::id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
-            'hari'        => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
-            'jam_mulai'   => 'required',
+            'hari' => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu,minggu',
+            'jam_mulai' => 'required',
             'jam_selesai' => 'required',
-            'kuota'       => 'required|integer|min:1',
+            'kuota' => 'required|integer|min:1',
         ]);
 
         $validated['is_aktif'] = $request->boolean('is_aktif');
 
         $schedule->update($validated);
+
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil diperbarui.');
     }
 
     public function deleteSchedule(DoctorSchedule $schedule)
     {
-        if ($schedule->id_dokter !== Auth::id()) abort(403);
+        if ($schedule->id_dokter !== Auth::id()) {
+            abort(403);
+        }
         $schedule->delete();
+
         return redirect()->route('doctor.schedule')->with('success', 'Jadwal berhasil dihapus.');
     }
 }
-

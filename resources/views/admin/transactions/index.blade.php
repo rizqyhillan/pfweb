@@ -79,7 +79,7 @@
     </div>
     @if($transactions->hasPages())
       <div class="card-footer d-flex justify-content-center">
-        {{ $transactions->links() }}
+        {{ $transactions->links('pagination::bootstrap-5') }}
       </div>
     @endif
   </div>
