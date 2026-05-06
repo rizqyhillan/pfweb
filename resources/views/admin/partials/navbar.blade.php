@@ -23,43 +23,57 @@
             <span class="badge bg-danger rounded-pill badge-notifications">{{ auth()->user()->unreadNotifications->count() }}</span>
           @endif
         </a>
-        <ul class="dropdown-menu dropdown-menu-end py-0">
-          <li class="dropdown-menu-header border-bottom">
-            <div class="dropdown-header d-flex align-items-center py-3">
+        <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg border-0" style="width: 350px;">
+          <li class="dropdown-menu-header border-bottom bg-light">
+            <div class="dropdown-header d-flex align-items-center py-3 px-4">
               <h5 class="text-body mb-0 me-auto">Notifikasi</h5>
-              <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Tandai semua sudah dibaca" onclick="markAllNotificationsAsRead()"><i class="icon-base bx fs-4 bx-envelope-open"></i></a>
+              <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Tandai semua sudah dibaca" onclick="window.markAllNotificationsAsRead()"><i class="icon-base bx fs-4 bx-envelope-open"></i></a>
             </div>
           </li>
-          <li class="dropdown-notifications-list scrollable-container">
+          <li class="dropdown-notifications-list scrollable-container" style="max-height: 400px; overflow-y: auto;">
             <ul class="list-group list-group-flush" id="notification-list">
               @forelse(auth()->user()->unreadNotifications as $notification)
-                <li class="list-group-item list-group-item-action dropdown-notifications-item" id="notif-{{ $notification->id }}">
-                  <div class="d-flex">
+                <li class="list-group-item list-group-item-action dropdown-notifications-item py-3 px-4 border-bottom {{ is_null($notification->read_at) ? 'bg-lighter' : '' }}" id="notif-{{ $notification->id }}">
+                  <div class="d-flex align-items-start">
                     <div class="flex-shrink-0 me-3">
-                      <div class="avatar">
-                        <span class="avatar-initial rounded-circle bg-label-{{ $notification->data['type'] ?? 'primary' }}"><i class="bx bx-info-circle"></i></span>
+                      <div class="avatar avatar-sm">
+                        @php
+                            $icon = 'bx-info-circle';
+                            $type = $notification->data['type'] ?? 'primary';
+                            if($type == 'success') $icon = 'bx-check-circle';
+                            if($type == 'warning') $icon = 'bx-error';
+                            if($type == 'danger') $icon = 'bx-x-circle';
+                            $url = $notification->data['url'] ?? '#';
+                        @endphp
+                        <span class="avatar-initial rounded-circle bg-label-{{ $type }}"><i class="bx {{ $icon }}"></i></span>
                       </div>
                     </div>
-                    <div class="flex-grow-1">
-                      <h6 class="mb-1">{{ $notification->data['title'] ?? 'Info' }}</h6>
-                      <p class="mb-0">{{ $notification->data['message'] ?? '' }}</p>
-                      <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
-                    </div>
-                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                      <a href="javascript:void(0)" class="dropdown-notifications-read" onclick="markNotificationAsRead('{{ $notification->id }}')"><span class="badge badge-dot"></span></a>
-                      <a href="javascript:void(0)" class="dropdown-notifications-archive" onclick="markNotificationAsRead('{{ $notification->id }}')"><span class="bx bx-x"></span></a>
+                    <a href="{{ $url }}" class="flex-grow-1 text-decoration-none text-body" style="min-width: 0;" @if($url !== '#') onclick="window.markNotificationAsRead('{{ $notification->id }}')" @endif>
+                      <h6 class="mb-1 text-truncate fw-bold">{{ $notification->data['title'] ?? 'Info' }}
+                        @if(is_null($notification->read_at))
+                          <span class="badge badge-dot bg-primary ms-1"></span>
+                        @endif
+                      </h6>
+                      <p class="mb-1 text-muted" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ $notification->data['message'] ?? '' }}</p>
+                      <small class="text-muted d-block" style="font-size: 0.75rem;"><i class="bx bx-time-five me-1"></i>{{ $notification->created_at->diffForHumans() }}</small>
+                    </a>
+                    <div class="flex-shrink-0 dropdown-notifications-actions ms-2 d-flex flex-column align-items-end">
+                      <a href="javascript:void(0)" class="text-muted dropdown-notifications-archive" onclick="window.markNotificationAsRead('{{ $notification->id }}')" data-bs-toggle="tooltip" title="Tandai dibaca">
+                        <i class="bx bx-check fs-4"></i>
+                      </a>
                     </div>
                   </div>
                 </li>
               @empty
-                <li class="list-group-item text-center text-muted py-4" id="empty-notif">
-                  Tidak ada notifikasi baru.
+                <li class="list-group-item text-center text-muted py-5" id="empty-notif">
+                  <i class="bx bx-bell-off fs-1 mb-3 text-lighter"></i>
+                  <p class="mb-0">Tidak ada notifikasi baru.</p>
                 </li>
               @endforelse
             </ul>
           </li>
           <li class="dropdown-menu-footer border-top p-3">
-            <button class="btn btn-primary text-uppercase w-100" disabled>Lihat Semua Notifikasi</button>
+            <a href="{{ route('notifications.index') }}" class="btn btn-primary text-uppercase w-100">Lihat Semua Notifikasi</a>
           </li>
         </ul>
       </li>

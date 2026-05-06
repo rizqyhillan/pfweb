@@ -8,6 +8,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(Auth::check())
+      <meta name="user-id" content="{{ Auth::id() }}">
+    @endif
 
     <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PawPet') }} {{ Auth::check() ? ucfirst(Auth::user()->role) : 'Admin' }}</title>
 
@@ -80,7 +83,7 @@
     <script src="{{ asset('admin-assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('admin-assets/js/config.js') }}"></script>
     
-    @vite(['resources/js/app.js'])
+    @vite(['resources/css/app.css'])
   </head>
 
   <body>
@@ -203,29 +206,74 @@
     <script>
       // Global real-time notification helper
       window.PawPetRealtime = {
-          showToast: function(title, message, type) {
+          playNotificationSound: function(type) {
+              // Create short beep sound using AudioContext
+              try {
+                  let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                  let oscillator = audioCtx.createOscillator();
+                  let gainNode = audioCtx.createGain();
+                  
+                  oscillator.connect(gainNode);
+                  gainNode.connect(audioCtx.destination);
+                  
+                  if (type === 'danger' || type === 'warning') {
+                      oscillator.type = 'square';
+                      oscillator.frequency.setValueAtTime(400, audioCtx.currentTime); // lower pitch for warning
+                      oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.3);
+                  } else {
+                      oscillator.type = 'sine';
+                      oscillator.frequency.setValueAtTime(600, audioCtx.currentTime); // nice ping for success/info
+                      oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                  }
+                  
+                  gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                  
+                  oscillator.start(audioCtx.currentTime);
+                  oscillator.stop(audioCtx.currentTime + 0.5);
+              } catch(e) { console.log('AudioContext not supported'); }
+          },
+          showToast: function(title, message, type, url) {
               type = type || 'info';
+              url = url || '#';
+              
+              // Play sound
+              this.playNotificationSound(type);
+
               let colors = {info: '#0ea5e9', success: '#22c55e', warning: '#f59e0b', danger: '#ef4444'};
               let icons  = {info: 'bx-info-circle', success: 'bx-check-circle', warning: 'bx-error', danger: 'bx-x-circle'};
               let container = document.getElementById('realtime-toast-container');
               let toast = document.createElement('div');
-              toast.style.cssText = 'background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:16px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;animation:slideIn .3s ease;border-left:4px solid '+colors[type]+';min-width:300px;';
+              
+              toast.style.cssText = 'background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.15);padding:16px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;animation:slideIn .3s ease;border-left:4px solid '+colors[type]+';min-width:300px;position:relative;cursor:'+(url !== '#' ? 'pointer' : 'default')+';';
+              
+              if(url !== '#') {
+                  toast.onclick = function(e) {
+                      if(e.target.tagName !== 'BUTTON') window.location.href = url;
+                  };
+              }
+
               toast.innerHTML = `
                 <i class="bx ${icons[type]}" style="font-size:24px;color:${colors[type]};margin-top:2px;"></i>
                 <div style="flex:1;">
-                  <strong style="display:block;margin-bottom:2px;font-size:14px;">${title}</strong>
+                  <strong style="display:block;margin-bottom:2px;font-size:14px;color:#333;">${title}</strong>
                   <span style="font-size:13px;color:#666;">${message}</span>
                 </div>
-                <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#999;">&times;</button>
+                <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#999;position:absolute;top:10px;right:10px;">&times;</button>
               `;
               container.appendChild(toast);
-              setTimeout(() => { if(toast.parentElement) toast.remove(); }, 8000);
+              
+              // Auto hide logic: danger (error) doesn't auto hide
+              if(type !== 'danger') {
+                  let timeout = type === 'success' || type === 'info' ? 5000 : 8000;
+                  setTimeout(() => { if(toast.parentElement) toast.remove(); }, timeout);
+              }
           }
       };
     </script>
     <script>
       // Mark specific notification as read
-      function markNotificationAsRead(id) {
+      window.markNotificationAsRead = function(id) {
         fetch(`/notifications/${id}/read`, {
           method: 'POST',
           headers: {
@@ -234,14 +282,15 @@
           }
         }).then(response => {
           if(response.ok) {
-            document.getElementById(`notif-${id}`).remove();
-            updateNotificationCount(-1);
+            const notifElement = document.getElementById(`notif-${id}`);
+            if (notifElement) notifElement.remove();
+            window.updateNotificationCount(-1);
           }
         });
-      }
+      };
 
       // Mark all notifications as read
-      function markAllNotificationsAsRead() {
+      window.markAllNotificationsAsRead = function() {
         fetch(`/notifications/read-all`, {
           method: 'POST',
           headers: {
@@ -250,14 +299,17 @@
           }
         }).then(response => {
           if(response.ok) {
-            document.getElementById('notification-list').innerHTML = '<li class="list-group-item text-center text-muted py-4" id="empty-notif">Tidak ada notifikasi baru.</li>';
-            updateNotificationCount('clear');
+            const notifList = document.getElementById('notification-list');
+            if (notifList) {
+                notifList.innerHTML = '<li class="list-group-item text-center text-muted py-4" id="empty-notif">Tidak ada notifikasi baru.</li>';
+            }
+            window.updateNotificationCount('clear');
           }
         });
-      }
+      };
 
       // Update badge count
-      function updateNotificationCount(change) {
+      window.updateNotificationCount = function(change) {
         const badge = document.querySelector('.badge-notifications');
         if(!badge && change > 0) {
           // Create badge if it doesn't exist
@@ -282,54 +334,6 @@
       }
 
     </script>
-    <script type="module">
-      // Listen for Reverb Notifications
-      const userId = '{{ auth()->id() }}';
-      if (window.Echo) {
-        window.Echo.private('App.Models.User.' + userId)
-          .notification((notification) => {
-            // Add to top of list
-            const list = document.getElementById('notification-list');
-            const empty = document.getElementById('empty-notif');
-            if(empty) empty.remove();
-
-            const li = document.createElement('li');
-            li.className = 'list-group-item list-group-item-action dropdown-notifications-item';
-            li.id = `notif-${notification.id}`;
-            li.innerHTML = `
-              <div class="d-flex">
-                <div class="flex-shrink-0 me-3">
-                  <div class="avatar">
-                    <span class="avatar-initial rounded-circle bg-label-${notification.type || 'primary'}"><i class="bx bx-info-circle"></i></span>
-                  </div>
-                </div>
-                <div class="flex-grow-1">
-                  <h6 class="mb-1">${notification.title || 'Info'}</h6>
-                  <p class="mb-0">${notification.message || ''}</p>
-                  <small class="text-muted">Baru saja</small>
-                </div>
-                <div class="flex-shrink-0 dropdown-notifications-actions">
-                  <a href="javascript:void(0)" class="dropdown-notifications-read" onclick="markNotificationAsRead('${notification.id}')"><span class="badge badge-dot"></span></a>
-                </div>
-              </div>
-            `;
-            list.insertBefore(li, list.firstChild);
-            updateNotificationCount(1);
-            
-            // Show Toast
-            if(window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
-                window.PawPetRealtime.showToast(notification.title || 'Notifikasi Baru', notification.message || '', notification.type || 'info');
-            }
-            
-            // Animate Bell
-            const bellIcon = document.querySelector('.dropdown-notifications > a > i.bx-bell');
-            if(bellIcon) {
-                bellIcon.classList.add('bx-tada');
-                setTimeout(() => { bellIcon.classList.remove('bx-tada'); }, 2000);
-            }
-          });
-      }
-    </script>
     <style>
       @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
       .bx-tada { animation: bx-tada 1s ease infinite; }
@@ -340,6 +344,7 @@
       }
     </style>
 
+    @vite(['resources/js/app.js'])
     @yield('page-js')
   </body>
 </html>

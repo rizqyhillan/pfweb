@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
+    public function index()
+    {
+        $notifications = Auth::user()->notifications()->paginate(15);
+        return view('notifications.index', compact('notifications'));
+    }
+
     public function markAsRead(Request $request, $id)
     {
         $notification = Auth::user()->notifications()->findOrFail($id);
