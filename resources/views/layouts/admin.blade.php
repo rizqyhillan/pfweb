@@ -223,8 +223,121 @@
           }
       };
     </script>
+    <script>
+      // Mark specific notification as read
+      function markNotificationAsRead(id) {
+        fetch(`/notifications/${id}/read`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          }
+        }).then(response => {
+          if(response.ok) {
+            document.getElementById(`notif-${id}`).remove();
+            updateNotificationCount(-1);
+          }
+        });
+      }
+
+      // Mark all notifications as read
+      function markAllNotificationsAsRead() {
+        fetch(`/notifications/read-all`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          }
+        }).then(response => {
+          if(response.ok) {
+            document.getElementById('notification-list').innerHTML = '<li class="list-group-item text-center text-muted py-4" id="empty-notif">Tidak ada notifikasi baru.</li>';
+            updateNotificationCount('clear');
+          }
+        });
+      }
+
+      // Update badge count
+      function updateNotificationCount(change) {
+        const badge = document.querySelector('.badge-notifications');
+        if(!badge && change > 0) {
+          // Create badge if it doesn't exist
+          const bell = document.querySelector('.dropdown-notifications > a');
+          const newBadge = document.createElement('span');
+          newBadge.className = 'badge bg-danger rounded-pill badge-notifications';
+          newBadge.innerText = change;
+          bell.appendChild(newBadge);
+        } else if (badge) {
+          let currentCount = parseInt(badge.innerText);
+          if(change === 'clear') {
+            badge.remove();
+          } else {
+            currentCount += change;
+            if(currentCount <= 0) {
+              badge.remove();
+            } else {
+              badge.innerText = currentCount;
+            }
+          }
+        }
+      }
+
+    </script>
+    <script type="module">
+      // Listen for Reverb Notifications
+      const userId = '{{ auth()->id() }}';
+      if (window.Echo) {
+        window.Echo.private('App.Models.User.' + userId)
+          .notification((notification) => {
+            // Add to top of list
+            const list = document.getElementById('notification-list');
+            const empty = document.getElementById('empty-notif');
+            if(empty) empty.remove();
+
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action dropdown-notifications-item';
+            li.id = `notif-${notification.id}`;
+            li.innerHTML = `
+              <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                  <div class="avatar">
+                    <span class="avatar-initial rounded-circle bg-label-${notification.type || 'primary'}"><i class="bx bx-info-circle"></i></span>
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">${notification.title || 'Info'}</h6>
+                  <p class="mb-0">${notification.message || ''}</p>
+                  <small class="text-muted">Baru saja</small>
+                </div>
+                <div class="flex-shrink-0 dropdown-notifications-actions">
+                  <a href="javascript:void(0)" class="dropdown-notifications-read" onclick="markNotificationAsRead('${notification.id}')"><span class="badge badge-dot"></span></a>
+                </div>
+              </div>
+            `;
+            list.insertBefore(li, list.firstChild);
+            updateNotificationCount(1);
+            
+            // Show Toast
+            if(window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
+                window.PawPetRealtime.showToast(notification.title || 'Notifikasi Baru', notification.message || '', notification.type || 'info');
+            }
+            
+            // Animate Bell
+            const bellIcon = document.querySelector('.dropdown-notifications > a > i.bx-bell');
+            if(bellIcon) {
+                bellIcon.classList.add('bx-tada');
+                setTimeout(() => { bellIcon.classList.remove('bx-tada'); }, 2000);
+            }
+          });
+      }
+    </script>
     <style>
       @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      .bx-tada { animation: bx-tada 1s ease infinite; }
+      @keyframes bx-tada {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+        20%, 40%, 60%, 80% { transform: rotate(10deg); }
+      }
     </style>
 
     @yield('page-js')

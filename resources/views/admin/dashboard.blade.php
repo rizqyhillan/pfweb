@@ -14,7 +14,7 @@
         <div class="d-flex align-items-start row">
           <div class="col-sm-7">
             <div class="card-body">
-              <h5 class="card-title text-primary mb-3">Selamat Datang, {{ Auth::user()->name }}! 🐾</h5>
+              <h5 class="card-title text-primary mb-3">Selamat Datang, {{ Auth::user()->nama }}! 🐾</h5>
               <p class="mb-6">
                 Dashboard admin klinik hewan Anda.<br />Kelola pasien, layanan, dan transaksi dari sini.
               </p>
@@ -153,19 +153,19 @@
               <tbody class="table-border-bottom-0">
                 @forelse($recentTransactions as $trx)
                   <tr>
-                    <td><strong>{{ $trx->transaction_code }}</strong></td>
-                    <td>{{ $trx->customer->name ?? '-' }}</td>
+                    <td><strong>{{ $trx->kode_transaksi }}</strong></td>
+                    <td>{{ $trx->pelanggan->nama ?? '-' }}</td>
                     <td>Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
                     <td>
-                      @if($trx->status === 'paid')
-                        <span class="badge bg-label-success">Paid</span>
+                      @if($trx->status === 'lunas')
+                        <span class="badge bg-label-success">Lunas</span>
                       @elseif($trx->status === 'pending')
                         <span class="badge bg-label-warning">Pending</span>
                       @else
-                        <span class="badge bg-label-danger">Cancelled</span>
+                        <span class="badge bg-label-danger">Batal</span>
                       @endif
                     </td>
-                    <td>{{ $trx->date ? $trx->date->format('d/m/Y') : '-' }}</td>
+                    <td>{{ $trx->tanggal ? $trx->tanggal->format('d/m/Y') : '-' }}</td>
                   </tr>
                 @empty
                   <tr>
@@ -194,12 +194,12 @@
                 </div>
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                   <div class="me-2">
-                    <h6 class="mb-0">{{ $record->pet->name ?? '-' }}</h6>
+                    <h6 class="mb-0">{{ $record->hewan->nama_hewan ?? '-' }}</h6>
                     <small
-                      class="text-body-secondary">{{ Str::limit($record->diagnosis ?? 'Belum ada diagnosis', 30) }}</small>
+                      class="text-body-secondary">{{ Str::limit($record->diagnosa ?? 'Belum ada diagnosis', 30) }}</small>
                   </div>
                   <div class="user-progress">
-                    <small class="text-body-secondary">{{ $record->date ? $record->date->format('d/m/Y') : '-' }}</small>
+                    <small class="text-body-secondary">{{ $record->tanggal ? $record->tanggal->format('d/m/Y') : '-' }}</small>
                   </div>
                 </div>
               </li>

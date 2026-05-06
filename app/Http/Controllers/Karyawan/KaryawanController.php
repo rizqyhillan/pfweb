@@ -190,6 +190,15 @@ class KaryawanController extends Controller
 
             try {
                 event(new TransactionCreatedRealtime($trx->fresh(['pelanggan', 'kasir'])));
+                
+                // Notify Admins
+                $admins = \App\Models\User::where('role', 'admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemNotification(
+                    'Transaksi Baru',
+                    "Karyawan {$trx->kasir->nama} mencatat transaksi {$trx->kode_transaksi} sebesar Rp " . number_format($trx->total, 0, ',', '.'),
+                    'success',
+                    route('admin.transactions.show', $trx->id)
+                ));
             } catch (\Exception $e) {
                 Log::warning('Broadcast failed: '.$e->getMessage());
             }
