@@ -19,6 +19,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+// use Illuminate\Support\Facades\Mail;
 
 // Dynamic Pages (using Controller)
 Route::controller(PageController::class)->group(function () {
@@ -164,3 +165,13 @@ require __DIR__.'/auth.php';
 Route::fallback(function () {
     return response()->view('pages.404', [], 404);
 });
+
+// Route::get('/test-email', function () {
+
+//     Mail::raw('EMAILNYA BISA NJIR KLASJFKLJSDALFKJ', function ($message) {
+//         $message->to('aslanalfarizy97@gmail.com')
+//                 ->subject('Test Email PawPet');
+//     });
+
+//     return 'Email berhasil dikirim';
+// });

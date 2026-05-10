@@ -14,6 +14,9 @@ Route::get('/test', function () {
 });
 
 Route::post('/login', [MobileAuthController::class, 'login']);
+Route::post('/register', [MobileAuthController::class, 'register']);
+Route::post('/send-otp', [MobileAuthController::class, 'sendOtp']);
+Route::post('/verify-otp', [MobileAuthController::class, 'verifyOtpAndRegister']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
