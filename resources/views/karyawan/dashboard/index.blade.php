@@ -5,9 +5,9 @@
 @section('content')
 <div class="row">
   <!-- Welcome Card -->
-  <div class="col-xxl-8 mb-6 order-0">
-    <div class="card">
-      <div class="d-flex align-items-start row">
+  <div class="col-lg-8 mb-6 order-0">
+    <div class="card h-100">
+      <div class="d-flex align-items-start row h-100">
         <div class="col-sm-7">
           <div class="card-body">
             <h5 class="card-title text-primary mb-3">Selamat Datang, {{ Auth::user()->nama }}! 👋</h5>
@@ -27,9 +27,9 @@
   </div>
 
   <!-- Stats -->
-  <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
-    <div class="row">
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
+  <div class="col-lg-4 mb-6 order-1">
+    <div class="row h-100">
+      <div class="col-6 mb-6 mb-lg-0">
         <div class="card h-100">
           <div class="card-body">
             <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -37,12 +37,12 @@
                 <span class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-package icon-md"></i></span>
               </div>
             </div>
-            <p class="mb-1">Produk Aktif</p>
+            <p class="mb-1 text-truncate">Produk Aktif</p>
             <h4 class="card-title mb-3">{{ number_format($totalProducts) }}</h4>
           </div>
         </div>
       </div>
-      <div class="col-lg-6 col-md-12 col-6 mb-6">
+      <div class="col-6 mb-6 mb-lg-0">
         <div class="card h-100">
           <div class="card-body">
             <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -50,7 +50,7 @@
                 <span class="avatar-initial rounded bg-label-success"><i class="icon-base bx bx-first-aid icon-md"></i></span>
               </div>
             </div>
-            <p class="mb-1">Layanan Aktif</p>
+            <p class="mb-1 text-truncate">Layanan Aktif</p>
             <h4 class="card-title mb-3">{{ number_format($totalServices) }}</h4>
           </div>
         </div>
@@ -61,9 +61,9 @@
 
 <div class="row">
   <!-- More Stats -->
-  <div class="col-12 col-md-8 col-lg-12 col-xxl-4 order-3 order-md-2">
-    <div class="row">
-      <div class="col-6 mb-6">
+  <div class="col-lg-4 mb-6 order-2">
+    <div class="row h-100">
+      <div class="col-6 mb-6 mb-lg-0">
         <div class="card h-100">
           <div class="card-body">
             <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -71,12 +71,12 @@
                 <span class="avatar-initial rounded bg-label-info"><i class="icon-base bx bx-receipt icon-md"></i></span>
               </div>
             </div>
-            <p class="mb-1">Transaksi Hari Ini</p>
+            <p class="mb-1 text-truncate">Transaksi Hari Ini</p>
             <h4 class="card-title mb-3">{{ number_format($todayTransactions) }}</h4>
           </div>
         </div>
       </div>
-      <div class="col-6 mb-6">
+      <div class="col-6 mb-6 mb-lg-0">
         <div class="card h-100">
           <div class="card-body">
             <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -84,7 +84,7 @@
                 <span class="avatar-initial rounded bg-label-warning"><i class="icon-base bx bx-money icon-md"></i></span>
               </div>
             </div>
-            <p class="mb-1">Pendapatan Hari Ini</p>
+            <p class="mb-1 text-truncate">Pendapatan Hari Ini</p>
             <h4 class="card-title mb-3">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</h4>
           </div>
         </div>
@@ -93,7 +93,7 @@
   </div>
 
   <!-- Recent Transactions -->
-  <div class="col-md-12 col-lg-8 order-2 mb-6">
+  <div class="col-lg-8 mb-6 order-3">
     <div class="card h-100">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h5 class="card-title m-0 me-2">Transaksi Terakhir</h5>

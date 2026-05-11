@@ -126,16 +126,25 @@
         .illust-content {
             position: relative; z-index: 2;
             text-align: center; color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
 
         .pet-illustration {
             margin: 0 auto 2rem;
             animation: petBounce 3s ease-in-out infinite;
+            display: flex; align-items: center; justify-content: center;
         }
         .illust-logo {
-            width: 240px; height: auto;
+            width: 220px; height: auto;
             object-fit: contain;
-            filter: drop-shadow(0 6px 25px rgba(255,255,255,0.6));
+            border-radius: 16px;
+            filter: drop-shadow(0 8px 25px rgba(255,255,255,0.5));
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .illust-logo:hover {
+            transform: scale(1.06);
+            filter: drop-shadow(0 12px 35px rgba(255,255,255,0.7));
         }
         @keyframes petBounce {
             0%, 100% { transform: translateY(0); }

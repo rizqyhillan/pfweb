@@ -35,9 +35,13 @@ class DashboardController extends Controller
             ->where('tanggal_expired', '<=', Carbon::now()->addDays(30))
             ->orderBy('tanggal_expired')->take(5)->get();
 
+        $todayRevenue = Transaction::whereDate('tanggal', Carbon::today())
+            ->where('status', 'lunas')
+            ->sum('total');
+
         return view('admin.dashboard', compact(
             'totalPets', 'totalProducts', 'totalServices', 'totalUsers', 'totalSuppliers',
-            'activeBoarding', 'todayTransactions', 'monthlyRevenue',
+            'activeBoarding', 'todayTransactions', 'monthlyRevenue', 'todayRevenue',
             'recentTransactions', 'recentMedicalRecords', 'lowStockProducts', 'nearExpiredBatches'
         ));
     }

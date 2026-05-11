@@ -7,12 +7,12 @@
 @endsection
 
 @section('content')
-  <div class="row">
-    <!-- Welcome Card -->
-    <div class="col-xxl-8 mb-6 order-0">
-      <div class="card">
-        <div class="d-flex align-items-start row">
-          <div class="col-sm-7">
+  <!-- Welcome Row -->
+  <div class="row mb-6">
+    <div class="col-12">
+      <div class="card h-100">
+        <div class="d-flex align-items-end row m-0">
+          <div class="col-sm-8">
             <div class="card-body">
               <h5 class="card-title text-primary mb-3">Selamat Datang, {{ Auth::user()->nama }}! 🐾</h5>
               <p class="mb-6">
@@ -21,107 +21,141 @@
               <a href="{{ route('admin.pets.index') }}" class="btn btn-sm btn-outline-primary">Lihat Data Hewan</a>
             </div>
           </div>
-          <div class="col-sm-5 text-center text-sm-left">
+          <div class="col-sm-4 text-center text-sm-end">
             <div class="card-body pb-0 px-0 px-md-6">
               <img src="{{ asset('admin-assets/img/illustrations/man-with-laptop.png') }}" height="175"
-                alt="View Badge User" />
+                alt="View Badge User" style="object-fit: contain;" />
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Stats Cards -->
-    <div class="col-xxl-4 col-lg-12 col-md-4 order-1">
-      <div class="row">
-        <div class="col-lg-6 col-md-12 col-6 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <img src="{{ asset('admin-assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
-                    class="rounded" />
-                </div>
-              </div>
-              <p class="mb-1">Total Hewan</p>
-              <h4 class="card-title mb-3">{{ number_format($totalPets) }}</h4>
-              <small class="text-success fw-medium"><i class="icon-base bx bx-check-circle"></i> Terdaftar</small>
+  <!-- Primary Stats Row (Financials & Key Activities) -->
+  <div class="row mb-6">
+    <!-- Pendapatan Hari Ini -->
+    <div class="col-lg-3 col-sm-6 mb-6 mb-lg-0">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="card-title d-flex align-items-start justify-content-between mb-4">
+            <div class="avatar flex-shrink-0">
+              <span class="avatar-initial rounded bg-label-warning"><i class="icon-base bx bx-money icon-md"></i></span>
             </div>
           </div>
-        </div>
-        <div class="col-lg-6 col-md-12 col-6 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <img src="{{ asset('admin-assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
-                    class="rounded" />
-                </div>
-              </div>
-              <p class="mb-1">Transaksi Hari Ini</p>
-              <h4 class="card-title mb-3">{{ number_format($todayTransactions) }}</h4>
-              <small class="text-info fw-medium"><i class="icon-base bx bx-receipt"></i> Hari ini</small>
-            </div>
-          </div>
+          <p class="mb-1 text-truncate">Pendapatan Hari Ini</p>
+          <h4 class="card-title mb-3">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</h4>
+          <small class="text-warning fw-medium"><i class="icon-base bx bx-trending-up"></i> Pemasukan Kas</small>
         </div>
       </div>
     </div>
 
-    <!-- More Stats -->
-    <div class="col-12 col-md-8 col-lg-12 col-xxl-4 order-3 order-md-2">
+    <!-- Pendapatan Bulan Ini -->
+    <div class="col-lg-3 col-sm-6 mb-6 mb-lg-0">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="card-title d-flex align-items-start justify-content-between mb-4">
+            <div class="avatar flex-shrink-0">
+              <span class="avatar-initial rounded bg-label-primary"><i class="icon-base bx bx-wallet icon-md"></i></span>
+            </div>
+          </div>
+          <p class="mb-1 text-truncate">Pendapatan Bulan Ini</p>
+          <h4 class="card-title mb-3">Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</h4>
+          <small class="text-primary fw-medium"><i class="icon-base bx bx-calendar"></i> Total Bulan Ini</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaksi Hari Ini -->
+    <div class="col-lg-3 col-sm-6 mb-6 mb-lg-0">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="card-title d-flex align-items-start justify-content-between mb-4">
+            <div class="avatar flex-shrink-0">
+              <img src="{{ asset('admin-assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info" class="rounded" />
+            </div>
+          </div>
+          <p class="mb-1 text-truncate">Transaksi Hari Ini</p>
+          <h4 class="card-title mb-3">{{ number_format($todayTransactions) }}</h4>
+          <small class="text-info fw-medium"><i class="icon-base bx bx-receipt"></i> Order Masuk</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Hewan -->
+    <div class="col-lg-3 col-sm-6 mb-6 mb-lg-0">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="card-title d-flex align-items-start justify-content-between mb-4">
+            <div class="avatar flex-shrink-0">
+              <img src="{{ asset('admin-assets/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded" />
+            </div>
+          </div>
+          <p class="mb-1 text-truncate">Total Hewan (Pasien)</p>
+          <h4 class="card-title mb-3">{{ number_format($totalPets) }}</h4>
+          <small class="text-success fw-medium"><i class="icon-base bx bx-check-circle"></i> Terdaftar</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Stats Row (Entity Information) -->
+  <div class="row">
+    <div class="col-12 mb-6">
       <div class="row">
-        <div class="col-6 mb-6">
+        <!-- Total Users -->
+        <div class="col-sm-6 col-lg-3 mb-6">
           <div class="card h-100">
             <div class="card-body">
               <div class="card-title d-flex align-items-start justify-content-between mb-4">
                 <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-primary"><i
-                      class="icon-base bx bx-money icon-md"></i></span>
+                  <span class="avatar-initial rounded bg-label-info"><i class="icon-base bx bx-user icon-md"></i></span>
                 </div>
               </div>
-              <p class="mb-1">Pendapatan Bulan Ini</p>
-              <h4 class="card-title mb-3">Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</h4>
+              <p class="mb-1 text-truncate">Total Pengguna</p>
+              <h4 class="card-title mb-3">{{ number_format($totalUsers) }}</h4>
+              <small class="text-info fw-medium"><i class="icon-base bx bx-group"></i> Sistem</small>
             </div>
           </div>
         </div>
-        <div class="col-6 mb-6">
+
+        <div class="col-sm-6 col-lg-3 mb-6">
           <div class="card h-100">
             <div class="card-body">
               <div class="card-title d-flex align-items-start justify-content-between mb-4">
                 <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-warning"><i
-                      class="icon-base bx bx-hotel icon-md"></i></span>
+                  <span class="avatar-initial rounded bg-label-warning"><i class="icon-base bx bx-hotel icon-md"></i></span>
                 </div>
               </div>
-              <p class="mb-1">Boarding Aktif</p>
+              <p class="mb-1 text-truncate">Boarding Aktif</p>
               <h4 class="card-title mb-3">{{ number_format($activeBoarding) }}</h4>
             </div>
           </div>
         </div>
-        <div class="col-6 mb-6">
+
+        <div class="col-sm-6 col-lg-3 mb-6">
           <div class="card h-100">
             <div class="card-body">
               <div class="card-title d-flex align-items-start justify-content-between mb-4">
                 <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-success"><i
-                      class="icon-base bx bx-package icon-md"></i></span>
+                  <span class="avatar-initial rounded bg-label-success"><i class="icon-base bx bx-package icon-md"></i></span>
                 </div>
               </div>
-              <p class="mb-1">Total Produk</p>
+              <p class="mb-1 text-truncate">Total Produk</p>
               <h4 class="card-title mb-3">{{ number_format($totalProducts) }}</h4>
             </div>
           </div>
         </div>
-        <div class="col-6 mb-6">
+
+        <div class="col-sm-6 col-lg-3 mb-6">
           <div class="card h-100">
             <div class="card-body">
               <div class="card-title d-flex align-items-start justify-content-between mb-4">
                 <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-danger"><i
-                      class="icon-base bx bx-first-aid icon-md"></i></span>
+                  <span class="avatar-initial rounded bg-label-danger"><i class="icon-base bx bx-first-aid icon-md"></i></span>
                 </div>
               </div>
-              <p class="mb-1">Layanan Aktif</p>
+              <p class="mb-1 text-truncate">Layanan Aktif</p>
               <h4 class="card-title mb-3">{{ number_format($totalServices) }}</h4>
             </div>
           </div>
@@ -132,7 +166,7 @@
 
   <div class="row">
     <!-- Recent Transactions -->
-    <div class="col-md-6 col-lg-8 order-2 mb-6">
+    <div class="col-lg-8 mb-6">
       <div class="card h-100">
         <div class="card-header d-flex align-items-center justify-content-between">
           <h5 class="card-title m-0 me-2">Transaksi Terakhir</h5>
@@ -180,7 +214,7 @@
     </div>
 
     <!-- Recent Medical Records -->
-    <div class="col-md-6 col-lg-4 order-3 mb-6">
+    <div class="col-lg-4 mb-6">
       <div class="card h-100">
         <div class="card-header d-flex align-items-center justify-content-between">
           <h5 class="card-title m-0 me-2">Rekam Medis Terakhir</h5>
@@ -212,21 +246,67 @@
     </div>
   </div>
 
-  <!-- Quick Info Row -->
   <div class="row">
-    <div class="col-12 mb-6">
-      <div class="card">
+    <!-- Low Stock Products -->
+    <div class="col-lg-6 mb-6">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h5 class="card-title m-0 me-2 text-warning"><i class="bx bx-error-circle me-2"></i>Peringatan Stok Rendah</h5>
+          <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-outline-warning">Kelola Produk</a>
+        </div>
         <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-3">
-              <span class="avatar-initial rounded bg-label-info p-2"><i class="icon-base bx bx-user icon-md"></i></span>
-              <div>
-                <h6 class="mb-0">Total Users</h6>
-                <small class="text-body-secondary">{{ $totalUsers }} pengguna terdaftar</small>
-              </div>
-            </div>
-            <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-info">Kelola Users</a>
-          </div>
+          <ul class="p-0 m-0">
+            @forelse($lowStockProducts as $product)
+              <li class="d-flex align-items-center justify-content-between mb-4 pb-1">
+                <div class="d-flex align-items-center">
+                  <div class="avatar flex-shrink-0 me-3">
+                    <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-package"></i></span>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <span class="fw-medium">{{ $product->nama_barang }}</span>
+                    <small class="text-muted">{{ $product->kategori->nama_kategori ?? 'Umum' }}</small>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="badge bg-label-danger">{{ $product->stok }} tersisa</span>
+                </div>
+              </li>
+            @empty
+              <li class="text-center text-muted">Semua stok produk dalam kondisi aman.</li>
+            @endforelse
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Near Expired Batches -->
+    <div class="col-lg-6 mb-6">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <h5 class="card-title m-0 me-2 text-danger"><i class="bx bx-calendar-exclamation me-2"></i>Hampir Kedaluwarsa</h5>
+        </div>
+        <div class="card-body">
+          <ul class="p-0 m-0">
+            @forelse($nearExpiredBatches as $batch)
+              <li class="d-flex align-items-center justify-content-between mb-4 pb-1">
+                <div class="d-flex align-items-center">
+                  <div class="avatar flex-shrink-0 me-3">
+                    <span class="avatar-initial rounded bg-label-danger"><i class="bx bx-calendar-x"></i></span>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <span class="fw-medium">{{ $batch->barang->nama_barang ?? 'Produk Dihapus' }}</span>
+                    <small class="text-muted">Batch: {{ $batch->kode_batch }} | Sisa: {{ $batch->sisa_stok }}</small>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <small class="text-danger fw-bold d-block">{{ \Carbon\Carbon::parse($batch->tanggal_expired)->diffForHumans() }}</small>
+                  <small class="text-muted">{{ \Carbon\Carbon::parse($batch->tanggal_expired)->format('d/m/Y') }}</small>
+                </div>
+              </li>
+            @empty
+              <li class="text-center text-muted">Tidak ada produk yang mendekati masa kedaluwarsa.</li>
+            @endforelse
+          </ul>
         </div>
       </div>
     </div>
