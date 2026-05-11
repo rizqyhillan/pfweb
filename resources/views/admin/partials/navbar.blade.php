@@ -44,6 +44,12 @@
                             if($type == 'warning') $icon = 'bx-error';
                             if($type == 'danger') $icon = 'bx-x-circle';
                             $url = $notification->data['url'] ?? '#';
+                            if ($url !== '#' && filter_var($url, FILTER_VALIDATE_URL)) {
+                                $parsed = parse_url($url);
+                                $path = $parsed['path'] ?? '';
+                                $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+                                $url = url($path . $query);
+                            }
                         @endphp
                         <span class="avatar-initial rounded-circle bg-label-{{ $type }}"><i class="bx {{ $icon }}"></i></span>
                       </div>

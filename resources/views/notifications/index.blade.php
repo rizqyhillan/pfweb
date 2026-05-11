@@ -7,49 +7,94 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Riwayat Notifikasi</h5>
-        <button class="btn btn-sm btn-outline-primary" onclick="window.markAllNotificationsAsRead(); setTimeout(() => location.reload(), 500);">
-            Tandai Semua Dibaca
+        <button class="btn btn-primary" onclick="window.markAllNotificationsAsRead(); setTimeout(() => location.reload(), 500);">
+            <i class="bx bx-check-double me-1"></i> Tandai Semua Dibaca
         </button>
       </div>
-      <div class="card-body p-0">
-        <div class="list-group list-group-flush">
-          @forelse($notifications as $notif)
-            @php
-                $icon = 'bx-info-circle';
-                $type = $notif->data['type'] ?? 'primary';
-                if($type == 'success') $icon = 'bx-check-circle';
-                if($type == 'warning') $icon = 'bx-error';
-                if($type == 'danger') $icon = 'bx-x-circle';
-                $url = $notif->data['url'] ?? '#';
-            @endphp
-            <a href="{{ $url !== '#' ? $url : 'javascript:void(0)' }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start p-4 {{ is_null($notif->read_at) ? 'bg-lighter border-start border-3 border-primary' : '' }}" @if(is_null($notif->read_at)) onclick="window.markNotificationAsRead('{{ $notif->id }}')" @endif>
-              <div class="d-flex align-items-start w-100">
-                <div class="flex-shrink-0 me-3 mt-1">
-                    <span class="avatar-initial rounded-circle bg-label-{{ $type }} p-2"><i class="bx {{ $icon }} fs-4"></i></span>
-                </div>
-                <div class="flex-grow-1 w-100">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1 fw-bold text-dark">{{ $notif->data['title'] ?? 'Info' }}</h6>
-                    <small class="text-muted"><i class="bx bx-time-five me-1"></i>{{ $notif->created_at->diffForHumans() }}</small>
-                  </div>
-                  <p class="mb-0 text-secondary">{{ $notif->data['message'] ?? '' }}</p>
-                </div>
-              </div>
-            </a>
-          @empty
-            <div class="text-center py-5">
-              <i class="bx bx-bell-off fs-1 text-muted mb-3"></i>
-              <h5>Tidak ada notifikasi</h5>
-              <p class="text-muted">Anda belum menerima notifikasi apapun sejauh ini.</p>
-            </div>
-          @endforelse
+      <div class="card-body">
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Judul</th>
+                <th>Pesan</th>
+                <th>Status</th>
+                <th>Waktu</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              @forelse($notifications as $notif)
+                @php
+                    $icon = 'bx-info-circle';
+                    $type = $notif->data['type'] ?? 'primary';
+                    if($type == 'success') $icon = 'bx-check-circle';
+                    if($type == 'warning') $icon = 'bx-error';
+                    if($type == 'danger') $icon = 'bx-x-circle';
+                    $url = $notif->data['url'] ?? '#';
+                    if ($url !== '#' && filter_var($url, FILTER_VALIDATE_URL)) {
+                        $parsed = parse_url($url);
+                        $path = $parsed['path'] ?? '';
+                        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+                        $url = url($path . $query);
+                    }
+                    $isUnread = is_null($notif->read_at);
+                @endphp
+                <tr class="{{ $isUnread ? 'table-active' : '' }}">
+                  <td>{{ $loop->iteration + $notifications->firstItem() - 1 }}</td>
+                  <td>
+                    <span class="text-{{ $type }} me-1"><i class="bx {{ $icon }}"></i></span>
+                    <strong>{{ $notif->data['title'] ?? 'Info' }}</strong>
+                  </td>
+                  <td>
+                      <span class="d-inline-block text-truncate" style="max-width: 300px;">
+                          {{ $notif->data['message'] ?? '' }}
+                      </span>
+                  </td>
+                  <td>
+                    @if($isUnread)
+                      <span class="badge bg-label-primary">Baru</span>
+                    @else
+                      <span class="badge bg-label-secondary">Dibaca</span>
+                    @endif
+                  </td>
+                  <td>
+                      {{ $notif->created_at->format('d/m/Y H:i') }}
+                      <br>
+                      <small class="text-muted">{{ $notif->created_at->diffForHumans() }}</small>
+                  </td>
+                  <td>
+                    @if($url !== '#')
+                      <a href="{{ $url }}" class="btn btn-sm btn-icon btn-info" title="Lihat Detail" @if($isUnread) onclick="window.markNotificationAsRead('{{ $notif->id }}')" @endif>
+                        <i class="bx bx-link-external"></i>
+                      </a>
+                    @endif
+                    @if($isUnread)
+                      <button type="button" class="btn btn-sm btn-icon btn-success" title="Tandai Dibaca" onclick="window.markNotificationAsRead('{{ $notif->id }}'); setTimeout(() => location.reload(), 300);">
+                        <i class="bx bx-check"></i>
+                      </button>
+                    @endif
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                      <i class="bx bx-bell-off fs-1 text-muted mb-2"></i>
+                      <p class="mb-0">Belum ada data notifikasi.</p>
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
         </div>
+
+        @if($notifications->hasPages())
+          <div class="mt-4">
+            {{ $notifications->links('pagination::bootstrap-5') }}
+          </div>
+        @endif
       </div>
-      @if($notifications->hasPages())
-      <div class="card-footer border-top pt-3 pb-0 d-flex justify-content-center">
-        {{ $notifications->links() }}
-      </div>
-      @endif
     </div>
   </div>
 </div>

@@ -27,6 +27,26 @@ function setupNotificationListener() {
         .listen('.new-notification', (data) => {
             console.log('[PawPet] Real-time notification received:', data);
 
+            const escapeHtml = (unsafe) => {
+                return (unsafe || '').toString()
+                     .replace(/&/g, "&amp;")
+                     .replace(/</g, "&lt;")
+                     .replace(/>/g, "&gt;")
+                     .replace(/"/g, "&quot;")
+                     .replace(/'/g, "&#039;");
+            };
+
+            const sanitizeUrl = (url) => {
+                if (!url || url === '#') return '#';
+                if (url.trim().toLowerCase().startsWith('javascript:')) return '#';
+                return escapeHtml(url);
+            };
+
+            const safeTitle = escapeHtml(data.title || 'Info');
+            const safeMessage = escapeHtml(data.message || '');
+            const safeUrl = sanitizeUrl(data.url);
+            const safeType = escapeHtml(data.type || 'info');
+
             // Add to top of notification dropdown list
             const list = document.getElementById('notification-list');
             const empty = document.getElementById('empty-notif');
@@ -46,14 +66,14 @@ function setupNotificationListener() {
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-sm">
-                                <span class="avatar-initial rounded-circle bg-label-${data.type || 'primary'}"><i class="bx ${icon}"></i></span>
+                                <span class="avatar-initial rounded-circle bg-label-${safeType}"><i class="bx ${icon}"></i></span>
                             </div>
                         </div>
-                        <a href="${data.url || '#'}" class="flex-grow-1 text-decoration-none text-body" style="min-width: 0;" ${data.url ? 'onclick="window.markNotificationAsRead(\\'live-' + Date.now() + '\\')"' : ''}>
-                            <h6 class="mb-1 text-truncate fw-bold">${data.title || 'Info'}
+                        <a href="${safeUrl}" class="flex-grow-1 text-decoration-none text-body" style="min-width: 0;" ${data.url ? `onclick="window.markNotificationAsRead('live-${Date.now()}')"` : ''}>
+                            <h6 class="mb-1 text-truncate fw-bold">${safeTitle}
                                 <span class="badge badge-dot bg-primary ms-1"></span>
                             </h6>
-                            <p class="mb-1 text-muted" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${data.message || ''}</p>
+                            <p class="mb-1 text-muted" style="font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${safeMessage}</p>
                             <small class="text-muted d-block" style="font-size: 0.75rem;"><i class="bx bx-time-five me-1"></i>Baru saja</small>
                         </a>
                         <div class="flex-shrink-0 dropdown-notifications-actions ms-2 d-flex flex-column align-items-end">
@@ -74,10 +94,10 @@ function setupNotificationListener() {
             // Show Toast pop-up
             if (window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
                 window.PawPetRealtime.showToast(
-                    data.title || 'Notifikasi Baru',
-                    data.message || '',
-                    data.type || 'info',
-                    data.url || '#'
+                    safeTitle,
+                    safeMessage,
+                    safeType,
+                    safeUrl
                 );
             }
 
