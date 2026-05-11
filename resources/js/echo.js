@@ -112,3 +112,49 @@ function setupNotificationListener() {
 
 // Run immediately since @vite is at the bottom of body
 setupNotificationListener();
+
+// Global listener for Transactions channel — toast on ALL pages
+function setupTransactionListener() {
+    if (!window.Echo) return;
+
+    window.Echo.channel('transactions')
+        .listen('.new-transaction', (e) => {
+            console.log('[PawPet] Global transaction event received:', e);
+            let trx = e.transaction;
+            let totalFormat = new Intl.NumberFormat('id-ID').format(trx.total);
+            let kasirName = trx.kasir ? trx.kasir.nama : 'Kasir';
+
+            if (window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
+                window.PawPetRealtime.showToast(
+                    '🧾 Transaksi Baru!',
+                    `${trx.kode_transaksi} oleh ${kasirName} — Rp ${totalFormat}`,
+                    'success'
+                );
+            }
+        });
+}
+
+// Global listener for Boardings channel — toast on ALL pages
+function setupBoardingListener() {
+    if (!window.Echo) return;
+
+    window.Echo.channel('boardings')
+        .listen('.new-boarding', (e) => {
+            console.log('[PawPet] Global boarding event received:', e);
+            let b = e.boarding;
+            let biayaFormat = new Intl.NumberFormat('id-ID').format(b.total_biaya);
+            let petName = b.hewan ? b.hewan.nama_hewan : 'Hewan';
+            let ownerName = (b.hewan && b.hewan.owner) ? b.hewan.owner.nama : '-';
+
+            if (window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
+                window.PawPetRealtime.showToast(
+                    '🐾 Boarding Baru!',
+                    `${petName} (${ownerName}) — Rp ${biayaFormat}`,
+                    'info'
+                );
+            }
+        });
+}
+
+setupTransactionListener();
+setupBoardingListener();

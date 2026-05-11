@@ -114,7 +114,6 @@
                   </tr>`;
 
                   tbody.insertAdjacentHTML('afterbegin', html);
-                  PawPetRealtime.showToast('🧾 Transaksi Baru!', `${trx.kode_transaksi} oleh ${trx.kasir ? trx.kasir.nama : 'Kasir'} — Rp ${totalFormat}`, 'success');
               });
       }
   });

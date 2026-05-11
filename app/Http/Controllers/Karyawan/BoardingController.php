@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Karyawan;
 
+use App\Events\BoardingCreatedRealtime;
 use App\Http\Controllers\Controller;
 use App\Mail\BoardingCreated;
 use App\Models\Boarding;
 use App\Models\Pet;
 use App\Models\Room;
+use App\Models\User;
+use App\Notifications\SystemNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 class BoardingController extends Controller
 {
@@ -58,6 +63,24 @@ class BoardingController extends Controller
             }
         } catch (\Exception $mailEx) {
             Log::error('Mail failed: '.$mailEx->getMessage());
+        }
+
+        // Broadcast real-time event & notify admins
+        try {
+            $boarding->load(['hewan.owner', 'kamar']);
+            event(new BoardingCreatedRealtime($boarding));
+
+            $karyawanName = Auth::user()->nama ?? 'Karyawan';
+            $petName = $boarding->hewan->nama_hewan ?? 'Hewan';
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new SystemNotification(
+                'Boarding Baru',
+                "Karyawan {$karyawanName} mencatat boarding untuk {$petName} — Rp ".number_format($v['total_biaya'], 0, ',', '.'),
+                'info',
+                route('admin.boardings.edit', $boarding->id)
+            ));
+        } catch (\Exception $e) {
+            Log::warning('Boarding broadcast failed: '.$e->getMessage());
         }
 
         return redirect()->route('karyawan.boardings.index')->with('success', 'Penitipan berhasil dibuat. Biaya: Rp '.number_format($v['total_biaya'], 0, ',', '.'));
