@@ -5,7 +5,18 @@ use Illuminate\Database\Eloquent\Model;
 class Pet extends Model
 {
     protected $table = 'hewan';
-    protected $fillable = ['id_pemilik', 'nama_hewan', 'jenis', 'ras', 'umur', 'berat', 'catatan'];
+    protected $fillable = [
+    'id_pemilik',
+    'nama_hewan',
+    'jenis',
+    'jenis_kelamin',
+    'tanggal_lahir',
+    'ras',
+    'umur',
+    'berat',
+    'catatan',
+    'foto',
+    ];
     protected $casts = ['berat' => 'decimal:2'];
 
     // Accessor agar $pet->name tetap jalan di view

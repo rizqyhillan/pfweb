@@ -137,4 +137,93 @@ class MobileAuthController extends Controller
         'user' => $user,
     ]);
     }
+
+    public function sendForgotPasswordOtp(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+    ]);
+
+    $otp = rand(1000, 9999);
+
+    Otp::updateOrCreate(
+        ['email' => $request->email],
+        [
+            'otp' => $otp,
+            'expired_at' => now()->addMinutes(5),
+        ]
+    );
+
+    Mail::raw("Kode OTP reset password PawPet kamu adalah: $otp", function ($message) use ($request) {
+        $message->to($request->email)
+                ->subject('Reset Password PawPet');
+    });
+
+    return response()->json([
+        'message' => 'OTP reset password berhasil dikirim'
+    ]);
+}
+
+public function verifyForgotPasswordOtp(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'otp' => 'required',
+    ]);
+
+    $otpData = Otp::where('email', $request->email)
+        ->where('otp', $request->otp)
+        ->first();
+
+    if (!$otpData) {
+        return response()->json([
+            'message' => 'OTP salah'
+        ], 400);
+    }
+
+    if (Carbon::now()->gt($otpData->expired_at)) {
+        return response()->json([
+            'message' => 'OTP sudah expired'
+        ], 400);
+    }
+
+    return response()->json([
+        'message' => 'OTP valid'
+    ]);
+}
+
+public function resetForgotPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'otp' => 'required',
+        'password' => 'required|min:6',
+    ]);
+
+    $otpData = Otp::where('email', $request->email)
+        ->where('otp', $request->otp)
+        ->first();
+
+    if (!$otpData) {
+        return response()->json([
+            'message' => 'OTP salah'
+        ], 400);
+    }
+
+    if (Carbon::now()->gt($otpData->expired_at)) {
+        return response()->json([
+            'message' => 'OTP sudah expired'
+        ], 400);
+    }
+
+    $user = User::where('email', $request->email)->first();
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    $otpData->delete();
+
+    return response()->json([
+        'message' => 'Password berhasil diubah'
+    ]);
+}
 }

@@ -97,7 +97,7 @@
           <div class="col-lg-6">
             <div class="hero-visual" data-aos="fade-left" data-aos-delay="400">
               <div class="main-image">
-                <img src="{{ asset('assets/pawpet/hero/wle.jpg') }}" alt="PawPet Care" class="img-fluid">
+                <img src="{{ asset('assets/pawpet/hero/banhom.jpg') }}" alt="PawPet Care" class="img-fluid">
                 <div class="floating-card appointment-card">
                   <div class="card-icon">
                     <i class="bi bi-calendar-check"></i>
