@@ -25,7 +25,7 @@
     </li>
 
     <!-- Pasien & Hewan -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Pasien & Hewan</span></li>
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Pasien Hewan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.pets.*') ? 'active' : '' }}">
       <a href="{{ route('admin.pets.index') }}" class="menu-link">
@@ -42,12 +42,33 @@
     </li>
 
     <!-- Dokter & Layanan -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Dokter & Layanan</span></li>
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Layanan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
       <a href="{{ route('admin.services.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-first-aid"></i>
         <div class="text-truncate">Layanan</div>
+      </a>
+    </li>
+
+    <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.rooms.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-door-open"></i>
+        <div class="text-truncate">Kamar</div>
+      </a>
+    </li>
+
+    <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.boardings.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-hotel"></i>
+        <div class="text-truncate">Penitipan</div>
+      </a>
+    </li>
+
+        <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.boardings.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-hotel"></i>
+        <div class="text-truncate">Layanan Dokter</div>
       </a>
     </li>
 
@@ -79,23 +100,6 @@
       <a href="{{ route('admin.stock-cards.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-transfer"></i>
         <div class="text-truncate">Kartu Stok</div>
-      </a>
-    </li>
-
-    <!-- Penitipan -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Penitipan Hewan</span></li>
-
-    <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.rooms.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-door-open"></i>
-        <div class="text-truncate">Kamar</div>
-      </a>
-    </li>
-
-    <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.boardings.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-hotel"></i>
-        <div class="text-truncate">Penitipan</div>
       </a>
     </li>
 
