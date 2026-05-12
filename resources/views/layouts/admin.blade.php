@@ -15,7 +15,7 @@
     <title>@yield('title', 'Dashboard') - {{ config('app.name', 'PawPet') }} {{ Auth::check() ? ucfirst(Auth::user()->role) : 'Admin' }}</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('admin-assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/jpeg" href="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

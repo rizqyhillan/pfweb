@@ -124,6 +124,9 @@ function setupTransactionListener() {
             let totalFormat = new Intl.NumberFormat('id-ID').format(trx.total);
             let kasirName = trx.kasir ? trx.kasir.nama : 'Kasir';
 
+            // We disable this toast because SystemNotification already triggers a toast via setupNotificationListener
+            // for Admins. If we leave this enabled, Admins will see the toast twice.
+            /*
             if (window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
                 window.PawPetRealtime.showToast(
                     '🧾 Transaksi Baru!',
@@ -131,6 +134,7 @@ function setupTransactionListener() {
                     'success'
                 );
             }
+            */
         });
 }
 
@@ -146,6 +150,9 @@ function setupBoardingListener() {
             let petName = b.hewan ? b.hewan.nama_hewan : 'Hewan';
             let ownerName = (b.hewan && b.hewan.owner) ? b.hewan.owner.nama : '-';
 
+            // We disable this toast because SystemNotification already triggers a toast via setupNotificationListener
+            // for Admins. If we leave this enabled, Admins will see the toast twice.
+            /*
             if (window.PawPetRealtime && typeof window.PawPetRealtime.showToast === 'function') {
                 window.PawPetRealtime.showToast(
                     '🐾 Boarding Baru!',
@@ -153,6 +160,7 @@ function setupBoardingListener() {
                     'info'
                 );
             }
+            */
         });
 }
 

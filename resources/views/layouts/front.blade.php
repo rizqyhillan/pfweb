@@ -13,8 +13,8 @@
   <meta name="author" content="@yield('meta_author', config('app.name'))">
 
   <!-- Favicons -->
-  <link rel="icon" href="{{ asset('assets/img/favicon.png') }}">
-  <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/jpeg" href="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}">
+  <link rel="apple-touch-icon" href="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
