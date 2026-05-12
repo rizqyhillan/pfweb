@@ -5,14 +5,37 @@
   <h4 class="mb-0">Data Kamar / Kandang</h4>
   <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Kamar</a>
 </div>
+
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bx bx-error-circle me-2"></i>
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
+@if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bx bx-check-circle me-2"></i>
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Tipe</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>#</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($rooms as $r)
     <tr>
       <td>{{ $loop->iteration + ($rooms->currentPage() - 1) * $rooms->perPage() }}</td>
       <td><strong>{{ $r->nama_kamar }}</strong></td>
-      <td><span class="badge bg-label-info">{{ ucfirst($r->tipe) }}</span></td>
+      <td>
+        @php
+          $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
+          $paketLabels = ['basic' => 'Basic', 'regular' => 'Regular', 'premium' => 'Premium'];
+        @endphp
+        <span class="badge bg-label-{{ $paketColors[$r->paket] ?? 'secondary' }}">{{ $paketLabels[$r->paket] ?? ucfirst($r->paket) }}</span>
+      </td>
       <td>Rp {{ number_format($r->harga_per_hari, 0, ',', '.') }}</td>
       <td>{{ $r->kapasitas }}</td>
       <td>
@@ -25,7 +48,13 @@
           <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{{ route('admin.rooms.edit', $r) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-            <form action="{{ route('admin.rooms.destroy', $r) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <form action="{{ route('admin.rooms.destroy', $r) }}" method="POST"
+              onsubmit="return confirm('Apakah Anda yakin ingin menghapus kamar \'{{ $r->nama_kamar }}\'?')">
+              @csrf @method('DELETE')
+              <button class="dropdown-item text-danger">
+                <i class="icon-base bx bx-trash me-1"></i> Hapus
+              </button>
+            </form>
           </div>
         </div>
       </td>

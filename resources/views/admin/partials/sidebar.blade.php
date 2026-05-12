@@ -6,7 +6,6 @@
       </span>
       <span class="app-brand-text demo menu-text fw-bold ms-2">PawPet</span>
     </a>
-
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
       <i class="bx bx-chevron-left d-block d-xl-none align-middle"></i>
     </a>
@@ -16,6 +15,7 @@
   <div class="menu-inner-shadow"></div>
 
   <ul class="menu-inner py-1">
+
     <!-- Dashboard -->
     <li class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
       <a href="{{ route('admin.dashboard') }}" class="menu-link">
@@ -24,7 +24,7 @@
       </a>
     </li>
 
-    <!-- Pasien & Hewan -->
+    <!-- Pasien Hewan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Pasien Hewan</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.pets.*') ? 'active' : '' }}">
@@ -41,35 +41,36 @@
       </a>
     </li>
 
-    <!-- Dokter & Layanan -->
-    <li class="menu-header small text-uppercase"><span class="menu-header-text">Layanan</span></li>
+    <!-- Layanan -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Booking</span></li>
 
     <li class="menu-item {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
       <a href="{{ route('admin.services.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-first-aid"></i>
-        <div class="text-truncate">Layanan</div>
+        <div class="text-truncate">Grooming</div>
       </a>
     </li>
 
-    <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.rooms.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-door-open"></i>
-        <div class="text-truncate">Kamar</div>
-      </a>
-    </li>
-
-    <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.boardings.index') }}" class="menu-link">
+    <!-- Penitipan (submenu: Paket Kamar + Data Boarding) -->
+    <li class="menu-item {{ request()->routeIs('admin.boardings.*') || request()->routeIs('admin.rooms.*') ? 'open' : '' }}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-hotel"></i>
         <div class="text-truncate">Penitipan</div>
       </a>
-    </li>
-
+      <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.rooms.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-door-open"></i>
+            <div class="text-truncate">Paket & Kamar</div>
+          </a>
+        </li>
         <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.boardings.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-hotel"></i>
-        <div class="text-truncate">Layanan Dokter</div>
-      </a>
+          <a href="{{ route('admin.boardings.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-list-ul"></i>
+            <div class="text-truncate">Data Boarding</div>
+          </a>
+        </li>
+      </ul>
     </li>
 
     <!-- Produk & Stok -->
@@ -138,5 +139,6 @@
         <div class="text-truncate">Lihat Website</div>
       </a>
     </li>
+
   </ul>
 </aside>
