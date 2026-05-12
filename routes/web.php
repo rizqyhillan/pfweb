@@ -15,10 +15,12 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Karyawan\KaryawanController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 // use Illuminate\Support\Facades\Mail;
 
 // Dynamic Pages (using Controller)
@@ -56,11 +58,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // Notifications
-    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 });
 
 // Admin Routes — hanya role 'admin'
@@ -107,6 +109,7 @@ Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->g
     Route::get('/patients/page/{page}', [DoctorController::class, 'patients'])->name('patients.page');
     Route::get('/patients/create', [DoctorController::class, 'createPatient'])->name('patients.create');
     Route::post('/patients', [DoctorController::class, 'storePatient'])->name('patients.store');
+    Route::get('/patients/{pet}', [DoctorController::class, 'showPatient'])->name('patients.show');
     Route::get('/patients/{pet}/edit', [DoctorController::class, 'editPatient'])->name('patients.edit');
     Route::put('/patients/{pet}', [DoctorController::class, 'updatePatient'])->name('patients.update');
     Route::delete('/patients/{pet}', [DoctorController::class, 'deletePatient'])->name('patients.destroy');
@@ -122,6 +125,7 @@ Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->g
     Route::get('/medical-records/page/{page}', [DoctorController::class, 'medicalRecords'])->name('medical-records.page');
     Route::get('/medical-records/create', [DoctorController::class, 'createMedicalRecord'])->name('medical-records.create');
     Route::post('/medical-records', [DoctorController::class, 'storeMedicalRecord'])->name('medical-records.store');
+    Route::get('/medical-records/{medical_record}', [DoctorController::class, 'showMedicalRecord'])->name('medical-records.show');
     Route::get('/medical-records/{medical_record}/edit', [DoctorController::class, 'editMedicalRecord'])->name('medical-records.edit');
     Route::put('/medical-records/{medical_record}', [DoctorController::class, 'updateMedicalRecord'])->name('medical-records.update');
     Route::delete('/medical-records/{medical_record}', [DoctorController::class, 'deleteMedicalRecord'])->name('medical-records.destroy');

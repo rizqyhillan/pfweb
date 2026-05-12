@@ -6,7 +6,7 @@
   <a href="{{ route('doctor.medical-records') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
-  <form action="{{ route('doctor.medical-records.update', $medical_record) }}" method="POST">@csrf @method('PUT')
+  <form action="{{ route('doctor.medical-records.update', $medical_record) }}" method="POST" enctype="multipart/form-data">@csrf @method('PUT')
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Hewan *</label>
         <select class="form-select" name="id_hewan" required><option value="">-- Pilih --</option>
@@ -22,6 +22,26 @@
       <div class="col-md-4"><label class="form-label">Resep Obat</label><textarea class="form-control" name="resep" rows="4">{{ old('resep', $medical_record->resep) }}</textarea></div>
     </div>
     <div class="mb-6"><label class="form-label">Catatan Tambahan</label><textarea class="form-control" name="catatan" rows="2">{{ old('catatan', $medical_record->catatan) }}</textarea></div>
+    
+    <div class="mb-6"><label class="form-label">Tambahkan Foto Baru (Bisa lebih dari 1)</label><input type="file" class="form-control" name="fotos[]" multiple accept="image/*" /></div>
+    
+    @if($medical_record->photos->count() > 0)
+    <div class="mb-6">
+      <label class="form-label d-block">Foto Sebelumnya</label>
+      <div class="d-flex flex-wrap gap-3">
+        @foreach($medical_record->photos as $photo)
+          <div class="position-relative">
+            <img src="{{ Storage::url($photo->foto) }}" alt="Foto" class="rounded border" style="height: 100px; object-fit: cover;">
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" name="delete_fotos[]" value="{{ $photo->id }}" id="deletePhoto{{ $photo->id }}">
+              <label class="form-check-label text-danger" for="deletePhoto{{ $photo->id }}">Hapus</label>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+    @endif
+    
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan Perubahan</button>
   </form>
 </div></div>

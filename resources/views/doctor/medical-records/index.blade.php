@@ -47,12 +47,22 @@
                   </td>
                   <td>{{ \Carbon\Carbon::parse($rec->tanggal)->format('d/m/Y') }}</td>
                   <td>
-                    <div class="d-flex">
-                      <a href="{{ route('doctor.medical-records.edit', $rec) }}" class="btn btn-sm btn-icon btn-primary me-2" title="Edit"><i class="bx bx-edit"></i></a>
-                      <form action="{{ route('doctor.medical-records.destroy', $rec) }}" method="POST">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Hapus"><i class="bx bx-trash"></i></button>
-                      </form>
+                    <div class="dropdown">
+                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ route('doctor.medical-records.show', $rec) }}">
+                            <i class="icon-base bx bx-show me-1"></i> Detail
+                        </a>
+                        <a class="dropdown-item" href="{{ route('doctor.medical-records.edit', $rec) }}">
+                          <i class="icon-base bx bx-edit-alt me-1"></i> Edit
+                        </a>
+                        <form action="{{ route('doctor.medical-records.destroy', $rec) }}" method="POST">
+                          @csrf @method('DELETE')
+                          <button class="dropdown-item text-danger">
+                            <i class="icon-base bx bx-trash me-1"></i> Hapus
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </td>
                 </tr>

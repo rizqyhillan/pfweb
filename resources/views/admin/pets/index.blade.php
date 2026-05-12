@@ -21,8 +21,9 @@
         <div class="dropdown">
           <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
           <div class="dropdown-menu">
+            <a class="dropdown-item" href="{{ route('admin.pets.show', $pet) }}"><i class="icon-base bx bx-show me-1"></i> Detail</a>
             <a class="dropdown-item" href="{{ route('admin.pets.edit', $pet) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-            <form action="{{ route('admin.pets.destroy', $pet) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <form action="{{ route('admin.pets.destroy', $pet) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin?')"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
           </div>
         </div>
       </td>

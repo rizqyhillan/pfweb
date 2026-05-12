@@ -6,7 +6,7 @@
   <a href="{{ route('doctor.medical-records') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
-  <form action="{{ route('doctor.medical-records.store') }}" method="POST">@csrf
+  <form action="{{ route('doctor.medical-records.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Hewan *</label>
         <select class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih --</option>
@@ -22,6 +22,7 @@
       <div class="col-md-4"><label class="form-label">Resep Obat</label><textarea class="form-control" name="resep" rows="4">{{ old('resep') }}</textarea></div>
     </div>
     <div class="mb-6"><label class="form-label">Catatan Tambahan</label><textarea class="form-control" name="catatan" rows="2">{{ old('catatan') }}</textarea></div>
+    <div class="mb-6"><label class="form-label">Foto-Foto (Bisa lebih dari 1)</label><input type="file" class="form-control" name="fotos[]" multiple accept="image/*" /></div>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>

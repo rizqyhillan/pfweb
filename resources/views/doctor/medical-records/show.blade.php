@@ -4,8 +4,8 @@
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Detail Rekam Medis</h4>
   <div>
-    <a href="{{ route('admin.medical-records.edit', $medical_record) }}" class="btn btn-warning"><i class="bx bx-edit me-1"></i> Edit</a>
-    <a href="{{ route('admin.medical-records.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+    <a href="{{ route('doctor.medical-records.edit', $medical_record) }}" class="btn btn-warning"><i class="bx bx-edit me-1"></i> Edit</a>
+    <a href="{{ route('doctor.medical-records') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
   </div>
 </div>
 <div class="row">
