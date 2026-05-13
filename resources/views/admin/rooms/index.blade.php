@@ -7,7 +7,6 @@
     <small class="text-muted">Kelola jenis paket dan kamar untuk penitipan.</small>
   </div>
   <div class="d-flex gap-2">
-    <a href="{{ route('admin.package-types.index') }}" class="btn btn-outline-secondary"><i class="bx bx-box me-1"></i> Jenis Paket</a>
     <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Kamar</a>
   </div>
 </div>
