@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Pagination\PathPaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +32,14 @@ class AppServiceProvider extends ServiceProvider
          */
         Builder::macro('pathPaginate', function (int $perPage, string $basePath): PathPaginator {
             $page = (int) (request()->route('page') ?? 1);
+            $model = $this->getModel();
+
+            if ($model instanceof Model && ! Schema::hasTable($model->getTable())) {
+                return new PathPaginator(collect([]), 0, $perPage, $page, [
+                    'path' => $basePath,
+                ]);
+            }
+
             $total = $this->toBase()->getCountForPagination();
             $items = $this->forPage($page, $perPage)->get();
 

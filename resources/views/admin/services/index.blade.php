@@ -1,10 +1,13 @@
 @extends('layouts.admin')
-@section('title', 'Data Layanan')
+@section('title', request('jenis_layanan') === 'grooming' ? 'Data Grooming' : 'Data Layanan')
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
-  <h4 class="mb-0">Data Layanan</h4>
-  <a href="{{ route('admin.services.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Layanan</a>
+  <h4 class="mb-0">{{ request('jenis_layanan') === 'grooming' ? 'Data Grooming' : 'Data Layanan' }}</h4>
+  <a href="{{ route('admin.services.create', request()->only('jenis_layanan')) }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Layanan</a>
 </div>
+@if(request('jenis_layanan') === 'grooming')
+  <div class="alert alert-info">Menampilkan layanan grooming saja.</div>
+@endif
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
   <thead><tr><th>#</th><th>Nama</th><th>Jenis</th><th>Harga</th><th>Durasi</th><th>Dokter</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
@@ -21,8 +24,8 @@
         <div class="dropdown">
           <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="{{ route('admin.services.edit', $s) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-            <form action="{{ route('admin.services.destroy', $s) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <a class="dropdown-item" href="{{ route('admin.services.edit', array_merge(['service' => $s], request()->only('jenis_layanan'))) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+            <form action="{{ route('admin.services.destroy', $s) }}" method="POST">@csrf @method('DELETE')<input type="hidden" name="jenis_layanan" value="{{ request('jenis_layanan') }}" /><button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
           </div>
         </div>
       </td>

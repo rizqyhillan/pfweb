@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PackageType;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
@@ -12,7 +14,7 @@ class RoomController extends Controller
     {
         $rooms = Room::latest()->pathPaginate(15, url('admin/rooms/page'));
 
-        // Hitung ringkasan per paket/tipe
+        // Hitung ringkasan per paket
         $paketSummary = Room::query()
             ->groupBy('paket')
             ->selectRaw('paket, COUNT(*) as total, MIN(harga_per_hari) as harga')
@@ -38,18 +40,26 @@ class RoomController extends Controller
 
     public function create()
     {
-        return view('admin.rooms.create');
+        $packageTypes = PackageType::options();
+
+        $packagePrices = PackageType::prices();
+
+        return view('admin.rooms.create', compact('packageTypes', 'packagePrices'));
     }
 
     public function store(Request $request)
     {
+        $packageTypes = PackageType::options();
+        $packageRule = ['required', Rule::in(array_keys($packageTypes))];
+
         $v = $request->validate([
             'nama_kamar' => 'required|string|max:50',
-            'paket' => 'required|in:basic,regular,premium',
+            'paket' => $packageRule,
             'harga_per_hari' => 'required|numeric|min:0',
             'kapasitas' => 'required|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
+
         $v['status'] = 'tersedia';
         Room::create($v);
 
@@ -58,19 +68,27 @@ class RoomController extends Controller
 
     public function edit(Room $room)
     {
-        return view('admin.rooms.edit', compact('room'));
+        $packageTypes = PackageType::options();
+
+        $packagePrices = PackageType::prices();
+
+        return view('admin.rooms.edit', compact('room', 'packageTypes', 'packagePrices'));
     }
 
     public function update(Request $request, Room $room)
     {
+        $packageTypes = PackageType::options();
+        $packageRule = ['required', Rule::in(array_keys($packageTypes))];
+
         $v = $request->validate([
             'nama_kamar' => 'required|string|max:50',
-            'paket' => 'required|in:basic,regular,premium',
+            'paket' => $packageRule,
             'harga_per_hari' => 'required|numeric|min:0',
             'kapasitas' => 'required|integer|min:1',
             'status' => 'required|in:tersedia,terisi,maintenance',
             'keterangan' => 'nullable|string',
         ]);
+
         $room->update($v);
 
         return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil diperbarui.');
@@ -78,7 +96,6 @@ class RoomController extends Controller
 
     public function destroy(Room $room)
     {
-        // Cek apakah kamar masih digunakan oleh boarding aktif atau pending
         $activeBoardings = $room->boardings()->whereIn('status', ['pending', 'aktif'])->count();
 
         if ($activeBoardings > 0) {

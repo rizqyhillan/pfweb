@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\BoardingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GroomingController;
 use App\Http\Controllers\Admin\MedicalRecordController;
+use App\Http\Controllers\Admin\PackageTypeController;
 use App\Http\Controllers\Admin\PetController;
 use App\Http\Controllers\Admin\ProductBatchController;
 use App\Http\Controllers\Admin\ProductController;
@@ -73,7 +75,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('services', ServiceController::class);
     Route::resource('transactions', TransactionController::class);
     Route::resource('rooms', RoomController::class);
+    Route::resource('package-types', PackageTypeController::class);
     Route::resource('boardings', BoardingController::class);
+    Route::resource('groomings', GroomingController::class);
     Route::resource('medical-records', MedicalRecordController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('users', UserController::class);
@@ -86,7 +90,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('services/page/{page}', [ServiceController::class, 'index'])->name('services.page');
     Route::get('transactions/page/{page}', [TransactionController::class, 'index'])->name('transactions.page');
     Route::get('rooms/page/{page}', [RoomController::class, 'index'])->name('rooms.page');
+    Route::get('package-types/page/{page}', [PackageTypeController::class, 'index'])->name('package-types.page');
     Route::get('boardings/page/{page}', [BoardingController::class, 'index'])->name('boardings.page');
+    Route::get('groomings/page/{page}', [GroomingController::class, 'index'])->name('groomings.page');
     Route::get('medical-records/page/{page}', [MedicalRecordController::class, 'index'])->name('medical-records.page');
     Route::get('suppliers/page/{page}', [SupplierController::class, 'index'])->name('suppliers.page');
     Route::get('users/page/{page}', [UserController::class, 'index'])->name('users.page');

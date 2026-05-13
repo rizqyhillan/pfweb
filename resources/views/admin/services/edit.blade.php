@@ -3,10 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Edit Layanan</h4>
-  <a href="{{ route('admin.services.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+  <a href="{{ route('admin.services.index', request()->only('jenis_layanan')) }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
   <form action="{{ route('admin.services.update', $service) }}" method="POST">@csrf @method('PUT')
+    <input type="hidden" name="jenis_layanan" value="{{ request('jenis_layanan') }}" />
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Nama Layanan *</label><input type="text" class="form-control" name="nama_layanan" value="{{ old('nama_layanan', $service->nama_layanan) }}" required /></div>
       <div class="col-md-3"><label class="form-label">Jenis *</label>

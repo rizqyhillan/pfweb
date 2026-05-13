@@ -44,24 +44,44 @@
     <!-- Layanan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Booking</span></li>
 
-    <li class="menu-item {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
-      <a href="{{ route('admin.services.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-first-aid"></i>
+    <li class="menu-item {{ (request()->routeIs('admin.groomings.*') && request()->query('jenis_layanan') === 'grooming') || (request()->routeIs('admin.package-types.*') && request()->query('section') === 'grooming') || request()->routeIs('admin.groomings.*') ? 'open' : '' }}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-cut"></i>
         <div class="text-truncate">Grooming</div>
       </a>
+      <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('admin.package-types.*') && request()->query('section') === 'grooming' ? 'active' : '' }}">
+          <a href="{{ route('admin.package-types.index', ['section' => 'grooming']) }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div class="text-truncate">Jenis Grooming</div>
+          </a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('admin.groomings.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.groomings.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-list-ul"></i>
+            <div class="text-truncate">Data Grooming</div>
+          </a>
+        </li>
+      </ul>
     </li>
 
     <!-- Penitipan (submenu: Paket Kamar + Data Boarding) -->
-    <li class="menu-item {{ request()->routeIs('admin.boardings.*') || request()->routeIs('admin.rooms.*') ? 'open' : '' }}">
+    <li class="menu-item {{ request()->routeIs('admin.boardings.*') || request()->routeIs('admin.rooms.*') || (request()->routeIs('admin.package-types.*') && request()->query('section') !== 'grooming') ? 'open' : '' }}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-hotel"></i>
         <div class="text-truncate">Penitipan</div>
       </a>
       <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('admin.package-types.*') && request()->query('section') !== 'grooming' ? 'active' : '' }}">
+          <a href="{{ route('admin.package-types.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div class="text-truncate">Jenis Paket</div>
+          </a>
+        </li>
         <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
           <a href="{{ route('admin.rooms.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-door-open"></i>
-            <div class="text-truncate">Paket & Kamar</div>
+            <div class="text-truncate">Kamar</div>
           </a>
         </li>
         <li class="menu-item {{ request()->routeIs('admin.boardings.*') ? 'active' : '' }}">

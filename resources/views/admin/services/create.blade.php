@@ -3,15 +3,16 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Tambah Layanan</h4>
-  <a href="{{ route('admin.services.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+  <a href="{{ route('admin.services.index', request()->only('jenis_layanan')) }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
   <form action="{{ route('admin.services.store') }}" method="POST">@csrf
+    <input type="hidden" name="jenis_layanan" value="{{ request('jenis_layanan') }}" />
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Nama Layanan *</label><input type="text" class="form-control @error('nama_layanan') is-invalid @enderror" name="nama_layanan" value="{{ old('nama_layanan') }}" required />@error('nama_layanan')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-3"><label class="form-label">Jenis *</label>
         <select class="form-select" name="jenis_layanan" required>
-          @foreach(['konsultasi'=>'Konsultasi','vaksinasi'=>'Vaksinasi','grooming'=>'Grooming','operasi'=>'Operasi','penitipan'=>'Penitipan','lainnya'=>'Lainnya'] as $k=>$v)<option value="{{ $k }}" {{ old('jenis_layanan') == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
+          @foreach(['konsultasi'=>'Konsultasi','vaksinasi'=>'Vaksinasi','grooming'=>'Grooming','operasi'=>'Operasi','penitipan'=>'Penitipan','lainnya'=>'Lainnya'] as $k=>$v)<option value="{{ $k }}" {{ old('jenis_layanan', request('jenis_layanan')) == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
         </select></div>
       <div class="col-md-3"><label class="form-label">Harga *</label><input type="number" step="0.01" class="form-control" name="harga" value="{{ old('harga', 0) }}" required /></div>
     </div>

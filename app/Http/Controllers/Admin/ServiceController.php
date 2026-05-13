@@ -9,9 +9,18 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $services = Service::with('dokter')->latest()->pathPaginate(15, url('admin/services/page'));
+        $query = Service::with('dokter');
+
+        if ($jenis = $request->query('jenis_layanan')) {
+            $query->where('jenis_layanan', $jenis);
+        }
+
+        $services = $query->latest()->pathPaginate(
+            15,
+            url('admin/services/page').($request->query('jenis_layanan') ? '?jenis_layanan='.urlencode($request->query('jenis_layanan')) : '')
+        );
 
         return view('admin.services.index', compact('services'));
     }
@@ -36,7 +45,7 @@ class ServiceController extends Controller
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 1;
         Service::create($v);
 
-        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil ditambahkan.');
+        return redirect()->route('admin.services.index', $request->only('jenis_layanan'))->with('success', 'Layanan berhasil ditambahkan.');
     }
 
     public function edit(Service $service)
@@ -59,13 +68,13 @@ class ServiceController extends Controller
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
         $service->update($v);
 
-        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil diperbarui.');
+        return redirect()->route('admin.services.index', $request->only('jenis_layanan'))->with('success', 'Layanan berhasil diperbarui.');
     }
 
-    public function destroy(Service $service)
+    public function destroy(Request $request, Service $service)
     {
         $service->delete();
 
-        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil dihapus.');
+        return redirect()->route('admin.services.index', $request->only('jenis_layanan'))->with('success', 'Layanan berhasil dihapus.');
     }
 }

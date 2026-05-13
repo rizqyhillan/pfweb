@@ -10,10 +10,14 @@
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Nama Kamar *</label><input type="text" class="form-control @error('nama_kamar') is-invalid @enderror" name="nama_kamar" value="{{ old('nama_kamar') }}" required />@error('nama_kamar')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-4"><label class="form-label">Paket *</label>
-        <select class="form-select" name="paket" required>
-          @foreach(\App\Models\Room::paketOptions() as $k=>$v)<option value="{{ $k }}" {{ old('paket') == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
-        </select></div>
-      <div class="col-md-4"><label class="form-label">Harga/Hari *</label><input type="number" step="0.01" class="form-control" name="harga_per_hari" value="{{ old('harga_per_hari', 0) }}" required /></div>
+        <select id="paketSelect" class="form-select @error('paket') is-invalid @enderror" name="paket" required>
+          @foreach($packageTypes as $key => $label)
+            <option value="{{ $key }}" {{ old('paket') == $key ? 'selected' : '' }}>{{ $label }}</option>
+          @endforeach
+        </select>
+        @error('paket')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+      <div class="col-md-4"><label class="form-label">Harga/Hari *</label><input id="hargaPerHari" type="number" step="0.01" class="form-control @error('harga_per_hari') is-invalid @enderror" name="harga_per_hari" value="{{ old('harga_per_hari', 0) }}" required /></div>
     </div>
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Kapasitas *</label><input type="number" class="form-control" name="kapasitas" value="{{ old('kapasitas', 1) }}" min="1" required /></div>
@@ -22,4 +26,20 @@
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const prices = @json($packagePrices);
+    const paketSelect = document.getElementById('paketSelect');
+    const hargaInput = document.getElementById('hargaPerHari');
+
+    if (paketSelect && hargaInput) {
+      paketSelect.addEventListener('change', function () {
+        const selected = this.value;
+        if (prices[selected] !== undefined) {
+          hargaInput.value = prices[selected];
+        }
+      });
+    }
+  });
+</script>
 @endsection

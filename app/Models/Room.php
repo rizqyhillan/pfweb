@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Room extends Model
 {
@@ -21,7 +22,15 @@ class Room extends Model
         'harga_per_hari' => 'decimal:2',
     ];
 
-    // Label paket yang rapi
+    public function getPaketLabelAttribute(): string
+    {
+        if (! Schema::hasTable('package_types')) {
+            return ucfirst($this->paket);
+        }
+
+        return PackageType::where('name', $this->paket)->value('label') ?? ucfirst($this->paket);
+    }
+
     public static function paketOptions(): array
     {
         return [
@@ -29,11 +38,6 @@ class Room extends Model
             'regular' => 'Regular',
             'premium' => 'Premium',
         ];
-    }
-
-    public function getPaketLabelAttribute(): string
-    {
-        return self::paketOptions()[$this->paket] ?? ucfirst($this->paket);
     }
 
     public function getNameAttribute(): string
