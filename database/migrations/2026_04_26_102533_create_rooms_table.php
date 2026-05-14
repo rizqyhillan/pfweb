@@ -2,41 +2,26 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // 1. Tambah kolom paket dulu
-        Schema::table('kamar', function (Blueprint $table) {
-            $table->string('paket', 50)->default('basic')->after('nama_kamar');
-        });
-
-        // 2. Migrate data dari tipe lama ke paket baru
-        DB::table('kamar')->where('tipe', 'kecil')->update(['paket' => 'basic']);
-        DB::table('kamar')->where('tipe', 'sedang')->update(['paket' => 'regular']);
-        DB::table('kamar')->where('tipe', 'besar')->update(['paket' => 'premium']);
-
-        // 3. Hapus kolom tipe lama
-        Schema::table('kamar', function (Blueprint $table) {
-            $table->dropColumn('tipe');
+        Schema::create('kamar', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kamar');
+            $table->enum('tipe', ['kecil', 'sedang', 'besar'])->default('sedang');
+            $table->decimal('harga_per_hari', 10, 2)->default(0);
+            $table->integer('kapasitas')->default(1);
+            $table->string('status', 50)->default('tersedia');
+            $table->text('keterangan')->nullable();
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::table('kamar', function (Blueprint $table) {
-            $table->enum('tipe', ['kecil', 'sedang', 'besar'])->default('sedang')->after('nama_kamar');
-        });
-
-        DB::table('kamar')->where('paket', 'basic')->update(['tipe' => 'kecil']);
-        DB::table('kamar')->where('paket', 'regular')->update(['tipe' => 'sedang']);
-        DB::table('kamar')->where('paket', 'premium')->update(['tipe' => 'besar']);
-
-        Schema::table('kamar', function (Blueprint $table) {
-            $table->dropColumn('paket');
-        });
+        Schema::dropIfExists('kamar');
     }
 };

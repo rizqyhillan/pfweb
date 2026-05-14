@@ -12,10 +12,12 @@ class PackageType extends Model
         'label',
         'description',
         'harga_per_malam',
+        'fasilitas',
     ];
 
     protected $casts = [
         'harga_per_malam' => 'decimal:2',
+        'fasilitas' => 'array',
     ];
 
     public static function defaultOptions(): array
@@ -64,13 +66,26 @@ class PackageType extends Model
 
     public static function ensureDefaultTypes(): void
     {
+        $descriptions = [
+            'basic' => 'Mandi + pengeringan bulu',
+            'regular' => 'Basic + potong kuku & telinga',
+            'premium' => 'Regular + styling & spa',
+        ];
+
+        $fasilitas = [
+            'basic' => ['Mandi dengan shampoo khusus', 'Pengeringan bulu', 'Penyisiran bulu'],
+            'regular' => ['Semua layanan Basic', 'Potong kuku', 'Bersihkan telinga', 'Parfum hewan'],
+            'premium' => ['Semua layanan Regular', 'Styling rambut', 'Spa & pijat relaksasi', 'Bandana/aksesoris'],
+        ];
+
         foreach (self::defaultOptions() as $name => $label) {
             self::firstOrCreate([
                 'name' => $name,
             ], [
                 'label' => $label,
-                'description' => null,
+                'description' => $descriptions[$name] ?? null,
                 'harga_per_malam' => self::defaultPrices()[$name] ?? 0,
+                'fasilitas' => $fasilitas[$name] ?? [],
             ]);
         }
     }

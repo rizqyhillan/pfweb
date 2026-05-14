@@ -16,7 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', 50)->unique();
             $table->string('label', 100);
+            $table->decimal('harga_per_malam', 12, 2)->default(0);
             $table->text('description')->nullable();
+            $table->json('fasilitas')->nullable();
             $table->timestamps();
         });
 
@@ -29,16 +31,31 @@ return new class extends Migration
             );
         }
 
-        $defaultPackages = [
-            'basic' => 'Basic',
-            'regular' => 'Regular',
-            'premium' => 'Premium',
+        $defaults = [
+            'basic' => [
+                'label' => 'Basic',
+                'harga_per_malam' => 50000,
+                'description' => 'Mandi + pengeringan bulu',
+                'fasilitas' => json_encode(['Mandi dengan shampoo khusus', 'Pengeringan bulu', 'Penyisiran bulu']),
+            ],
+            'regular' => [
+                'label' => 'Regular',
+                'harga_per_malam' => 100000,
+                'description' => 'Basic + potong kuku & telinga',
+                'fasilitas' => json_encode(['Semua layanan Basic', 'Potong kuku', 'Bersihkan telinga', 'Parfum hewan']),
+            ],
+            'premium' => [
+                'label' => 'Premium',
+                'harga_per_malam' => 150000,
+                'description' => 'Regular + styling & spa',
+                'fasilitas' => json_encode(['Semua layanan Regular', 'Styling rambut', 'Spa & pijat relaksasi', 'Bandana/aksesoris']),
+            ],
         ];
 
-        foreach ($defaultPackages as $name => $label) {
+        foreach ($defaults as $name => $data) {
             DB::table('package_types')->updateOrInsert(
                 ['name' => $name],
-                ['label' => $label, 'updated_at' => now(), 'created_at' => now()]
+                array_merge($data, ['updated_at' => now(), 'created_at' => now()])
             );
         }
     }

@@ -39,7 +39,7 @@
 @endif
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Label</th><th>{{ $section === 'grooming' ? 'Harga Paket' : 'Harga/Malam' }}</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>#</th><th>Nama</th><th>Label</th><th>{{ $section === 'grooming' ? 'Harga Paket' : 'Harga/Malam' }}</th><th>Keterangan</th><th>Fasilitas</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($packageTypes as $packageType)
     <tr>
@@ -56,6 +56,15 @@
       <td>{{ $packageType->label }}</td>
       <td>Rp {{ number_format($packageType->harga_per_malam ?? 0, 0, ',', '.') }}</td>
       <td>{{ $packageType->description ?? '-' }}</td>
+      <td style="white-space: normal; max-width: 250px;">
+        @if(!empty($packageType->fasilitas) && is_array($packageType->fasilitas))
+          @foreach($packageType->fasilitas as $item)
+            <span class="badge bg-label-success mb-1"><i class="bx bx-check me-1"></i>{{ $item }}</span>
+          @endforeach
+        @else
+          <span class="text-muted">-</span>
+        @endif
+      </td>
       <td>
         @if(empty($tableMissing))
           <div class="dropdown">
@@ -75,7 +84,7 @@
       </td>
     </tr>
     @empty
-    <tr><td colspan="5" class="text-center text-muted py-4">Belum ada jenis paket</td></tr>
+    <tr><td colspan="7" class="text-center text-muted py-4">Belum ada jenis paket</td></tr>
     @endforelse
   </tbody>
 </table></div>

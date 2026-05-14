@@ -62,7 +62,16 @@ class PackageTypeController extends Controller
             'label' => ['required', 'string', 'max:100'],
             'harga_per_malam' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
+            'fasilitas_input' => ['nullable', 'string'],
         ]);
+
+        // Konversi input fasilitas (satu per baris) ke JSON array
+        if (!empty($v['fasilitas_input'])) {
+            $v['fasilitas'] = array_values(array_filter(array_map('trim', explode("\n", $v['fasilitas_input']))));
+        } else {
+            $v['fasilitas'] = [];
+        }
+        unset($v['fasilitas_input']);
 
         PackageType::create($v);
 
@@ -91,7 +100,16 @@ class PackageTypeController extends Controller
             'label' => ['required', 'string', 'max:100'],
             'harga_per_malam' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
+            'fasilitas_input' => ['nullable', 'string'],
         ]);
+
+        // Konversi input fasilitas (satu per baris) ke JSON array
+        if (!empty($v['fasilitas_input'])) {
+            $v['fasilitas'] = array_values(array_filter(array_map('trim', explode("\n", $v['fasilitas_input']))));
+        } else {
+            $v['fasilitas'] = [];
+        }
+        unset($v['fasilitas_input']);
 
         $packageType->update($v);
 
