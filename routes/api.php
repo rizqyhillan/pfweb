@@ -25,6 +25,10 @@ Route::post('/forgot-password/send-otp', [MobileAuthController::class, 'sendForg
 Route::post('/forgot-password/verify-otp', [MobileAuthController::class, 'verifyForgotPasswordOtp']);
 Route::post('/forgot-password/reset', [MobileAuthController::class, 'resetForgotPassword']);
 
+// Grooming (publik - bisa dilihat tanpa login)
+Route::get('/grooming/packages', [TransactionController::class, 'getGroomingPackages']);
+Route::get('/grooming/availability', [TransactionController::class, 'getGroomingAvailability']);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [MobileAuthController::class, 'logout']);
@@ -47,6 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
     Route::get('/transactions/status/{status}', [TransactionController::class, 'byStatus']);
+    
+    // Grooming
+    Route::post('/grooming/book', [TransactionController::class, 'storeGrooming']);
+
+    // Shop
+    Route::post('/checkout', [TransactionController::class, 'checkout']);
 
     // Pets
     Route::get('/my-pets', [PetController::class, 'index']);

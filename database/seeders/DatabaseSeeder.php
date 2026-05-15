@@ -55,10 +55,10 @@ class DatabaseSeeder extends Seeder
         // 3. Rooms
         $rooms = [];
         $paketKamar = ['basic', 'regular', 'premium', 'basic', 'regular'];
-        
+
         for ($i = 1; $i <= 5; $i++) {
             $paket = $paketKamar[$i - 1];
-        
+
             $rooms[] = Room::firstOrCreate(
                 ['nama_kamar' => "Kamar $i"],
                 [
@@ -75,7 +75,6 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
-
         // 4. Services
         $services = [];
         $namaLayanan = ['Vaksinasi Kucing', 'Grooming Anjing', 'Pemeriksaan Umum', 'Operasi Minor', 'Scaling Gigi'];

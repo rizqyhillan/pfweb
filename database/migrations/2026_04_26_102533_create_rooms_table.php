@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('kamar', function (Blueprint $table) {
             $table->id();
-
             $table->string('nama_kamar');
             $table->string('paket', 50)->default('basic');
 
