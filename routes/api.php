@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\PetController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\DoctorBookingController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -52,5 +53,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/my-pets', [PetController::class, 'store']);
     Route::put('/my-pets/{id}', [PetController::class, 'update']);
     Route::delete('/my-pets/{id}', [PetController::class, 'destroy']);
+
+    // Doctor Booking
+    Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
+    Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
+    Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
+    Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
+    Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
+    Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
 
 });

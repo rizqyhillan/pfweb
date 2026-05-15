@@ -12,10 +12,11 @@ class Room extends Model
     protected $fillable = [
         'nama_kamar',
         'paket',
-        'harga_per_hari',
         'kapasitas',
+        'terisi',
+        'harga_per_hari',
+        'fasilitas',
         'status',
-        'keterangan',
     ];
 
     protected $casts = [

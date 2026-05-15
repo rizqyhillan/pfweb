@@ -5,8 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     protected $table = 'transaksi';
-    protected $fillable = ['id_pelanggan', 'id_kasir', 'kode_transaksi', 'jenis', 'subtotal', 'diskon', 'total', 'jumlah_bayar', 'kembalian', 'metode_bayar', 'status', 'catatan', 'tanggal'];
-    protected $casts = ['subtotal' => 'decimal:2', 'diskon' => 'decimal:2', 'total' => 'decimal:2', 'jumlah_bayar' => 'decimal:2', 'kembalian' => 'decimal:2', 'tanggal' => 'datetime'];
+    protected $fillable = [ 'id_pelanggan', 'id_kasir', 'kode_transaksi', 'jenis', 'subtotal', 'diskon', 'total', 'jumlah_bayar', 'kembalian', 'metode_bayar', 'status', 'payment_provider', 'payment_channel', 'payment_reference', 'payment_token', 'payment_redirect_url', 'payment_status', 'payment_expired_at', 'paid_at', 'catatan', 'tanggal', ];
+    protected $casts = [ 'subtotal' => 'decimal:2', 'diskon' => 'decimal:2', 'total' => 'decimal:2', 'jumlah_bayar' => 'decimal:2', 'kembalian' => 'decimal:2', 'tanggal' => 'datetime', 'payment_expired_at' => 'datetime', 'paid_at' => 'datetime', ];
 
     // Default status when creating
     protected $attributes = [
@@ -45,5 +45,10 @@ class Transaction extends Model
     public function services()
     {
         return $this->layanan();
+    }
+
+    public function bookingDokter() 
+    {
+    return $this->hasOne(DoctorBooking::class, 'id_transaksi');
     }
 }

@@ -54,11 +54,26 @@ class DatabaseSeeder extends Seeder
 
         // 3. Rooms
         $rooms = [];
-        $tipeKamar = ['kecil', 'sedang', 'besar', 'kecil', 'sedang'];
+        $paketKamar = ['basic', 'regular', 'premium', 'basic', 'regular'];
+        
         for ($i = 1; $i <= 5; $i++) {
-            $rooms[] = Room::firstOrCreate(['nama_kamar' => "Kamar $i"], [
-                'tipe' => $tipeKamar[$i - 1], 'harga_per_hari' => ($tipeKamar[$i - 1] == 'kecil' ? 50000 : ($tipeKamar[$i - 1] == 'sedang' ? 100000 : 150000)), 'status' => 'tersedia'
-            ]);
+            $paket = $paketKamar[$i - 1];
+        
+            $rooms[] = Room::firstOrCreate(
+                ['nama_kamar' => "Kamar $i"],
+                [
+                    'paket' => $paket,
+                    'kapasitas' => $paket === 'basic' ? 1 : ($paket === 'regular' ? 2 : 3),
+                    'terisi' => 0,
+                    'harga_per_hari' => $paket === 'basic' ? 50000 : ($paket === 'regular' ? 100000 : 150000),
+                    'fasilitas' => $paket === 'basic'
+                        ? 'Kandang standar, makan 2x sehari'
+                        : ($paket === 'regular'
+                            ? 'Kandang luas, makan 2x sehari, grooming ringan'
+                            : 'Kamar premium, makan 3x sehari, grooming, monitoring harian'),
+                    'status' => 'tersedia',
+                ]
+            );
         }
 
         // 4. Services

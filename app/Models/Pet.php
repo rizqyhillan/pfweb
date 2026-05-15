@@ -29,4 +29,9 @@ class Pet extends Model
     // Alias
     public function medicalRecords() { return $this->rekamMedis(); }
     public function boardings() { return $this->penitipan(); }
+
+    public function bookingDokter()
+    {
+        return $this->hasMany(DoctorBooking::class, 'id_hewan');
+    }
 }

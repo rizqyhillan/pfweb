@@ -22,6 +22,9 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DoctorBookingController;
+use App\Http\Controllers\Admin\DoctorScheduleController;
+use App\Http\Controllers\Admin\DoctorServiceController;
 
 // use Illuminate\Support\Facades\Mail;
 
@@ -83,6 +86,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('users', UserController::class);
     Route::resource('product-batches', ProductBatchController::class);
     Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
+    Route::resource('doctor-bookings', DoctorBookingController::class);
+    Route::resource('doctor-schedules', DoctorScheduleController::class);
+    Route::resource('doctor-services', DoctorServiceController::class);
+    
 
     // Path-based pagination routes
     Route::get('pets/page/{page}', [PetController::class, 'index'])->name('pets.page');

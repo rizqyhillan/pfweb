@@ -35,4 +35,19 @@ class User extends Authenticatable
     public function transactionsAsCustomer() { return $this->transaksiPelanggan(); }
     public function transactionsAsCashier()  { return $this->transaksiKasir(); }
     public function boardings()       { return $this->penitipan(); }
+
+    public function bookingDokterSebagaiDokter()
+    {
+    return $this->hasMany(DoctorBooking::class, 'id_dokter');
+    }
+
+    public function bookingDokterSebagaiPelanggan()
+    {
+        return $this->hasManyThrough(
+            DoctorBooking::class,
+            Pet::class,
+            'id_pemilik',
+            'id_hewan'
+        );
+    }
 }

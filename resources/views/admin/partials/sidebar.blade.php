@@ -93,6 +93,37 @@
       </ul>
     </li>
 
+        <!-- Dokter (submenu: Jadwal Dokter + Layanan Dokter + Data Booking Dokter) -->
+    <li class="menu-item {{ request()->routeIs('admin.doctor-schedules.*') || request()->routeIs('admin.doctor-services.*') || request()->routeIs('admin.doctor-bookings.*') ? 'open' : '' }}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-plus-medical"></i>
+        <div class="text-truncate">Dokter</div>
+      </a>
+    
+      <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('admin.doctor-schedules.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.doctor-schedules.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar"></i>
+            <div class="text-truncate">Jadwal Dokter</div>
+          </a>
+        </li>
+      
+        <li class="menu-item {{ request()->routeIs('admin.doctor-services.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.doctor-services.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-briefcase-alt-2"></i>
+            <div class="text-truncate">Layanan Dokter</div>
+          </a>
+        </li>
+      
+        <li class="menu-item {{ request()->routeIs('admin.doctor-bookings.*') ? 'active' : '' }}">
+          <a href="{{ route('admin.doctor-bookings.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-list-ul"></i>
+            <div class="text-truncate">Data Booking Dokter</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
     <!-- Produk & Stok -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Produk & Stok</span></li>
 
