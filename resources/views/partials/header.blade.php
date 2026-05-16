@@ -8,12 +8,12 @@
           <h1 class="sitename" style="font-weight: 700; color: var(--accent-color);">PawPet</h1>
         </a>
 
-        <nav id="navmenu" class="navmenu">
+          <nav id="navmenu" class="navmenu">
           <ul>
             <li><a href="{{ route('home') }}" class="active">Home</a></li>
-            <li><a href="#shop">Shop</a></li>
-            <li><a href="#booking">Booking</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="{{ route('home') }}#shop">Shop</a></li>
+            <li><a href="{{ route('appointment') }}">Booking</a></li>
+            <li><a href="{{ route('contact') }}">Contact</a></li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>

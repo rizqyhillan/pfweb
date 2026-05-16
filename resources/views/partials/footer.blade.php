@@ -37,10 +37,10 @@
                   <div class="nav-column">
                     <h6>Layanan</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Konsultasi Dokter</a>
-                      <a href="#!">Grooming</a>
-                      <a href="#!">Penitipan Hewan</a>
-                      <a href="#!">Vaksinasi</a>
+                      <a href="{{ route('services') }}">Konsultasi Dokter</a>
+                      <a href="{{ route('services') }}">Grooming</a>
+                      <a href="{{ route('services') }}">Penitipan Hewan</a>
+                      <a href="{{ route('services') }}">Vaksinasi</a>
                     </nav>
                   </div>
                 </div>
@@ -49,10 +49,10 @@
                   <div class="nav-column">
                     <h6>PawPet Shop</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Makanan Kucing & Anjing</a>
-                      <a href="#!">Aksesoris & Mainan</a>
-                      <a href="#!">Vitamin & Obat</a>
-                      <a href="#!">Perlengkapan Mandi</a>
+                      <a href="{{ route('home') }}#shop">Makanan Kucing & Anjing</a>
+                      <a href="{{ route('home') }}#shop">Aksesoris & Mainan</a>
+                      <a href="{{ route('home') }}#shop">Vitamin & Obat</a>
+                      <a href="{{ route('home') }}#shop">Perlengkapan Mandi</a>
                     </nav>
                   </div>
                 </div>
@@ -61,10 +61,10 @@
                   <div class="nav-column">
                     <h6>Bantuan</h6>
                     <nav class="footer-nav">
-                      <a href="#!">FAQ</a>
-                      <a href="#!">Pusat Bantuan</a>
-                      <a href="#!">Syarat & Ketentuan</a>
-                      <a href="#!">Kebijakan Privasi</a>
+                      <a href="{{ route('faq') }}">FAQ</a>
+                      <a href="{{ route('contact') }}">Pusat Bantuan</a>
+                      <a href="{{ route('terms') }}">Syarat & Ketentuan</a>
+                      <a href="{{ route('privacy') }}">Kebijakan Privasi</a>
                     </nav>
                   </div>
                 </div>
@@ -73,10 +73,10 @@
                   <div class="nav-column">
                     <h6>Ikuti Kami</h6>
                     <nav class="footer-nav">
-                      <a href="#!">Instagram</a>
-                      <a href="#!">Facebook</a>
-                      <a href="#!">TikTok</a>
-                      <a href="#!">Twitter</a>
+                      <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+                      <a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a>
+                      <a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a>
+                      <a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a>
                     </nav>
                   </div>
                 </div>
@@ -103,9 +103,9 @@
 
             <div class="col-lg-6">
               <div class="legal-links">
-                <a href="#!">Privacy Policy</a>
-                <a href="#!">Terms of Service</a>
-                <a href="#!">Cookie Policy</a>
+                <a href="{{ route('privacy') }}">Privacy Policy</a>
+                <a href="{{ route('terms') }}">Terms of Service</a>
+                <a href="{{ route('privacy') }}">Cookie Policy</a>
                 <div class="credits">
                   <!-- All the links in the footer should remain intact. -->
                   <!-- You can delete the links only if you've purchased the pro version. -->
