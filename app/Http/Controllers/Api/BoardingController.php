@@ -73,7 +73,7 @@ class BoardingController extends Controller
             'id_kamar' => ['required', 'exists:kamar,id'],
             'tanggal_masuk' => ['required', 'date'],
             'tanggal_rencana_keluar' => ['required', 'date', 'after:tanggal_masuk'],
-            'catatan' => ['nullable', 'string'],
+            'catatan_titip' => ['nullable', 'string'],
         ]);
 
         $pet = Pet::where('id', $validated['id_hewan'])
@@ -104,7 +104,7 @@ class BoardingController extends Controller
             'tanggal_keluar' => null,
             'status' => 'pending',
             'total_biaya' => $totalBiaya,
-            'catatan' => $validated['catatan'] ?? null,
+            'catatan_titip' => $validated['catatan_titip'] ?? null,
         ]);
 
         $boarding->load([
@@ -165,9 +165,9 @@ class BoardingController extends Controller
             })
             ->firstOrFail();
 
-        if (!in_array($boarding->status, ['pending', 'dikonfirmasi'])) {
+        if (!in_array($boarding->status, ['pending'])) {
             return response()->json([
-                'message' => 'Penitipan tidak bisa dibatalkan pada status saat ini.',
+                'message' => 'Penitipan hanya bisa dibatalkan jika status masih pending.',
             ], 422);
         }
 
@@ -229,7 +229,9 @@ class BoardingController extends Controller
             'total_biaya' => (float) $boarding->total_biaya,
 
             'status' => $boarding->status,
-            'catatan' => $boarding->catatan,
+            'catatan' => $boarding->catatan_titip,
+            'catatan_titip' => $boarding->catatan_titip,
+            'catatan_jemput' => $boarding->catatan_jemput,
 
             'metode_pembayaran' => 'Bayar di lokasi',
             'payment_note' => 'Pembayaran dilakukan di lokasi saat check-in atau setelah penitipan selesai.',

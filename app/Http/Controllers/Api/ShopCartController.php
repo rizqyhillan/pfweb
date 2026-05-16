@@ -223,7 +223,7 @@ class ShopCartController extends Controller
     {
         $validated = $request->validate([
             'catatan' => ['nullable', 'string'],
-            'metode_bayar' => ['nullable', 'string', 'max:50'],
+            'metode_bayar' => ['nullable', 'in:cash,transfer,ewallet'],
         ]);
 
         $user = $request->user();
@@ -272,7 +272,7 @@ class ShopCartController extends Controller
                 'total' => $subtotal,
                 'jumlah_bayar' => 0,
                 'kembalian' => 0,
-                'metode_bayar' => $validated['metode_bayar'] ?? 'online',
+                'metode_bayar' => $validated['metode_bayar'] ?? 'ewallet',
                 'status' => 'pending',
                 'catatan' => $validated['catatan'] ?? null,
                 'tanggal' => now(),
