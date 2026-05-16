@@ -20,6 +20,8 @@ class Room extends Model
     ];
 
     protected $casts = [
+        'kapasitas' => 'integer',
+        'terisi' => 'integer',
         'harga_per_hari' => 'decimal:2',
     ];
 

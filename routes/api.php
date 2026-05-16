@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\DoctorBookingController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\ShopCartController;
+use App\Http\Controllers\Api\BoardingController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -47,12 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Medical Records
     Route::get('/medical-records', [MedicalRecordController::class, 'index']);
     Route::get('/pets/{id}/medical-records', [MedicalRecordController::class, 'byPet']);
+    Route::get('/medical-records/pet/{id}', [MedicalRecordController::class, 'byPet']);
+    Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show']);
     Route::post('/medical-records', [MedicalRecordController::class, 'store']);
 
     // Transactions
     Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
     Route::get('/transactions/status/{status}', [TransactionController::class, 'byStatus']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
     
     // Grooming
     Route::post('/grooming/book', [TransactionController::class, 'storeGrooming']);
@@ -62,8 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Shopping
     Route::get('/shop/products', [ShopController::class, 'products']);
-    Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
     Route::get('/shop/categories', [ShopController::class, 'categories']);
+    Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
 
     // Shopping Cart
     Route::get('/shop/cart', [ShopCartController::class, 'index']);
@@ -87,5 +90,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
     Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
     Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
+
+    // Boarding / Penitipan
+    Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
+    Route::get('/boarding/rooms/{id}', [BoardingController::class, 'roomDetail']);
+    Route::post('/boarding/estimate', [BoardingController::class, 'estimate']);
+    Route::post('/boarding/book', [BoardingController::class, 'store']);
+    Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
+    Route::get('/boardings/{id}', [BoardingController::class, 'show']);
+    Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
 
 });

@@ -39,7 +39,7 @@ class TransactionController extends Controller
             ])
             ->where('id_pelanggan', $request->user()->id)
             ->findOrFail($id);
-    
+
         return response()->json([
             'data' => $this->formatTransaction($transaction),
         ]);
@@ -155,7 +155,7 @@ class TransactionController extends Controller
         $barangItems = $transaction->barang->map(function ($item) {
             $product = $item->barang;
             $image = $product->image ?? null;
-
+    
             return [
                 'id' => $item->id,
                 'tipe' => 'barang',
@@ -169,10 +169,10 @@ class TransactionController extends Controller
                 'subtotal' => (float) $item->subtotal,
             ];
         });
-
+    
         $layananItems = $transaction->layanan->map(function ($item) {
             $service = $item->layanan;
-
+    
             return [
                 'id' => $item->id,
                 'tipe' => 'layanan',
@@ -184,31 +184,31 @@ class TransactionController extends Controller
                 'subtotal' => (float) $item->subtotal,
             ];
         });
-
+    
         $items = $barangItems->concat($layananItems)->values();
-
+    
         return [
             'id' => $transaction->id,
             'kode_transaksi' => $transaction->kode_transaksi,
             'jenis' => $transaction->jenis,
-
+    
             'id_pelanggan' => $transaction->id_pelanggan,
             'nama_pelanggan' => $transaction->pelanggan->nama ?? '-',
-
+    
             'id_kasir' => $transaction->id_kasir,
             'nama_kasir' => $transaction->kasir->nama ?? null,
-
+    
             'subtotal' => (float) $transaction->subtotal,
             'diskon' => (float) $transaction->diskon,
             'total' => (float) $transaction->total,
             'jumlah_bayar' => (float) $transaction->jumlah_bayar,
             'kembalian' => (float) $transaction->kembalian,
-
+    
             'metode_bayar' => $transaction->metode_bayar,
             'status' => $transaction->status,
             'catatan' => $transaction->catatan,
             'tanggal' => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
-
+    
             'items' => $items,
             'barang' => $barangItems,
             'layanan' => $layananItems,
