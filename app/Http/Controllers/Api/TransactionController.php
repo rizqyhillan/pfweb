@@ -11,51 +11,65 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    /**
-     * GET /api/transactions
-     * Ambil semua transaksi milik pelanggan yang sedang login
-     */
     public function index(Request $request)
     {
-        $transactions = Transaction::with(['pelanggan', 'kasir'])
+        $transactions = Transaction::with([
+                'pelanggan',
+                'kasir',
+                'barang.barang',
+                'layanan.layanan',
+            ])
+            ->where('id_pelanggan', $request->user()->id)
             ->latest('tanggal')
-            ->get();
+            ->get()
+            ->map(fn ($transaction) => $this->formatTransaction($transaction));
 
-        return response()->json($transactions);
+        return response()->json([
+            'data' => $transactions,
+        ]);
     }
 
-    /**
-     * GET /api/transactions/{id}
-     * Detail satu transaksi
-     */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $transaction = Transaction::with(['pelanggan', 'kasir'])
+        $transaction = Transaction::with([
+                'pelanggan',
+                'kasir',
+                'barang.barang',
+                'layanan.layanan',
+            ])
+            ->where('id_pelanggan', $request->user()->id)
             ->findOrFail($id);
-
-        return response()->json($transaction);
+    
+        return response()->json([
+            'data' => $this->formatTransaction($transaction),
+        ]);
     }
 
-    /**
-     * GET /api/transactions/status/{status}
-     * Filter berdasarkan status: lunas | pending | batal
-     */
-    public function byStatus($status)
+    public function byStatus(Request $request, $status)
     {
         $allowed = ['lunas', 'pending', 'batal'];
 
         if (!in_array($status, $allowed)) {
             return response()->json([
-                'message' => 'Status tidak valid. Gunakan: lunas, pending, atau batal'
+                'message' => 'Status tidak valid. Gunakan: lunas, pending, atau batal.',
             ], 422);
         }
 
-        $transactions = Transaction::with(['pelanggan', 'kasir'])
+        $transactions = Transaction::with([
+                'pelanggan',
+                'kasir',
+                'barang.barang',
+                'layanan.layanan',
+            ])
+            ->where('id_pelanggan', $request->user()->id)
             ->where('status', $status)
             ->latest('tanggal')
-            ->get();
+            ->get()
+            ->map(fn ($transaction) => $this->formatTransaction($transaction));
 
-        return response()->json($transactions);
+        return response()->json([
+            'data' => $transactions,
+        ]);
     }
 
     /**
@@ -134,5 +148,70 @@ class TransactionController extends Controller
             'message' => 'Booking grooming berhasil',
             'data' => $grooming
         ], 201);
+    }
+
+    private function formatTransaction(Transaction $transaction): array
+    {
+        $barangItems = $transaction->barang->map(function ($item) {
+            $product = $item->barang;
+            $image = $product->image ?? null;
+
+            return [
+                'id' => $item->id,
+                'tipe' => 'barang',
+                'id_barang' => $item->id_barang,
+                'nama' => $product->nama_barang ?? '-',
+                'kategori' => $product->kategori ?? null,
+                'image' => $image,
+                'image_url' => $image ? asset('storage/' . $image) : null,
+                'jumlah' => (int) $item->jumlah,
+                'harga_satuan' => (float) $item->harga_satuan,
+                'subtotal' => (float) $item->subtotal,
+            ];
+        });
+
+        $layananItems = $transaction->layanan->map(function ($item) {
+            $service = $item->layanan;
+
+            return [
+                'id' => $item->id,
+                'tipe' => 'layanan',
+                'id_layanan' => $item->id_layanan,
+                'nama' => $service->nama_layanan ?? '-',
+                'kategori' => $service->kategori ?? null,
+                'jumlah' => (int) $item->jumlah,
+                'harga_satuan' => (float) $item->harga_satuan,
+                'subtotal' => (float) $item->subtotal,
+            ];
+        });
+
+        $items = $barangItems->concat($layananItems)->values();
+
+        return [
+            'id' => $transaction->id,
+            'kode_transaksi' => $transaction->kode_transaksi,
+            'jenis' => $transaction->jenis,
+
+            'id_pelanggan' => $transaction->id_pelanggan,
+            'nama_pelanggan' => $transaction->pelanggan->nama ?? '-',
+
+            'id_kasir' => $transaction->id_kasir,
+            'nama_kasir' => $transaction->kasir->nama ?? null,
+
+            'subtotal' => (float) $transaction->subtotal,
+            'diskon' => (float) $transaction->diskon,
+            'total' => (float) $transaction->total,
+            'jumlah_bayar' => (float) $transaction->jumlah_bayar,
+            'kembalian' => (float) $transaction->kembalian,
+
+            'metode_bayar' => $transaction->metode_bayar,
+            'status' => $transaction->status,
+            'catatan' => $transaction->catatan,
+            'tanggal' => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
+
+            'items' => $items,
+            'barang' => $barangItems,
+            'layanan' => $layananItems,
+        ];
     }
 }

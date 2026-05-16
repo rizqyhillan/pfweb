@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DoctorBookingController;
 use App\Http\Controllers\Admin\DoctorScheduleController;
 use App\Http\Controllers\Admin\DoctorServiceController;
+use App\Http\Controllers\Admin\ShopOrderController;
 
 // use Illuminate\Support\Facades\Mail;
 
@@ -89,6 +90,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('doctor-bookings', DoctorBookingController::class);
     Route::resource('doctor-schedules', DoctorScheduleController::class);
     Route::resource('doctor-services', DoctorServiceController::class);
+    Route::get('shop-orders', [ShopOrderController::class, 'index'])->name('shop-orders.index');
+    Route::get('shop-orders/{shopOrder}', [ShopOrderController::class, 'show'])->name('shop-orders.show');
+    Route::put('shop-orders/{shopOrder}/status', [ShopOrderController::class, 'updateStatus'])->name('shop-orders.update-status');
     
 
     // Path-based pagination routes

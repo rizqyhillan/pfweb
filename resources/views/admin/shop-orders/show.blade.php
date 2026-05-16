@@ -1,0 +1,160 @@
+@extends('layouts.admin')
+
+@section('title', 'Detail Pesanan Shopping')
+
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1 text-gray-800">Detail Pesanan Shopping</h1>
+            <p class="text-muted mb-0">{{ $shopOrder->kode_transaksi }}</p>
+        </div>
+
+        <a href="{{ route('admin.shop-orders.index') }}" class="btn btn-secondary">
+            Kembali
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @php
+        $badgeClass = match($shopOrder->status) {
+            'pending' => 'warning',
+            'lunas' => 'success',
+            'batal' => 'danger',
+            default => 'secondary',
+        };
+    @endphp
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Item Pesanan</h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach($shopOrder->barang as $item)
+                                    <tr>
+                                        <td>{{ $item->barang->nama_barang ?? '-' }}</td>
+                                        <td>{{ $item->barang->kategori ?? '-' }}</td>
+                                        <td>{{ $item->jumlah }}</td>
+                                        <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
+                                        <td>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-end">Subtotal</th>
+                                    <th>Rp {{ number_format($shopOrder->subtotal, 0, ',', '.') }}</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" class="text-end">Diskon</th>
+                                    <th>Rp {{ number_format($shopOrder->diskon, 0, ',', '.') }}</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" class="text-end">Total</th>
+                                    <th>Rp {{ number_format($shopOrder->total, 0, ',', '.') }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Update Status Pesanan</h5>
+                </div>
+
+                <div class="card-body">
+                    <form action="{{ route('admin.shop-orders.update-status', $shopOrder) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status Pesanan</label>
+                            <select name="status" id="status" class="form-control" required>
+                                <option value="pending" {{ $shopOrder->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="lunas" {{ $shopOrder->status === 'lunas' ? 'selected' : '' }}>Lunas</option>
+                                <option value="batal" {{ $shopOrder->status === 'batal' ? 'selected' : '' }}>Batal</option>
+                            </select>
+                            <small class="text-muted">
+                                Jika status pending diubah ke batal, stok barang akan dikembalikan otomatis.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="catatan" class="form-label">Catatan</label>
+                            <textarea name="catatan" id="catatan" rows="3" class="form-control">{{ old('catatan', $shopOrder->catatan) }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Simpan Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Ringkasan</h5>
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-2"><strong>Kode:</strong><br>{{ $shopOrder->kode_transaksi }}</p>
+                    <p class="mb-2"><strong>Status:</strong><br>
+                        <span class="badge bg-{{ $badgeClass }}">
+                            {{ ucfirst($shopOrder->status) }}
+                        </span>
+                    </p>
+                    <p class="mb-2"><strong>Metode Bayar:</strong><br>{{ $shopOrder->metode_bayar ?? '-' }}</p>
+                    <p class="mb-2"><strong>Tanggal:</strong><br>{{ optional($shopOrder->tanggal)->format('d M Y H:i') }}</p>
+                    <p class="mb-0"><strong>Total:</strong><br>Rp {{ number_format($shopOrder->total, 0, ',', '.') }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Customer</h5>
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-2"><strong>Nama:</strong><br>{{ $shopOrder->pelanggan->nama ?? '-' }}</p>
+                    <p class="mb-2"><strong>Email:</strong><br>{{ $shopOrder->pelanggan->email ?? '-' }}</p>
+                    <p class="mb-0"><strong>No HP:</strong><br>{{ $shopOrder->pelanggan->no_hp ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

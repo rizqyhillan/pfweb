@@ -124,6 +124,16 @@
       </ul>
     </li>
 
+    <!-- Shopping -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Shopping</span></li>
+      
+    <li class="menu-item {{ request()->routeIs('admin.shop-orders.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.shop-orders.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-shopping-bag"></i>
+        <div class="text-truncate">Pesanan Shopping</div>
+      </a>
+    </li>
+
     <!-- Produk & Stok -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Produk & Stok</span></li>
 

@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->foreignId('id_pelanggan')->constrained('users');
             $table->foreignId('id_kasir')->nullable()->constrained('users');
             $table->string('kode_transaksi', 30)->unique();
-            $table->enum('jenis', ['layanan', 'barang', 'campuran'])->default('campuran');
+            $table->enum('jenis', ['layanan', 'barang', 'campuran', 'shopping', 'grooming', 'penitipan', 'dokter'])->default('barang');
             $table->decimal('subtotal', 14, 2)->default(0.00);
             $table->decimal('diskon', 14, 2)->default(0.00);
             $table->decimal('total', 14, 2)->default(0.00);

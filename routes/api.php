@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\PetController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\DoctorBookingController;
+use App\Http\Controllers\Api\ShopController;
+use App\Http\Controllers\Api\ShopCartController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -57,6 +59,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Shop
     Route::post('/checkout', [TransactionController::class, 'checkout']);
+
+    // Shopping
+    Route::get('/shop/products', [ShopController::class, 'products']);
+    Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
+    Route::get('/shop/categories', [ShopController::class, 'categories']);
+
+    // Shopping Cart
+    Route::get('/shop/cart', [ShopCartController::class, 'index']);
+    Route::post('/shop/cart/items', [ShopCartController::class, 'addItem']);
+    Route::patch('/shop/cart/items/{item}', [ShopCartController::class, 'updateItem']);
+    Route::delete('/shop/cart/items/{item}', [ShopCartController::class, 'removeItem']);
+    Route::delete('/shop/cart', [ShopCartController::class, 'clear']);
+    Route::post('/shop/checkout', [ShopCartController::class, 'checkout']);
+    Route::post('/shop/transactions/{id}/cancel', [ShopCartController::class, 'cancelTransaction']);
 
     // Pets
     Route::get('/my-pets', [PetController::class, 'index']);
