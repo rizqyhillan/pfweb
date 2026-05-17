@@ -171,6 +171,22 @@ class DoctorBookingController extends Controller
             ->with('success', 'Booking dokter berhasil diperbarui.');
     }
 
+
+    public function updateStatus(Request $request, DoctorBooking $doctorBooking)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,dikonfirmasi,selesai,batal'],
+        ]);
+
+        $doctorBooking->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()
+            ->route('admin.doctor-bookings.index')
+            ->with('success', 'Status booking dokter berhasil diperbarui.');
+    }
+
     public function destroy(DoctorBooking $doctorBooking)
     {
         $doctorBooking->delete();

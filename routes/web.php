@@ -80,13 +80,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('transactions', TransactionController::class);
     Route::resource('rooms', RoomController::class);
     Route::resource('package-types', PackageTypeController::class);
+    Route::put('boardings/{boarding}/status', [BoardingController::class, 'updateStatus'])->name('boardings.update-status');
     Route::resource('boardings', BoardingController::class);
+    Route::put('groomings/{grooming}/status', [GroomingController::class, 'updateStatus'])->name('groomings.update-status');
     Route::resource('groomings', GroomingController::class);
     Route::resource('medical-records', MedicalRecordController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('users', UserController::class);
     Route::resource('product-batches', ProductBatchController::class);
     Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
+    Route::put('doctor-bookings/{doctorBooking}/status', [DoctorBookingController::class, 'updateStatus'])->name('doctor-bookings.update-status');
     Route::resource('doctor-bookings', DoctorBookingController::class);
     Route::resource('doctor-schedules', DoctorScheduleController::class);
     Route::resource('doctor-services', DoctorServiceController::class);

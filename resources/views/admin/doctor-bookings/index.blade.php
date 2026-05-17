@@ -80,6 +80,33 @@
                                             Edit
                                         </a>
 
+                                        @if($booking->status === 'pending')
+                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="dikonfirmasi">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">Konfirmasi</button>
+                                            </form>
+                                        @endif
+
+                                        @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
+                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline" onsubmit="return confirm('Batalkan booking dokter ini?')">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="batal">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Batal</button>
+                                            </form>
+                                        @endif
+
+                                        @if($booking->status === 'dikonfirmasi')
+                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="selesai">
+                                                <button type="submit" class="btn btn-sm btn-outline-success">Selesai</button>
+                                            </form>
+                                        @endif
+
                                         <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus booking ini?')">
                                             @csrf
                                             @method('DELETE')

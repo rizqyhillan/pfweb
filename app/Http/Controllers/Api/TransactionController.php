@@ -181,6 +181,38 @@ class TransactionController extends Controller
         ]);
     }
 
+
+    public function rescheduleGrooming(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'tanggal_grooming' => ['required', 'date', 'after_or_equal:today'],
+            'waktu_grooming' => ['required', 'date_format:H:i'],
+        ]);
+
+        $grooming = Grooming::with(['hewan.owner', 'paket'])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        if (!in_array($grooming->status, ['pending'])) {
+            return response()->json([
+                'message' => 'Booking grooming hanya bisa diubah jadwal jika status masih pending.',
+            ], 422);
+        }
+
+        $grooming->update([
+            'tanggal_grooming' => $validated['tanggal_grooming'],
+            'waktu_grooming' => $validated['waktu_grooming'],
+        ]);
+
+        return response()->json([
+            'message' => 'Jadwal booking grooming berhasil diubah.',
+            'data' => $this->formatGrooming($grooming->fresh(['hewan.owner', 'paket'])),
+        ]);
+    }
+
     public function cancelGrooming(Request $request, $id)
     {
         $grooming = Grooming::with(['hewan.owner', 'paket'])

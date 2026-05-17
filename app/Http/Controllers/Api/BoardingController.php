@@ -154,6 +154,47 @@ class BoardingController extends Controller
         ]);
     }
 
+
+    public function reschedule(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'tanggal_masuk' => ['required', 'date', 'after_or_equal:today'],
+            'tanggal_rencana_keluar' => ['required', 'date', 'after:tanggal_masuk'],
+        ]);
+
+        $boarding = Boarding::with([
+                'hewan.owner',
+                'kamar',
+            ])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        if (!in_array($boarding->status, ['pending'])) {
+            return response()->json([
+                'message' => 'Booking penitipan hanya bisa diubah jadwal jika status masih pending.',
+            ], 422);
+        }
+
+        $tanggalMasuk = Carbon::parse($validated['tanggal_masuk'])->startOfDay();
+        $tanggalKeluar = Carbon::parse($validated['tanggal_rencana_keluar'])->startOfDay();
+        $jumlahHari = max(1, $tanggalMasuk->diffInDays($tanggalKeluar));
+        $totalBiaya = $jumlahHari * ($boarding->kamar->harga_per_hari ?? 0);
+
+        $boarding->update([
+            'tanggal_masuk' => $tanggalMasuk,
+            'tanggal_rencana_keluar' => $tanggalKeluar,
+            'total_biaya' => $totalBiaya,
+        ]);
+
+        return response()->json([
+            'message' => 'Jadwal booking penitipan berhasil diubah.',
+            'data' => $this->formatBoarding($boarding->fresh(['hewan.owner', 'kamar'])),
+        ]);
+    }
+
     public function cancel(Request $request, $id)
     {
         $boarding = Boarding::with([

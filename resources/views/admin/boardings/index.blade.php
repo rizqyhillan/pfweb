@@ -53,6 +53,27 @@
                   <div class="dropdown-menu">
                     <a class="dropdown-item" href="{{ route('admin.boardings.edit', $boarding) }}"><i
                         class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+                    @if($boarding->status === 'pending')
+                      <form action="{{ route('admin.boardings.update-status', $boarding) }}" method="POST">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="status" value="aktif">
+                        <button class="dropdown-item text-primary"><i class="icon-base bx bx-check me-1"></i> Check-in/Aktif</button>
+                      </form>
+                    @endif
+                    @if($boarding->status === 'aktif')
+                      <form action="{{ route('admin.boardings.update-status', $boarding) }}" method="POST">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="status" value="selesai">
+                        <button class="dropdown-item text-success"><i class="icon-base bx bx-check-double me-1"></i> Selesaikan</button>
+                      </form>
+                    @endif
+                    @if(in_array($boarding->status, ['pending', 'aktif']))
+                      <form action="{{ route('admin.boardings.update-status', $boarding) }}" method="POST" onsubmit="return confirm('Batalkan penitipan ini?')">
+                        @csrf @method('PUT')
+                        <input type="hidden" name="status" value="batal">
+                        <button class="dropdown-item text-danger"><i class="icon-base bx bx-x me-1"></i> Batalkan</button>
+                      </form>
+                    @endif
                     <form action="{{ route('admin.boardings.destroy', $boarding) }}" method="POST">
                       @csrf @method('DELETE')
                       <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>

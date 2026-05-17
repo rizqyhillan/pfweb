@@ -77,6 +77,18 @@ class GroomingController extends Controller
         return redirect()->route('admin.groomings.index')->with('success', 'Grooming berhasil diperbarui.');
     }
 
+
+    public function updateStatus(Request $request, Grooming $grooming)
+    {
+        $v = $request->validate([
+            'status' => 'required|in:pending,aktif,selesai,batal',
+        ]);
+
+        $grooming->update($v);
+
+        return redirect()->route('admin.groomings.index')->with('success', 'Status grooming berhasil diperbarui.');
+    }
+
     public function destroy(Grooming $grooming)
     {
         $grooming->delete();

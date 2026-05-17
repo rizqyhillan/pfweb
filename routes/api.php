@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-grooming-bookings', [TransactionController::class, 'myGroomingBookings']);
     Route::get('/grooming-bookings/{id}', [TransactionController::class, 'showGrooming']);
     Route::post('/grooming-bookings/{id}/cancel', [TransactionController::class, 'cancelGrooming']);
+    Route::post('/grooming-bookings/{id}/reschedule', [TransactionController::class, 'rescheduleGrooming']);
 
     // Shop
     Route::post('/checkout', [TransactionController::class, 'checkout']);
@@ -95,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
     Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
     Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
+    Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
 
     // Boarding / Penitipan
     Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
@@ -104,5 +106,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
     Route::get('/boardings/{id}', [BoardingController::class, 'show']);
     Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
+    Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
 
 });

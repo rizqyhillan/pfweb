@@ -101,6 +101,24 @@ class BoardingController extends Controller
         return redirect()->route('admin.boardings.index')->with('success', 'Penitipan berhasil diperbarui.');
     }
 
+
+    public function updateStatus(Request $request, Boarding $boarding)
+    {
+        $v = $request->validate([
+            'status' => 'required|in:pending,aktif,selesai,batal',
+        ]);
+
+        $boarding->update($v);
+
+        if (in_array($v['status'], ['selesai', 'batal'])) {
+            Room::where('id', $boarding->id_kamar)->update(['status' => 'tersedia']);
+        } elseif ($v['status'] === 'aktif') {
+            Room::where('id', $boarding->id_kamar)->update(['status' => 'terisi']);
+        }
+
+        return redirect()->route('admin.boardings.index')->with('success', 'Status penitipan berhasil diperbarui.');
+    }
+
     public function destroy(Boarding $boarding)
     {
         Room::where('id', $boarding->id_kamar)->update(['status' => 'tersedia']);

@@ -207,6 +207,52 @@ class DoctorBookingController extends Controller
     }
 
 
+
+    public function reschedule(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'tanggal_booking' => ['required', 'date', 'after_or_equal:today'],
+            'jam_booking' => ['required', 'date_format:H:i'],
+            'id_jadwal' => ['nullable', 'exists:jadwal_dokter,id'],
+        ]);
+
+        $booking = DoctorBooking::with([
+                'hewan',
+                'dokter',
+                'layanan',
+                'jadwal',
+            ])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        if (!in_array($booking->status, ['pending'])) {
+            return response()->json([
+                'message' => 'Booking dokter hanya bisa diubah jadwal jika status masih pending.',
+            ], 422);
+        }
+
+        if (!empty($validated['id_jadwal'])) {
+            DoctorSchedule::where('id', $validated['id_jadwal'])
+                ->where('id_dokter', $booking->id_dokter)
+                ->where('is_aktif', true)
+                ->firstOrFail();
+        }
+
+        $booking->update([
+            'id_jadwal' => $validated['id_jadwal'] ?? $booking->id_jadwal,
+            'tanggal_booking' => $validated['tanggal_booking'],
+            'jam_booking' => $validated['jam_booking'],
+        ]);
+
+        return response()->json([
+            'message' => 'Jadwal booking dokter berhasil diubah.',
+            'data' => $this->formatBooking($booking->fresh(['hewan', 'dokter', 'layanan', 'jadwal'])),
+        ]);
+    }
+
     public function cancel(Request $request, $id)
     {
         $booking = DoctorBooking::with([
