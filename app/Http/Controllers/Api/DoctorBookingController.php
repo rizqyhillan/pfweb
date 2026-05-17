@@ -8,6 +8,7 @@ use App\Models\DoctorSchedule;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DoctorBookingController extends Controller
@@ -110,7 +111,7 @@ class DoctorBookingController extends Controller
             'id_dokter' => ['required', 'exists:users,id'],
             'id_layanan' => ['required', 'exists:layanan,id'],
             'id_jadwal' => ['nullable', 'exists:jadwal_dokter,id'],
-            'tanggal_booking' => ['required', 'date'],
+            'tanggal_booking' => ['required', 'date', 'after_or_equal:today'],
             'jam_booking' => ['required', 'date_format:H:i'],
             'keluhan' => ['nullable', 'string'],
         ]);
@@ -205,6 +206,37 @@ class DoctorBookingController extends Controller
         ]);
     }
 
+
+    public function cancel(Request $request, $id)
+    {
+        $booking = DoctorBooking::with([
+                'hewan',
+                'dokter',
+                'layanan',
+                'jadwal',
+            ])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        if (!in_array($booking->status, ['pending'])) {
+            return response()->json([
+                'message' => 'Booking dokter hanya bisa dibatalkan jika status masih pending.',
+            ], 422);
+        }
+
+        $booking->update([
+            'status' => 'batal',
+        ]);
+
+        return response()->json([
+            'message' => 'Booking dokter berhasil dibatalkan.',
+            'data' => $this->formatBooking($booking->fresh(['hewan', 'dokter', 'layanan', 'jadwal'])),
+        ]);
+    }
+
     private function formatBooking(DoctorBooking $booking): array
     {
         return [
@@ -226,7 +258,7 @@ class DoctorBookingController extends Controller
             'jam_selesai_jadwal' => $booking->jadwal->jam_selesai ?? null,
 
             'tanggal_booking' => optional($booking->tanggal_booking)->format('Y-m-d'),
-            'jam_booking' => $booking->jam_booking,
+            'jam_booking' => $booking->jam_booking ? Carbon::parse($booking->jam_booking)->format('H:i') : null,
             'keluhan' => $booking->keluhan,
             'catatan_dokter' => $booking->catatan_dokter,
             'status' => $booking->status,

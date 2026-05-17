@@ -38,7 +38,7 @@ class BoardingController extends Controller
     {
         $validated = $request->validate([
             'id_kamar' => ['required', 'exists:kamar,id'],
-            'tanggal_masuk' => ['required', 'date'],
+            'tanggal_masuk' => ['required', 'date', 'after_or_equal:today'],
             'tanggal_rencana_keluar' => ['required', 'date', 'after:tanggal_masuk'],
         ]);
 
@@ -71,9 +71,10 @@ class BoardingController extends Controller
         $validated = $request->validate([
             'id_hewan' => ['required', 'exists:hewan,id'],
             'id_kamar' => ['required', 'exists:kamar,id'],
-            'tanggal_masuk' => ['required', 'date'],
+            'tanggal_masuk' => ['required', 'date', 'after_or_equal:today'],
             'tanggal_rencana_keluar' => ['required', 'date', 'after:tanggal_masuk'],
             'catatan_titip' => ['nullable', 'string'],
+            'catatan' => ['nullable', 'string'],
         ]);
 
         $pet = Pet::where('id', $validated['id_hewan'])
@@ -104,7 +105,7 @@ class BoardingController extends Controller
             'tanggal_keluar' => null,
             'status' => 'pending',
             'total_biaya' => $totalBiaya,
-            'catatan_titip' => $validated['catatan_titip'] ?? null,
+            'catatan_titip' => $validated['catatan_titip'] ?? $validated['catatan'] ?? null,
         ]);
 
         $boarding->load([

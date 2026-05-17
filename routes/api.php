@@ -60,6 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Grooming
     Route::post('/grooming/book', [TransactionController::class, 'storeGrooming']);
+    Route::get('/my-grooming-bookings', [TransactionController::class, 'myGroomingBookings']);
+    Route::get('/grooming-bookings/{id}', [TransactionController::class, 'showGrooming']);
+    Route::post('/grooming-bookings/{id}/cancel', [TransactionController::class, 'cancelGrooming']);
 
     // Shop
     Route::post('/checkout', [TransactionController::class, 'checkout']);
@@ -91,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
     Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
     Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
+    Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
 
     // Boarding / Penitipan
     Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);

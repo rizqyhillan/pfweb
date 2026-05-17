@@ -124,7 +124,7 @@ class TransactionController extends Controller
         $v = $request->validate([
             'id_hewan' => 'required|exists:hewan,id',
             'id_paket' => 'required|exists:package_types,id',
-            'tanggal_grooming' => 'required|date',
+            'tanggal_grooming' => 'required|date|after_or_equal:today',
             'waktu_grooming' => 'required|date_format:H:i',
             'catatan_grooming' => 'nullable|string',
         ]);
@@ -144,10 +144,91 @@ class TransactionController extends Controller
 
         $grooming = Grooming::create($v);
 
+        $grooming->load(['hewan.owner', 'paket']);
+
         return response()->json([
-            'message' => 'Booking grooming berhasil',
-            'data' => $grooming
+            'message' => 'Booking grooming berhasil dibuat. Pembayaran dilakukan di lokasi.',
+            'data' => $this->formatGrooming($grooming),
         ], 201);
+    }
+
+    public function myGroomingBookings(Request $request)
+    {
+        $groomings = Grooming::with(['hewan.owner', 'paket'])
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->latest('tanggal_grooming')
+            ->get()
+            ->map(fn ($grooming) => $this->formatGrooming($grooming));
+
+        return response()->json([
+            'data' => $groomings,
+        ]);
+    }
+
+    public function showGrooming(Request $request, $id)
+    {
+        $grooming = Grooming::with(['hewan.owner', 'paket'])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        return response()->json([
+            'data' => $this->formatGrooming($grooming),
+        ]);
+    }
+
+    public function cancelGrooming(Request $request, $id)
+    {
+        $grooming = Grooming::with(['hewan.owner', 'paket'])
+            ->where('id', $id)
+            ->whereHas('hewan', function ($query) use ($request) {
+                $query->where('id_pemilik', $request->user()->id);
+            })
+            ->firstOrFail();
+
+        if (!in_array($grooming->status, ['pending'])) {
+            return response()->json([
+                'message' => 'Booking grooming hanya bisa dibatalkan jika status masih pending.',
+            ], 422);
+        }
+
+        $grooming->update([
+            'status' => 'batal',
+        ]);
+
+        return response()->json([
+            'message' => 'Booking grooming berhasil dibatalkan.',
+            'data' => $this->formatGrooming($grooming->fresh(['hewan.owner', 'paket'])),
+        ]);
+    }
+
+    private function formatGrooming(Grooming $grooming): array
+    {
+        return [
+            'id' => $grooming->id,
+            'id_hewan' => $grooming->id_hewan,
+            'nama_hewan' => $grooming->hewan->nama_hewan ?? '-',
+            'jenis_hewan' => $grooming->hewan->jenis ?? null,
+            'ras_hewan' => $grooming->hewan->ras ?? null,
+            'id_paket' => $grooming->id_paket,
+            'nama_paket' => $grooming->paket->label ?? $grooming->paket->name ?? 'Grooming',
+            'deskripsi_paket' => $grooming->paket->description ?? null,
+            'fasilitas_paket' => $grooming->paket->fasilitas ?? null,
+            'tanggal_grooming' => optional($grooming->tanggal_grooming)->format('Y-m-d'),
+            'waktu_grooming' => $grooming->waktu_grooming ? Carbon::parse($grooming->waktu_grooming)->format('H:i') : null,
+            'status' => $grooming->status,
+            'catatan_grooming' => $grooming->catatan_grooming,
+            'estimasi_biaya' => (float) $grooming->total_biaya,
+            'total_biaya' => (float) $grooming->total_biaya,
+            'metode_pembayaran' => 'Bayar di lokasi',
+            'payment_note' => 'Pembayaran dilakukan di lokasi setelah layanan selesai.',
+            'created_at' => optional($grooming->created_at)->format('Y-m-d H:i:s'),
+            'updated_at' => optional($grooming->updated_at)->format('Y-m-d H:i:s'),
+        ];
     }
 
     private function formatTransaction(Transaction $transaction): array
