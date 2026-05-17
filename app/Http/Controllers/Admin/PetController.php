@@ -30,31 +30,30 @@ class PetController extends Controller
 
     public function store(Request $request)
     {
-        $v = $request->validate([
-            'id_pemilik' => 'required|exists:users,id',
+        $validated = $request->validate([
             'nama_hewan' => 'required|string|max:100',
             'jenis' => 'required|string|max:50',
+            'jenis_kelamin' => 'nullable|string|max:20',
+            'tanggal_lahir' => 'nullable|date',
             'ras' => 'nullable|string|max:100',
             'umur' => 'nullable|string|max:30',
-            'berat' => 'nullable|numeric|min:0',
+            'berat' => 'nullable|numeric',
             'catatan' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if (! empty($v['jenis'])) {
-            PetType::firstOrCreate(['name' => $v['jenis']]);
-        }
-        if (! empty($v['ras'])) {
-            PetBreed::firstOrCreate(['name' => $v['ras']]);
-        }
+        $validated['id_pemilik'] = $request->user()->id;
 
         if ($request->hasFile('foto')) {
-            $v['foto'] = $request->file('foto')->store('pets', 'public');
+            $validated['foto'] = $request->file('foto')->store('pets', 'public');
         }
 
-        Pet::create($v);
+        $pet = Pet::create($validated);
 
-        return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil ditambahkan.');
+        return response()->json([
+            'message' => 'Hewan berhasil ditambahkan',
+            'data' => $pet,
+        ], 201);
     }
 
     public function edit(Pet $pet)
@@ -66,36 +65,38 @@ class PetController extends Controller
         return view('admin.pets.edit', compact('pet', 'owners', 'types', 'breeds'));
     }
 
-    public function update(Request $request, Pet $pet)
+    public function update(Request $request, $id)
     {
-        $v = $request->validate([
-            'id_pemilik' => 'required|exists:users,id',
+        $pet = Pet::where('id', $id)
+            ->where('id_pemilik', $request->user()->id)
+            ->firstOrFail();
+
+        $validated = $request->validate([
             'nama_hewan' => 'required|string|max:100',
             'jenis' => 'required|string|max:50',
+            'jenis_kelamin' => 'nullable|string|max:20',
+            'tanggal_lahir' => 'nullable|date',
             'ras' => 'nullable|string|max:100',
             'umur' => 'nullable|string|max:30',
-            'berat' => 'nullable|numeric|min:0',
+            'berat' => 'nullable|numeric',
             'catatan' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
-        if (! empty($v['jenis'])) {
-            PetType::firstOrCreate(['name' => $v['jenis']]);
-        }
-        if (! empty($v['ras'])) {
-            PetBreed::firstOrCreate(['name' => $v['ras']]);
-        }
 
         if ($request->hasFile('foto')) {
             if ($pet->foto && Storage::disk('public')->exists($pet->foto)) {
                 Storage::disk('public')->delete($pet->foto);
             }
-            $v['foto'] = $request->file('foto')->store('pets', 'public');
+
+            $validated['foto'] = $request->file('foto')->store('pets', 'public');
         }
 
-        $pet->update($v);
+        $pet->update($validated);
 
-        return redirect()->route('admin.pets.index')->with('success', 'Data hewan berhasil diperbarui.');
+        return response()->json([
+            'message' => 'Hewan berhasil diperbarui',
+            'data' => $pet,
+        ]);
     }
 
     public function show(Pet $pet)
@@ -105,13 +106,20 @@ class PetController extends Controller
         return view('admin.pets.show', compact('pet'));
     }
 
-    public function destroy(Pet $pet)
+    public function destroy(Request $request, $id)
     {
+        $pet = Pet::where('id', $id)
+            ->where('id_pemilik', $request->user()->id)
+            ->firstOrFail();
+    
         if ($pet->foto && Storage::disk('public')->exists($pet->foto)) {
             Storage::disk('public')->delete($pet->foto);
         }
+    
         $pet->delete();
-
-        return redirect()->route('admin.pets.index')->with('success', 'Data hewan berhasil dihapus.');
+    
+        return response()->json([
+            'message' => 'Hewan berhasil dihapus',
+        ]);
     }
 }

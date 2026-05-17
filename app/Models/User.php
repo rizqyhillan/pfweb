@@ -9,7 +9,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['nama', 'email', 'password', 'role', 'no_hp', 'alamat', 'is_aktif'];
+    protected $fillable = ['nama', 'email', 'password', 'role', 'no_hp', 'alamat', 'is_aktif', 'foto'];
     protected $hidden = ['password', 'remember_token'];
     protected function casts(): array
     {
