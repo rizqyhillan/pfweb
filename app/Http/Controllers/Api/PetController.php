@@ -33,6 +33,13 @@ class PetController extends Controller
 
         $validated['id_pemilik'] = $request->user()->id;
 
+        if (!empty($validated['jenis'])) {
+            \App\Models\PetType::firstOrCreate(['name' => $validated['jenis']]);
+        }
+        if (!empty($validated['ras'])) {
+            \App\Models\PetBreed::firstOrCreate(['name' => $validated['ras']]);
+        }
+
         $pet = Pet::create($validated);
 
         return response()->json([
@@ -58,6 +65,13 @@ class PetController extends Controller
             'catatan' => 'nullable|string',
             'foto' => 'nullable|string',
             ]);
+
+    if (!empty($validated['jenis'])) {
+        \App\Models\PetType::firstOrCreate(['name' => $validated['jenis']]);
+    }
+    if (!empty($validated['ras'])) {
+        \App\Models\PetBreed::firstOrCreate(['name' => $validated['ras']]);
+    }
 
     $pet->update($validated);
 

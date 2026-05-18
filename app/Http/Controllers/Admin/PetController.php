@@ -31,6 +31,7 @@ class PetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'id_pemilik' => 'required|exists:users,id',
             'nama_hewan' => 'required|string|max:100',
             'jenis' => 'required|string|max:50',
             'jenis_kelamin' => 'nullable|string|max:20',
@@ -42,18 +43,20 @@ class PetController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $validated['id_pemilik'] = $request->user()->id;
-
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('pets', 'public');
         }
 
-        $pet = Pet::create($validated);
+        if (!empty($validated['jenis'])) {
+            PetType::firstOrCreate(['name' => $validated['jenis']]);
+        }
+        if (!empty($validated['ras'])) {
+            PetBreed::firstOrCreate(['name' => $validated['ras']]);
+        }
 
-        return response()->json([
-            'message' => 'Hewan berhasil ditambahkan',
-            'data' => $pet,
-        ], 201);
+        Pet::create($validated);
+
+        return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil ditambahkan');
     }
 
     public function edit(Pet $pet)
@@ -67,11 +70,10 @@ class PetController extends Controller
 
     public function update(Request $request, $id)
     {
-        $pet = Pet::where('id', $id)
-            ->where('id_pemilik', $request->user()->id)
-            ->firstOrFail();
+        $pet = Pet::findOrFail($id);
 
         $validated = $request->validate([
+            'id_pemilik' => 'required|exists:users,id',
             'nama_hewan' => 'required|string|max:100',
             'jenis' => 'required|string|max:50',
             'jenis_kelamin' => 'nullable|string|max:20',
@@ -91,12 +93,16 @@ class PetController extends Controller
             $validated['foto'] = $request->file('foto')->store('pets', 'public');
         }
 
+        if (!empty($validated['jenis'])) {
+            PetType::firstOrCreate(['name' => $validated['jenis']]);
+        }
+        if (!empty($validated['ras'])) {
+            PetBreed::firstOrCreate(['name' => $validated['ras']]);
+        }
+
         $pet->update($validated);
 
-        return response()->json([
-            'message' => 'Hewan berhasil diperbarui',
-            'data' => $pet,
-        ]);
+        return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil diperbarui');
     }
 
     public function show(Pet $pet)
@@ -108,9 +114,7 @@ class PetController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $pet = Pet::where('id', $id)
-            ->where('id_pemilik', $request->user()->id)
-            ->firstOrFail();
+        $pet = Pet::findOrFail($id);
     
         if ($pet->foto && Storage::disk('public')->exists($pet->foto)) {
             Storage::disk('public')->delete($pet->foto);
@@ -118,8 +122,6 @@ class PetController extends Controller
     
         $pet->delete();
     
-        return response()->json([
-            'message' => 'Hewan berhasil dihapus',
-        ]);
+        return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil dihapus');
     }
 }
