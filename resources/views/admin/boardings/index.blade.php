@@ -97,4 +97,67 @@
     @endif
   </div>
 
+  @section('page-js')
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.Echo !== 'undefined') {
+          console.log('✅ Echo connected. Listening on boardings (Admin)...');
+
+          window.Echo.channel('boardings')
+            .listen('.new-boarding', (e) => {
+              let b = e.boarding;
+              let tbody = document.querySelector('tbody.table-border-bottom-0');
+              let noDataTr = tbody.querySelector('td[colspan="9"]');
+              if (noDataTr) noDataTr.parentElement.remove();
+
+              let biayaFormat = new Intl.NumberFormat('id-ID').format(b.total_biaya);
+              let checkinStr = b.tanggal_masuk ? new Date(b.tanggal_masuk).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+              let checkoutStr = b.tanggal_rencana_keluar ? new Date(b.tanggal_rencana_keluar).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+
+              let statusMap = {
+                'aktif': '<span class="badge bg-label-primary">Aktif</span>',
+                'selesai': '<span class="badge bg-label-success">Selesai</span>',
+                'pending': '<span class="badge bg-label-warning">Pending</span>',
+                'batal': '<span class="badge bg-label-danger">Batal</span>',
+              };
+              let statusBadge = statusMap[b.status] || '<span class="badge bg-label-secondary">' + (b.status || '-') + '</span>';
+
+              let petName = b.hewan ? b.hewan.nama_hewan : '-';
+              let ownerName = (b.hewan && b.hewan.owner) ? b.hewan.owner.nama : '-';
+              let roomName = b.kamar ? b.kamar.nama_kamar : '-';
+
+              let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+              let actionsHtml = `
+                <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/admin/boardings/${b.id}/edit"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+                    <form action="/admin/boardings/${b.id}" method="POST">
+                      <input type="hidden" name="_token" value="${csrfToken}">
+                      <input type="hidden" name="_method" value="DELETE">
+                      <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
+                    </form>
+                  </div>
+                </div>`;
+
+              let html = `
+                <tr style="animation: slideIn .3s ease; background-color: rgba(40, 199, 111, 0.05);">
+                  <td><span class="badge bg-success bx-tada">Baru</span></td>
+                  <td><strong>${petName}</strong></td>
+                  <td>${ownerName}</td>
+                  <td>${roomName}</td>
+                  <td>${checkinStr}</td>
+                  <td>${checkoutStr}</td>
+                  <td>${statusBadge}</td>
+                  <td>Rp ${biayaFormat}</td>
+                  <td>${actionsHtml}</td>
+                </tr>`;
+
+              tbody.insertAdjacentHTML('afterbegin', html);
+            });
+        }
+      });
+    </script>
+  @endsection
 @endsection

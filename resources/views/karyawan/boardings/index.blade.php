@@ -108,8 +108,8 @@
               let roomName = b.kamar ? b.kamar.nama_kamar : '-';
 
               let html = `
-                <tr style="animation: slideIn .3s ease;">
-                  <td><span class="badge bg-success">Baru</span></td>
+                <tr style="animation: slideIn .3s ease; background-color: rgba(40, 199, 111, 0.05);">
+                  <td><span class="badge bg-success bx-tada">Baru</span></td>
                   <td><strong>${petName}</strong></td>
                   <td>${ownerName}</td>
                   <td>${roomName}</td>
