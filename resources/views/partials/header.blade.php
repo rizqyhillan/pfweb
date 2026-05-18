@@ -8,66 +8,38 @@
           <h1 class="sitename" style="font-weight: 700; color: var(--accent-color);">PawPet</h1>
         </a>
 
-          <nav id="navmenu" class="navmenu">
-          <ul>
-            <li><a href="{{ route('home') }}" class="active">Home</a></li>
-            <li><a href="{{ route('home') }}#shop">Shop</a></li>
-            <li><a href="{{ route('appointment') }}">Booking</a></li>
-            <li><a href="{{ route('contact') }}">Contact</a></li>
+        <div class="dropdown">
+          <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 32px; color: var(--accent-color); border: none; background: transparent;">
+            <i class="bi bi-list"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" style="border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; padding: 10px 0; min-width: 220px;">
+            <li><a class="dropdown-item py-2 fw-semibold" href="#hero">Home</a></li>
+            <li><a class="dropdown-item py-2 fw-semibold" href="#services">Layanan Terpadu</a></li>
+            <li><a class="dropdown-item py-2 fw-semibold" href="#shop">Shop</a></li>
+            <li><a class="dropdown-item py-2 fw-semibold" href="#contact">Contact</a></li>
+            <li><hr class="dropdown-divider"></li>
+            @guest
+              <li><a class="dropdown-item py-2 fw-bold text-primary" href="{{ route('login') }}"><i class="bi bi-person me-2"></i>Login</a></li>
+            @endguest
+            @auth
+              @php
+                $dashRoute = match(Auth::user()->role) {
+                  'admin'    => route('admin.dashboard'),
+                  'dokter'   => route('doctor.dashboard'),
+                  'karyawan' => route('karyawan.dashboard'),
+                  default    => route('home'),
+                };
+              @endphp
+              <li><a class="dropdown-item py-2 fw-bold text-primary" href="{{ $dashRoute }}"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
+              <li>
+                <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                  @csrf
+                  <button type="submit" class="dropdown-item py-2 fw-bold text-danger"><i class="bi bi-box-arrow-right me-2"></i>Keluar</button>
+                </form>
+              </li>
+            @endauth
           </ul>
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-
-        {{-- AUTH BUTTONS ──────────────────────────── --}}
-        <div class="d-flex align-items-center gap-2 ms-3" style="flex-shrink:0;">
-
-          @guest
-            {{-- Belum login: tampilkan Login & Register --}}
-            <a href="{{ route('login') }}"
-               style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
-                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
-                      transition:all .2s;"
-               onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
-               onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
-              <i class="bi bi-person me-1"></i>Login
-            </a>
-          @endguest
-
-          @auth
-            {{-- Sudah login: Dashboard sesuai role --}}
-            @php
-              $dashRoute = match(Auth::user()->role) {
-                'admin'    => route('admin.dashboard'),
-                'dokter'   => route('doctor.dashboard'),
-                'karyawan' => route('karyawan.dashboard'),
-                default    => route('home'),
-              };
-            @endphp
-
-            <a href="{{ $dashRoute }}"
-               style="padding:.42rem 1rem;border:2px solid var(--accent-color);color:var(--accent-color);
-                      border-radius:25px;font-size:.82rem;font-weight:700;text-decoration:none;
-                      transition:all .2s;"
-               onmouseover="this.style.background='var(--accent-color)';this.style.color='#fff';"
-               onmouseout="this.style.background='transparent';this.style.color='var(--accent-color)';">
-              <i class="bi bi-grid me-1"></i>Dashboard
-            </a>
-
-            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-              @csrf
-              <button type="submit"
-                      style="padding:.42rem 1rem;background:rgba(239,68,68,.1);color:#ef4444;
-                             border:2px solid rgba(239,68,68,.25);border-radius:25px;
-                             font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;"
-                      onmouseover="this.style.background='rgba(239,68,68,.2)';"
-                      onmouseout="this.style.background='rgba(239,68,68,.1)';">
-                <i class="bi bi-box-arrow-right me-1"></i>Keluar
-              </button>
-            </form>
-          @endauth
-
         </div>
-        {{-- /AUTH BUTTONS ─────────────────────────── --}}
 
       </div>
 

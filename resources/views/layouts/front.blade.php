@@ -45,6 +45,11 @@
       --nav-dropdown-hover-color: #f59e0b;
     }
     
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 90px;
+    }
+    
     .light-background {
       --background-color: #fffaf5 !important; /* Cream sangat ringan */
       --surface-color: #ffffff;

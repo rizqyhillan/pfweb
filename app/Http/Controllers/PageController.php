@@ -95,22 +95,4 @@ class PageController extends Controller
             return $fallback ?? collect();
         }
     }
-
-    public function doctors()
-    {
-        // TODO: Fetch doctors from database
-        return view('pages.doctors');
-    }
-
-    public function services()
-    {
-        // TODO: Fetch services from database
-        return view('pages.services');
-    }
-
-    public function departments()
-    {
-        // TODO: Fetch departments from database
-        return view('pages.departments');
-    }
 }

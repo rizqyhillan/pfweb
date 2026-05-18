@@ -37,10 +37,10 @@
                   <div class="nav-column">
                     <h6>Layanan</h6>
                     <nav class="footer-nav">
-                      <a href="{{ route('services') }}">Konsultasi Dokter</a>
-                      <a href="{{ route('services') }}">Grooming</a>
-                      <a href="{{ route('services') }}">Penitipan Hewan</a>
-                      <a href="{{ route('services') }}">Vaksinasi</a>
+                      <a href="#services">Konsultasi Dokter</a>
+                      <a href="#services">Grooming</a>
+                      <a href="#services">Penitipan Hewan</a>
+                      <a href="#services">Vaksinasi</a>
                     </nav>
                   </div>
                 </div>
@@ -49,10 +49,10 @@
                   <div class="nav-column">
                     <h6>PawPet Shop</h6>
                     <nav class="footer-nav">
-                      <a href="{{ route('home') }}#shop">Makanan Kucing & Anjing</a>
-                      <a href="{{ route('home') }}#shop">Aksesoris & Mainan</a>
-                      <a href="{{ route('home') }}#shop">Vitamin & Obat</a>
-                      <a href="{{ route('home') }}#shop">Perlengkapan Mandi</a>
+                      <a href="#shop">Makanan Kucing & Anjing</a>
+                      <a href="#shop">Aksesoris & Mainan</a>
+                      <a href="#shop">Vitamin & Obat</a>
+                      <a href="#shop">Perlengkapan Mandi</a>
                     </nav>
                   </div>
                 </div>
@@ -61,10 +61,10 @@
                   <div class="nav-column">
                     <h6>Bantuan</h6>
                     <nav class="footer-nav">
-                      <a href="{{ route('faq') }}">FAQ</a>
-                      <a href="{{ route('contact') }}">Pusat Bantuan</a>
-                      <a href="{{ route('terms') }}">Syarat & Ketentuan</a>
-                      <a href="{{ route('privacy') }}">Kebijakan Privasi</a>
+                      <a href="#contact">FAQ</a>
+                      <a href="#contact">Pusat Bantuan</a>
+                      <a href="#">Syarat & Ketentuan</a>
+                      <a href="#">Kebijakan Privasi</a>
                     </nav>
                   </div>
                 </div>
@@ -103,16 +103,9 @@
 
             <div class="col-lg-6">
               <div class="legal-links">
-                <a href="{{ route('privacy') }}">Privacy Policy</a>
-                <a href="{{ route('terms') }}">Terms of Service</a>
-                <a href="{{ route('privacy') }}">Cookie Policy</a>
-                <div class="credits">
-                  <!-- All the links in the footer should remain intact. -->
-                  <!-- You can delete the links only if you've purchased the pro version. -->
-                  <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                  <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-                  Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>. Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                </div>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
               </div>
             </div>
 

@@ -58,8 +58,11 @@
               <div class="hero-actions" data-aos="fade-right" data-aos-delay="600">
                 @guest
                   {{-- Belum login: Booking + ajakan daftar --}}
-                  <a href="{{ route('appointment') }}" class="btn btn-primary">
+                  <a href="#services" class="btn btn-primary">
                     <i class="bi bi-calendar-check me-1"></i>Booking Sekarang
+                  </a>
+                  <a href="#services" class="btn btn-outline">
+                    <i class="bi bi-search me-1"></i>Jelajahi Layanan
                   </a>
                 @endguest
 
@@ -76,7 +79,7 @@
                   <a href="{{ $heroDash }}" class="btn btn-primary">
                     <i class="bi bi-grid me-1"></i>Ke Dashboard
                   </a>
-                  <a href="{{ route('appointment') }}" class="btn btn-outline">
+                  <a href="#services" class="btn btn-outline">
                     <i class="bi bi-calendar-check me-1"></i>Booking Sekarang
                   </a>
                 @endauth
@@ -168,7 +171,7 @@
               </div>
 
               <div class="cta-section">
-                <a href="{{ route('about') }}" class="btn-primary">Learn More About Us</a>
+                <a href="#services" class="btn-primary">Learn More About Us</a>
               </div>
             </div>
           </div>
@@ -228,7 +231,7 @@
                   <span><i class="bi bi-check-circle-fill"></i>Pemeriksaan Kesehatan Menyeluruh</span>
                   <span><i class="bi bi-check-circle-fill"></i>Penanganan Darurat 24/7</span>
                 </div>
-                <a href="{{ route('department-details') }}" class="specialty-link">
+                <a href="#services" class="specialty-link">
                   Selengkapnya <i class="bi bi-arrow-right"></i>
                 </a>
               </div>
@@ -253,7 +256,7 @@
                   <span><i class="bi bi-check-circle-fill"></i>Konsultasi Diet Khusus</span>
                   <span><i class="bi bi-check-circle-fill"></i>Suplemen & Vitamin Hewan</span>
                 </div>
-                <a href="{{ route('department-details') }}" class="specialty-link">
+                <a href="#services" class="specialty-link">
                   Selengkapnya <i class="bi bi-arrow-right"></i>
                 </a>
               </div>
@@ -278,7 +281,7 @@
                 <li>Potong Kuku & Bulu</li>
                 <li>Spa & Aromaterapi</li>
               </ul>
-              <a href="{{ route('department-details') }}" class="highlight-cta">Learn More</a>
+              <a href="#services" class="highlight-cta">Learn More</a>
             </div>
           </div><!-- End Department Highlight -->
 
@@ -294,7 +297,7 @@
                 <li>Pantauan Berkala</li>
                 <li>Aktivitas Harian</li>
               </ul>
-              <a href="{{ route('department-details') }}" class="highlight-cta">Learn More</a>
+              <a href="#services" class="highlight-cta">Learn More</a>
             </div>
           </div><!-- End Department Highlight -->
 
@@ -310,7 +313,7 @@
                 <li>Jadwal Imunisasi Teratur</li>
                 <li>Sertifikat Vaksin Resmi</li>
               </ul>
-              <a href="{{ route('department-details') }}" class="highlight-cta">Learn More</a>
+              <a href="#services" class="highlight-cta">Learn More</a>
             </div>
           </div><!-- End Department Highlight -->
 
@@ -320,9 +323,8 @@
           <div class="row align-items-center">
             <div class="col-lg-8">
               <div class="emergency-content">
-                <h3>Emergency Services Available 24/7</h3>
-                <p>Our emergency department is equipped with state-of-the-art technology and staffed by board-certified
-                  emergency physicians ready to provide immediate care.</p>
+                <h3>Layanan Darurat Tersedia 24/7</h3>
+                <p>Klinik kami dilengkapi dengan teknologi terkini dan ditangani oleh dokter hewan profesional yang siap memberikan penanganan segera kapan saja anabul Anda membutuhkannya.</p>
               </div>
             </div>
             <div class="col-lg-4 text-lg-end">
@@ -339,7 +341,7 @@
     </section><!-- /Featured Departments Section -->
 
     <!-- Featured Services Section -->
-    <section id="featured-services" class="featured-services section">
+    <section id="services" class="featured-services section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
@@ -366,7 +368,7 @@
               <div class="service-details">
                 <h2>Kesehatan dan Perawatan Terbaik</h2>
                 <p>Kami menyediakan layanan kesehatan menyeluruh mulai dari pemeriksaan rutin, grooming profesional, hingga kebutuhan nutrisi hewan peliharaan Anda.</p>
-                <a href="{{ route('services') }}" class="main-cta">Jelajahi Layanan Kami</a>
+                <a href="#services" class="main-cta">Jelajahi Layanan Kami</a>
               </div>
             </div>
           </div>
@@ -381,7 +383,7 @@
                 <div class="service-info">
                   <h4>Perawatan Kulit & Bulu</h4>
                   <p>Perawatan khusus untuk menjaga kesehatan kulit dan keindahan bulu anabul kesayangan Anda.</p>
-                  <a href="{{ route('services') }}" class="service-link">Learn More</a>
+                  <a href="#services" class="service-link">Learn More</a>
                 </div>
               </div>
 
@@ -392,7 +394,7 @@
                 <div class="service-info">
                   <h4>Tindakan Medis</h4>
                   <p>Penanganan medis profesional oleh dokter hewan berpengalaman untuk berbagai kondisi kesehatan.</p>
-                  <a href="{{ route('services') }}" class="service-link">Learn More</a>
+                  <a href="#services" class="service-link">Learn More</a>
                 </div>
               </div>
 
@@ -403,7 +405,7 @@
                 <div class="service-info">
                   <h4>Laboratorium Hewan</h4>
                   <p>Pemeriksaan laboratorium lengkap untuk diagnosis yang akurat dan penanganan yang tepat.</p>
-                  <a href="{{ route('services') }}" class="service-link">Learn More</a>
+                  <a href="#services" class="service-link">Learn More</a>
                 </div>
               </div>
 
@@ -519,8 +521,8 @@
               <span class="rating-score">Stok: {{ $product->stok }}</span>
             </div>
             <div class="action-buttons">
-              <a href="{{ route('services') }}" class="btn-secondary">View Details</a>
-              <a href="{{ route('appointment') }}" class="btn-primary">Order</a>
+              <a href="#shop" class="btn-secondary">View Details</a>
+              <a href="#shop" class="btn-primary">Order</a>
             </div>
           </div><!-- End Product Card -->
           @empty
@@ -533,7 +535,7 @@
         </div>
 
         <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
-          <a href="{{ route('services') }}" class="btn-view-all">
+          <a href="#shop" class="btn-view-all">
             Lihat Semua Produk
             <i class="bi bi-arrow-right"></i>
           </a>
@@ -543,8 +545,187 @@
 
     </section><!-- /PawPet Shop Section -->
 
+    <!-- Doctors Section -->
+    <section id="doctors" class="doctors section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Tim Dokter Hewan</h2>
+        <p>Berpengalaman dan penuh kasih sayang dalam merawat anabul Anda</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4">
+          @forelse($doctors as $doctor)
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ 100 + ($loop->index * 100) }}">
+            <div class="doctor-card">
+              <div class="doctor-image">
+                <img src="{{ asset('assets/pawpet/icons/icon-pet.jpeg') }}" alt="{{ $doctor->name }}" class="img-fluid">
+                <div class="doctor-overlay">
+                  <div class="social-links">
+                    <span class="social-icon mx-1 text-white"><i class="bi bi-linkedin"></i></span>
+                    <span class="social-icon mx-1 text-white"><i class="bi bi-envelope"></i></span>
+                  </div>
+                </div>
+              </div>
+              <div class="doctor-content">
+                <h4>{{ $doctor->name }}</h4>
+                <span class="specialty">Dokter Hewan</span>
+                <p>Siap memberikan penanganan medis profesional untuk kesehatan anabul kesayangan Anda.</p>
+                <div class="doctor-meta">
+                  <div class="department">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span>Kesehatan Hewan</span>
+                  </div>
+                </div>
+                <a href="#services" class="btn-appointment">Konsultasi</a>
+              </div>
+            </div>
+          </div>
+          @empty
+          <div class="col-12 text-center py-5">
+            <p class="text-muted">Jadwal dokter segera diperbarui.</p>
+          </div>
+          @endforelse
+        </div>
+      </div>
+    </section><!-- /Doctors Section -->
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Apa Kata Mereka?</h2>
+        <p>Pengalaman pelanggan kami mempercayakan anabulnya di PawPet</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-4">
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="testimonial-item">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>Pelayanan sangat ramah dan profesional. Kucing saya jadi lebih sehat dan aktif setelah rutin checkup di sini.</p>
+              <div class="testimonial-footer">
+                <div class="testimonial-author">
+                  <div>
+                    <h5>Sarah & Mochi</h5>
+                    <span>Cat Owner</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="testimonial-item">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>Grooming-nya juara! Bulu anjing saya jadi lembut banget dan wangi tahan lama. Tempatnya juga bersih.</p>
+              <div class="testimonial-footer">
+                <div class="testimonial-author">
+                  <div>
+                    <h5>Budi & Max</h5>
+                    <span>Dog Owner</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="testimonial-item">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>Sangat membantu waktu emergency. Dokter hewan cepat tanggap dan penjelasannya sangat mudah dipahami.</p>
+              <div class="testimonial-footer">
+                <div class="testimonial-author">
+                  <div>
+                    <h5>Anita & Bella</h5>
+                    <span>Pet Owner</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- /Testimonials Section -->
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>FAQ</h2>
+        <p>Pertanyaan yang sering diajukan</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row justify-content-center">
+          <div class="col-lg-9">
+            <div class="faq-wrapper">
+              <div class="faq-item faq-active" data-aos="fade-up" data-aos-delay="150">
+                <div class="faq-header">
+                  <span class="faq-number">01</span>
+                  <h4>Apakah PawPet menerima kasus darurat 24 jam?</h4>
+                  <div class="faq-toggle">
+                    <i class="bi bi-plus"></i><i class="bi bi-dash"></i>
+                  </div>
+                </div>
+                <div class="faq-content">
+                  <div class="content-inner">
+                    <p>Ya, kami memiliki layanan darurat 24/7. Anda dapat menghubungi hotline kami kapan saja saat hewan peliharaan Anda membutuhkan penanganan medis segera.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="faq-header">
+                  <span class="faq-number">02</span>
+                  <h4>Layanan grooming apa saja yang tersedia?</h4>
+                  <div class="faq-toggle">
+                    <i class="bi bi-plus"></i><i class="bi bi-dash"></i>
+                  </div>
+                </div>
+                <div class="faq-content">
+                  <div class="content-inner">
+                    <p>Kami menyediakan layanan grooming lengkap, mulai dari mandi biasa, potong bulu, potong kuku, pembersihan telinga, hingga paket spa premium untuk kenyamanan maksimal anabul Anda.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="faq-item" data-aos="fade-up" data-aos-delay="250">
+                <div class="faq-header">
+                  <span class="faq-number">03</span>
+                  <h4>Bagaimana cara memesan layanan atau membeli produk?</h4>
+                  <div class="faq-toggle">
+                    <i class="bi bi-plus"></i><i class="bi bi-dash"></i>
+                  </div>
+                </div>
+                <div class="faq-content">
+                  <div class="content-inner">
+                    <p>Anda dapat membuat janji temu melalui tombol 'Booking Sekarang' di halaman ini, atau menghubungi kami melalui WhatsApp. Untuk produk, bisa langsung memesan lewat PawPet Shop.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- /FAQ Section -->
+
+    <!-- Download App Section -->
+    <section id="download-app" class="download-app section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Download Aplikasi PawPet</h2>
+        <p>Kelola kesehatan, grooming, booking, dan kebutuhan anabul Anda langsung dari smartphone.</p>
+      </div>
+      <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+          <a href="#" class="btn btn-primary" style="border-radius: 50px; padding: 15px 30px; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; background: var(--accent-color); border: none; color: white;">
+            <i class="bi bi-google-play me-2" style="font-size: 1.3rem;"></i> Download di Google Play
+          </a>
+          <a href="#" class="btn btn-outline" style="border-radius: 50px; padding: 15px 30px; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; border: 2px solid var(--accent-color); color: var(--accent-color); background: transparent;">
+            <i class="bi bi-android2 me-2" style="font-size: 1.3rem;"></i> Download APK Android
+          </a>
+        </div>
+      </div>
+    </section><!-- /Download App Section -->
+
     <!-- Call To Action Section -->
-    <section id="call-to-action" class="call-to-action section light-background">
+    <section id="contact" class="call-to-action section light-background">
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -557,11 +738,11 @@
                 <p>Dari konsultasi dokter hewan, grooming profesional, hingga penitipan hewan yang aman — semua layanan terbaik untuk anabul kesayangan Anda tersedia di PawPet.</p>
 
                 <div class="cta-wrapper">
-                  <a href="{{ route('appointment') }}" class="primary-cta">
+                  <a href="#contact" class="primary-cta">
                     <span>Schedule Consultation</span>
                     <i class="bi bi-arrow-right"></i>
                   </a>
-                  <a href="{{ route('services') }}" class="secondary-cta">
+                  <a href="#services" class="secondary-cta">
                     <span>Explore Services</span>
                     <i class="bi bi-arrow-right"></i>
                   </a>
@@ -632,7 +813,7 @@
                   <i class="bi bi-telephone"></i>
                   <span>+62 811 2233 4455</span>
                 </a>
-                <a href="{{ route('contact') }}" class="contact-link">Temukan Lokasi</a>
+                <a href="#contact" class="contact-link">Temukan Lokasi</a>
               </div>
             </div>
 
