@@ -3,10 +3,21 @@
 @section('title', 'Data Grooming')
 
 @section('content')
-  <div class="d-flex justify-content-between align-items-center mb-6">
+  <div class="d-flex justify-content-between align-items-end gap-3 mb-6">
     <h4 class="mb-0">Data Grooming</h4>
-    <a href="{{ route('admin.groomings.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Grooming
-      Baru</a>
+    <form method="GET" action="{{ route('admin.groomings.index') }}" class="d-flex gap-2 align-items-end">
+      <div style="min-width: 220px;">
+        <label for="paket" class="form-label mb-2">Filter Paket</label>
+        <select id="paket" name="paket" class="form-control form-control-sm">
+          <option value="">-- Semua Paket --</option>
+          @foreach($packageOptions as $key => $label)
+            <option value="{{ $key }}" @if($selectedPaket == $key) selected @endif>{{ $label }}</option>
+          @endforeach
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      <a href="{{ route('admin.groomings.create') }}" class="btn btn-primary btn-sm"><i class="bx bx-plus me-1"></i> Grooming Baru</a>
+    </form>
   </div>
 
   <div class="card">
@@ -31,7 +42,13 @@
               <td>{{ $loop->iteration + ($groomings->currentPage() - 1) * $groomings->perPage() }}</td>
               <td><strong>{{ $grooming->hewan?->nama_hewan ?? '-' }}</strong></td>
               <td>{{ $grooming->hewan?->owner?->nama ?? '-' }}</td>
-              <td>{{ $grooming->paket?->label ?? '-' }}</td>
+              <td>
+                @php
+                  $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
+                  $paketName = $grooming->paket?->name;
+                @endphp
+                <span class="badge bg-label-{{ $paketColors[$paketName] ?? 'secondary' }}">{{ $grooming->paket?->label ?? '-' }}</span>
+              </td>
               <td>{{ $grooming->tanggal_grooming ? $grooming->tanggal_grooming->format('d/m/Y') : '-' }}</td>
               <td>{{ $grooming->waktu_grooming ? $grooming->waktu_grooming->format('H:i') : '-' }}</td>
               <td>

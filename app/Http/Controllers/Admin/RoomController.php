@@ -10,9 +10,15 @@ use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rooms = Room::latest()->pathPaginate(15, url('admin/rooms/page'));
+        $query = Room::query();
+
+        if ($request->filled('paket')) {
+            $query->where('paket', $request->paket);
+        }
+
+        $rooms = $query->latest()->pathPaginate(15, url('admin/rooms/page'));
 
         // Hitung ringkasan per paket
         $paketSummary = Room::query()
@@ -35,7 +41,10 @@ class RoomController extends Controller
                 ];
             });
 
-        return view('admin.rooms.index', compact('rooms', 'paketSummary'));
+        $paketOptions = Room::paketOptions();
+        $selectedPaket = $request->paket ?? '';
+
+        return view('admin.rooms.index', compact('rooms', 'paketSummary', 'paketOptions', 'selectedPaket'));
     }
 
     public function create()

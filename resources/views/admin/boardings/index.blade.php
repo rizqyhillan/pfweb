@@ -3,13 +3,31 @@
 @section('title', 'Data Boarding')
 
 @section('content')
-  <div class="d-flex justify-content-between align-items-center mb-6">
+  <div class="d-flex justify-content-between align-items-end gap-3 mb-6">
     <h4 class="mb-0">Data Boarding (Penitipan)</h4>
-    <a href="{{ route('admin.boardings.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Boarding
-      Baru</a>
+    <form method="GET" action="{{ route('admin.boardings.index') }}" class="d-flex gap-2 align-items-end">
+      <div style="min-width: 200px;">
+        <label for="paket" class="form-label mb-2">Filter Paket</label>
+        <select id="paket" name="paket" class="form-control form-control-sm">
+          <option value="">-- Semua Paket --</option>
+          @foreach($paketOptions as $key => $label)
+            <option value="{{ $key }}" @if($selectedPaket === $key) selected @endif>
+              {{ $label }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">
+        Filter
+      </button>
+      <a href="{{ route('admin.boardings.create') }}" class="btn btn-primary btn-sm"><i class="bx bx-plus me-1"></i> Boarding Baru</a>
+    </form>
   </div>
 
   <div class="card">
+
+  <div class="card">
+
     <div class="table-responsive text-nowrap">
       <table class="table">
         <thead>
@@ -18,8 +36,9 @@
             <th>Hewan</th>
             <th>Pemilik</th>
             <th>Kamar</th>
+            <th>Paket</th>
             <th>Check-in</th>
-            <th>Plan Check-out</th>
+            <th>Check-out</th>
             <th>Status</th>
             <th>Biaya</th>
             <th>Aksi</th>
@@ -32,6 +51,14 @@
               <td><strong>{{ $boarding->hewan?->nama_hewan ?? '-' }}</strong></td>
               <td>{{ $boarding->hewan?->owner?->nama ?? '-' }}</td>
               <td>{{ $boarding->kamar?->nama_kamar ?? '-' }}</td>
+              <td>
+                @php
+                  $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
+                  $paketLabels = ['basic' => 'Basic', 'regular' => 'Regular', 'premium' => 'Premium'];
+                  $paket = $boarding->kamar?->paket ?? 'unknown';
+                @endphp
+                <span class="badge bg-label-{{ $paketColors[$paket] ?? 'secondary' }}">{{ $paketLabels[$paket] ?? ucfirst($paket) }}</span>
+              </td>
               <td>{{ $boarding->tanggal_masuk ? $boarding->tanggal_masuk->format('d/m/Y') : '-' }}</td>
               <td>{{ $boarding->tanggal_rencana_keluar ? $boarding->tanggal_rencana_keluar->format('d/m/Y') : '-' }}</td>
               <td>
@@ -84,7 +111,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="9" class="text-center text-muted py-4">Belum ada data boarding</td>
+              <td colspan="10" class="text-center text-muted py-4">Belum ada data boarding</td>
             </tr>
           @endforelse
         </tbody>

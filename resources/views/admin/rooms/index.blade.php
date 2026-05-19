@@ -1,14 +1,26 @@
 @extends('layouts.admin')
 @section('title', 'Data Kamar')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-6">
+<div class="d-flex justify-content-between align-items-end gap-3 mb-6">
   <div>
     <h4 class="mb-0">Data Kamar / Kandang</h4>
     <small class="text-muted">Kelola jenis paket dan kamar untuk penitipan.</small>
   </div>
-  <div class="d-flex gap-2">
-    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Kamar</a>
-  </div>
+  <form method="GET" action="{{ route('admin.rooms.index') }}" class="d-flex gap-2 align-items-end">
+    <div style="min-width: 220px;">
+      <label for="paket" class="form-label mb-2">Filter Paket</label>
+      <select id="paket" name="paket" class="form-control form-control-sm">
+        <option value="">-- Semua Paket --</option>
+        @foreach($paketOptions as $key => $label)
+          <option value="{{ $key }}" @if($selectedPaket === $key) selected @endif>
+            {{ $label }}
+          </option>
+        @endforeach
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary btn-sm"><i class="bx bx-plus me-1"></i> Tambah Kamar</a>
+  </form>
 </div>
 
 @if(session('error'))

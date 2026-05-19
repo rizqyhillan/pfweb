@@ -14,11 +14,22 @@ use Illuminate\Support\Facades\Mail;
 
 class BoardingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $boardings = Boarding::with(['hewan.owner', 'kamar'])->latest()->pathPaginate(15, url('admin/boardings/page'));
+        $query = Boarding::with(['hewan.owner', 'kamar']);
 
-        return view('admin.boardings.index', compact('boardings'));
+        // Filter by paket if provided
+        if ($request->has('paket') && $request->paket != '') {
+            $query->whereHas('kamar', function ($q) use ($request) {
+                $q->where('paket', $request->paket);
+            });
+        }
+
+        $boardings = $query->latest()->pathPaginate(15, url('admin/boardings/page'));
+        $paketOptions = Room::paketOptions();
+        $selectedPaket = $request->paket ?? '';
+
+        return view('admin.boardings.index', compact('boardings', 'paketOptions', 'selectedPaket'));
     }
 
     public function create()

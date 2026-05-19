@@ -10,11 +10,19 @@ use Illuminate\Http\Request;
 
 class GroomingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $groomings = Grooming::with(['hewan.owner', 'paket'])->latest()->pathPaginate(15, url('admin/groomings/page'));
+        $query = Grooming::with(['hewan.owner', 'paket']);
 
-        return view('admin.groomings.index', compact('groomings'));
+        if ($request->filled('paket')) {
+            $query->where('id_paket', $request->paket);
+        }
+
+        $groomings = $query->latest()->pathPaginate(15, url('admin/groomings/page'));
+        $packageOptions = PackageType::orderBy('label')->pluck('label', 'id')->toArray();
+        $selectedPaket = $request->paket ?? '';
+
+        return view('admin.groomings.index', compact('groomings', 'packageOptions', 'selectedPaket'));
     }
 
     public function create()

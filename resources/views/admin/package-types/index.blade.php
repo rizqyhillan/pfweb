@@ -39,7 +39,7 @@
 @endif
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Label</th><th>{{ $section === 'grooming' ? 'Harga Paket' : 'Harga/Malam' }}</th><th>Keterangan</th><th>Fasilitas</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>#</th><th>Nama</th><th>{{ $section === 'grooming' ? 'Paket' : 'Label' }}</th><th>{{ $section === 'grooming' ? 'Harga Paket' : 'Harga/Malam' }}</th><th>Keterangan</th><th>Fasilitas</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($packageTypes as $packageType)
     <tr>
@@ -53,7 +53,12 @@
         {{ $index }}
       </td>
       <td><strong>{{ $packageType->name }}</strong></td>
-      <td>{{ $packageType->label }}</td>
+      <td>
+        @php
+          $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
+        @endphp
+        <span class="badge bg-label-{{ $paketColors[$packageType->name] ?? 'secondary' }}">{{ $packageType->label }}</span>
+      </td>
       <td>Rp {{ number_format($packageType->harga_per_malam ?? 0, 0, ',', '.') }}</td>
       <td>{{ $packageType->description ?? '-' }}</td>
       <td style="white-space: normal; max-width: 250px;">
