@@ -92,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
     Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
     Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
+    Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
     Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
     Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
     Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
