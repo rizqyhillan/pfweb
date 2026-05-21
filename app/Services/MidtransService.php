@@ -13,11 +13,15 @@ class MidtransService
 
     public function __construct()
     {
-        $this->serverKey    = config('services.midtrans.server_key');
+        $this->serverKey    = (string) config('services.midtrans.server_key', '');
         $this->isProduction = (bool) config('services.midtrans.is_production', false);
         $this->snapUrl      = $this->isProduction
             ? 'https://app.midtrans.com/snap/v1/transactions'
-            : config('services.midtrans.snap_url', 'https://app.sandbox.midtrans.com/snap/v1/transactions');
+            : (string) config('services.midtrans.snap_url', 'https://app.sandbox.midtrans.com/snap/v1/transactions');
+
+        if (empty($this->serverKey)) {
+            Log::warning('Midtrans server key is empty. Please check your configuration.');
+        }
     }
 
     /**
