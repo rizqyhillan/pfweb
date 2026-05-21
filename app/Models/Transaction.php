@@ -51,4 +51,35 @@ class Transaction extends Model
     {
     return $this->hasOne(DoctorBooking::class, 'id_transaksi');
     }
+
+    /**
+     * Check if the transaction's payment has expired and update status to 'batal' if it is.
+     * Restores the products stock.
+     */
+    public function checkAndUpdateStatusIfExpired(): bool
+    {
+        if ($this->status === 'pending' && 
+            $this->payment_expired_at && 
+            $this->payment_expired_at->isPast()) {
+            
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                // Restore stock
+                foreach ($this->barang as $item) {
+                    if ($item->barang) {
+                        $item->barang->increment('stok', $item->jumlah);
+                    }
+                }
+                
+                $this->update([
+                    'status' => 'batal',
+                    'payment_status' => 'expire',
+                    'catatan' => trim(($this->catatan ? $this->catatan . "\n" : '') . 'Dibatalkan otomatis karena batas waktu pembayaran habis (12 jam).'),
+                ]);
+            });
+            
+            return true;
+        }
+        
+        return false;
+    }
 }

@@ -330,11 +330,23 @@ class ShopCartController extends Controller
                     $snapToken   = $snap['token'];
                     $redirectUrl = $snap['redirect_url'];
 
+                    $duration = config('services.midtrans.expiry_duration', 12);
+                    $unit = config('services.midtrans.expiry_unit', 'hour');
+                    $expiredAt = now();
+                    if ($unit === 'minute') {
+                        $expiredAt = $expiredAt->addMinutes($duration);
+                    } elseif ($unit === 'day') {
+                        $expiredAt = $expiredAt->addDays($duration);
+                    } else {
+                        $expiredAt = $expiredAt->addHours($duration);
+                    }
+
                     $transaction->update([
                         'payment_provider'     => 'midtrans',
                         'payment_token'        => $snapToken,
                         'payment_redirect_url' => $redirectUrl,
                         'payment_status'       => 'pending',
+                        'payment_expired_at'   => $expiredAt,
                     ]);
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::error('Midtrans Snap failed: ' . $e->getMessage());

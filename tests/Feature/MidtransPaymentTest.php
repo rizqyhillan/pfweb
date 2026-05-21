@@ -88,6 +88,16 @@ test('shop checkout creates a transaction and generates snap token', function ()
     expect($transaction->payment_status)->toBe('pending');
     expect($transaction->payment_token)->toBe('mock-snap-token-123');
     expect($transaction->payment_redirect_url)->toBe('https://app.sandbox.midtrans.com/snap/v1/payment/mock-snap-token-123');
+    expect($transaction->payment_expired_at)->not->toBeNull();
+    expect($transaction->payment_expired_at->isAfter(now()->addMinutes(710)))->toBeTrue();
+    expect($transaction->payment_expired_at->isBefore(now()->addMinutes(730)))->toBeTrue();
+
+    Http::assertSent(function ($request) {
+        return $request->url() === 'https://app.sandbox.midtrans.com/snap/v1/transactions' &&
+            isset($request['expiry']) &&
+            $request['expiry']['unit'] === 'hour' &&
+            $request['expiry']['duration'] === 12;
+    });
 });
 
 test('midtrans callback with settlement updates transaction to lunas', function () {
@@ -242,5 +252,61 @@ test('viewing a pending transaction with missing snap token regenerates it', fun
     $transaction->refresh();
     expect($transaction->payment_token)->toBe('regenerated-snap-token-999');
     expect($transaction->payment_redirect_url)->toBe('https://app.sandbox.midtrans.com/snap/v1/payment/regenerated-snap-token-999');
+    expect($transaction->payment_expired_at)->not->toBeNull();
+    expect($transaction->payment_expired_at->isAfter(now()->addMinutes(710)))->toBeTrue();
+    expect($transaction->payment_expired_at->isBefore(now()->addMinutes(730)))->toBeTrue();
+
+    Http::assertSent(function ($request) {
+        return $request->url() === 'https://app.sandbox.midtrans.com/snap/v1/transactions' &&
+            isset($request['expiry']) &&
+            $request['expiry']['unit'] === 'hour' &&
+            $request['expiry']['duration'] === 12;
+    });
+});
+
+test('accessing an expired pending transaction automatically cancels it and restores stock', function () {
+    // Arrange: Create an expired transaction and detail barang
+    $transaction = Transaction::create([
+        'id_pelanggan' => $this->user->id,
+        'kode_transaksi' => 'SHOP-EXPIRED-AUTO',
+        'jenis' => 'shopping',
+        'subtotal' => 100000,
+        'total' => 100000,
+        'metode_bayar' => 'ewallet',
+        'status' => 'pending',
+        'payment_status' => 'pending',
+        'payment_expired_at' => now()->subHour(), // Expired 1 hour ago
+        'tanggal' => now(),
+    ]);
+
+    // Transaction details (products purchased)
+    $transaction->barang()->create([
+        'id_barang' => $this->product->id,
+        'jumlah' => 2,
+        'harga_satuan' => 50000,
+        'subtotal' => 100000,
+    ]);
+
+    // Set stock (reduced during checkout)
+    $this->product->update(['stok' => 8]);
+
+    // Act: Retrieve detail transaction (show)
+    $response = $this->actingAs($this->user, 'sanctum')
+        ->getJson("/api/transactions/{$transaction->id}");
+
+    // Assert: response should indicate status is batal
+    $response->assertStatus(200)
+        ->assertJsonPath('data.status', 'batal')
+        ->assertJsonPath('data.payment_status', 'expire');
+
+    // Assert: database records
+    $transaction->refresh();
+    expect($transaction->status)->toBe('batal');
+    expect($transaction->payment_status)->toBe('expire');
+    expect($transaction->catatan)->toContain('Dibatalkan otomatis karena batas waktu pembayaran habis');
+
+    // Assert: stock was restored
+    $this->product->refresh();
+    expect($this->product->stok)->toBe(10);
 });
 

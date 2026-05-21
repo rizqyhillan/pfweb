@@ -10,14 +10,18 @@ class MidtransService
     protected string $serverKey;
     protected string $snapUrl;
     protected bool $isProduction;
+    protected int $expiryDuration;
+    protected string $expiryUnit;
 
     public function __construct()
     {
-        $this->serverKey    = (string) config('services.midtrans.server_key', '');
-        $this->isProduction = (bool) config('services.midtrans.is_production', false);
-        $this->snapUrl      = $this->isProduction
+        $this->serverKey      = (string) config('services.midtrans.server_key', '');
+        $this->isProduction   = (bool) config('services.midtrans.is_production', false);
+        $this->snapUrl        = $this->isProduction
             ? 'https://app.midtrans.com/snap/v1/transactions'
             : (string) config('services.midtrans.snap_url', 'https://app.sandbox.midtrans.com/snap/v1/transactions');
+        $this->expiryDuration = (int) config('services.midtrans.expiry_duration', 12);
+        $this->expiryUnit     = (string) config('services.midtrans.expiry_unit', 'hour');
 
         if (empty($this->serverKey)) {
             Log::warning('Midtrans server key is empty. Please check your configuration.');
@@ -43,6 +47,10 @@ class MidtransService
                 'gross_amount' => $grossAmount,
             ],
             'customer_details' => $customerDetails,
+            'expiry' => [
+                'unit'     => $this->expiryUnit,
+                'duration' => $this->expiryDuration,
+            ],
         ];
 
         if (!empty($itemDetails)) {

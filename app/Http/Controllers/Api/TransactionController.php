@@ -13,13 +13,27 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
+        $user = $request->user();
+
+        // 1. Proactively check and update any expired pending transactions
+        $expiredTransactions = Transaction::where('id_pelanggan', $user->id)
+            ->where('status', 'pending')
+            ->whereNotNull('payment_expired_at')
+            ->where('payment_expired_at', '<', now())
+            ->get();
+
+        foreach ($expiredTransactions as $trx) {
+            $trx->checkAndUpdateStatusIfExpired();
+        }
+
+        // 2. Fetch all transactions
         $transactions = Transaction::with([
                 'pelanggan',
                 'kasir',
                 'barang.barang',
                 'layanan.layanan',
             ])
-            ->where('id_pelanggan', $request->user()->id)
+            ->where('id_pelanggan', $user->id)
             ->latest('tanggal')
             ->get()
             ->map(fn ($transaction) => $this->formatTransaction($transaction));
@@ -39,6 +53,9 @@ class TransactionController extends Controller
             ])
             ->where('id_pelanggan', $request->user()->id)
             ->findOrFail($id);
+
+        // 1. Proactively check and update if expired
+        $transaction->checkAndUpdateStatusIfExpired();
 
         if ($transaction->status === 'pending' && 
             in_array($transaction->metode_bayar, ['transfer', 'ewallet']) && 
@@ -82,11 +99,23 @@ class TransactionController extends Controller
                     itemDetails: $itemDetails,
                 );
 
+                $duration = config('services.midtrans.expiry_duration', 12);
+                $unit = config('services.midtrans.expiry_unit', 'hour');
+                $expiredAt = now();
+                if ($unit === 'minute') {
+                    $expiredAt = $expiredAt->addMinutes($duration);
+                } elseif ($unit === 'day') {
+                    $expiredAt = $expiredAt->addDays($duration);
+                } else {
+                    $expiredAt = $expiredAt->addHours($duration);
+                }
+
                 $transaction->update([
                     'payment_provider'     => 'midtrans',
                     'payment_token'        => $snap['token'],
                     'payment_redirect_url' => $snap['redirect_url'],
                     'payment_status'       => 'pending',
+                    'payment_expired_at'   => $expiredAt,
                 ]);
                 
                 $transaction->refresh();
