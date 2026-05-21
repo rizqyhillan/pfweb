@@ -26,6 +26,14 @@
                 </p>
                 <p><strong>Tipe:</strong> <span class="badge bg-label-info">{{ ucfirst($transaction->jenis) }}</span></p>
                 <p><strong>Metode Bayar:</strong> {{ ucfirst($transaction->metode_bayar ?? '-') }}</p>
+                @if(in_array(strtolower($transaction->metode_bayar), ['transfer', 'ewallet']))
+                    <p><strong>Midtrans ID:</strong> {{ $transaction->payment_reference ?? '-' }}</p>
+                    <p><strong>Midtrans Token:</strong> {{ $transaction->payment_token ?? '-' }}</p>
+                    <p><strong>Status Midtrans:</strong> <span class="badge bg-label-secondary">{{ ucfirst($transaction->payment_status ?? '-') }}</span></p>
+                    @if($transaction->paid_at)
+                        <p><strong>Tanggal Bayar Midtrans:</strong> {{ $transaction->paid_at ? \Carbon\Carbon::parse($transaction->paid_at)->format('d/m/Y H:i') : '-' }}</p>
+                    @endif
+                @endif
             </div>
         </div>
 

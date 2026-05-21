@@ -138,6 +138,14 @@
                         </span>
                     </p>
                     <p class="mb-2"><strong>Metode Bayar:</strong><br>{{ $shopOrder->metode_bayar ?? '-' }}</p>
+                    @if(in_array(strtolower($shopOrder->metode_bayar), ['transfer', 'ewallet']))
+                        <p class="mb-2"><strong>Midtrans ID:</strong><br>{{ $shopOrder->payment_reference ?? '-' }}</p>
+                        <p class="mb-2"><strong>Midtrans Token:</strong><br>{{ $shopOrder->payment_token ?? '-' }}</p>
+                        <p class="mb-2"><strong>Status Midtrans:</strong><br>{{ ucfirst($shopOrder->payment_status ?? '-') }}</p>
+                        @if($shopOrder->paid_at)
+                            <p class="mb-2"><strong>Tanggal Bayar:</strong><br>{{ $shopOrder->paid_at ? \Carbon\Carbon::parse($shopOrder->paid_at)->format('d M Y H:i') : '-' }}</p>
+                        @endif
+                    @endif
                     <p class="mb-2"><strong>Tanggal:</strong><br>{{ optional($shopOrder->tanggal)->format('d M Y H:i') }}</p>
                     <p class="mb-0"><strong>Total:</strong><br>Rp {{ number_format($shopOrder->total, 0, ',', '.') }}</p>
                 </div>

@@ -40,6 +40,61 @@ class TransactionController extends Controller
             ->where('id_pelanggan', $request->user()->id)
             ->findOrFail($id);
 
+        if ($transaction->status === 'pending' && 
+            in_array($transaction->metode_bayar, ['transfer', 'ewallet']) && 
+            empty($transaction->payment_token)) {
+            try {
+                $midtrans = app(\App\Services\MidtransService::class);
+                
+                $itemDetails = [];
+                foreach ($transaction->barang as $item) {
+                    $product = $item->barang;
+                    if ($product) {
+                        $itemDetails[] = [
+                            'id'       => (string) $product->id,
+                            'price'    => (int) $item->harga_satuan,
+                            'quantity' => (int) $item->jumlah,
+                            'name'     => mb_substr($product->nama_barang, 0, 50),
+                        ];
+                    }
+                }
+                
+                foreach ($transaction->layanan as $item) {
+                    $service = $item->layanan;
+                    if ($service) {
+                        $itemDetails[] = [
+                            'id'       => (string) $service->id,
+                            'price'    => (int) $item->harga_satuan,
+                            'quantity' => (int) $item->jumlah,
+                            'name'     => mb_substr($service->nama_layanan, 0, 50),
+                        ];
+                    }
+                }
+
+                $snap = $midtrans->createSnapToken(
+                    orderId: $transaction->kode_transaksi,
+                    grossAmount: (int) $transaction->total,
+                    customerDetails: [
+                        'first_name' => $transaction->pelanggan->nama ?? '',
+                        'email'      => $transaction->pelanggan->email ?? '',
+                        'phone'      => $transaction->pelanggan->no_hp ?? '',
+                    ],
+                    itemDetails: $itemDetails,
+                );
+
+                $transaction->update([
+                    'payment_provider'     => 'midtrans',
+                    'payment_token'        => $snap['token'],
+                    'payment_redirect_url' => $snap['redirect_url'],
+                    'payment_status'       => 'pending',
+                ]);
+                
+                $transaction->refresh();
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Regenerate Midtrans Snap failed: ' . $e->getMessage());
+            }
+        }
+
         return response()->json([
             'data' => $this->formatTransaction($transaction),
         ]);

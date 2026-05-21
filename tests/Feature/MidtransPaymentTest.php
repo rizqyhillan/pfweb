@@ -208,3 +208,39 @@ test('midtrans callback rejects invalid signature key', function () {
     $transaction->refresh();
     expect($transaction->status)->toBe('pending');
 });
+
+test('viewing a pending transaction with missing snap token regenerates it', function () {
+    // Arrange: Mock Midtrans Snap response
+    Http::fake([
+        'https://app.sandbox.midtrans.com/snap/v1/transactions' => Http::response([
+            'token' => 'regenerated-snap-token-999',
+            'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v1/payment/regenerated-snap-token-999'
+        ], 201),
+    ]);
+
+    // Create a transaction without payment_token / payment_redirect_url
+    $transaction = Transaction::create([
+        'id_pelanggan' => $this->user->id,
+        'kode_transaksi' => 'SHOP-REGEN-111',
+        'jenis' => 'shopping',
+        'subtotal' => 100000,
+        'total' => 100000,
+        'metode_bayar' => 'ewallet',
+        'status' => 'pending',
+        'payment_status' => 'pending',
+    ]);
+
+    // Act: Request details
+    $response = $this->actingAs($this->user, 'sanctum')
+        ->getJson("/api/transactions/{$transaction->id}");
+
+    // Assert
+    $response->assertStatus(200)
+        ->assertJsonPath('data.snap_token', 'regenerated-snap-token-999')
+        ->assertJsonPath('data.redirect_url', 'https://app.sandbox.midtrans.com/snap/v1/payment/regenerated-snap-token-999');
+
+    $transaction->refresh();
+    expect($transaction->payment_token)->toBe('regenerated-snap-token-999');
+    expect($transaction->payment_redirect_url)->toBe('https://app.sandbox.midtrans.com/snap/v1/payment/regenerated-snap-token-999');
+});
+

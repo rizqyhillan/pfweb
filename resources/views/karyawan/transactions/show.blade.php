@@ -11,6 +11,15 @@
             <p><strong>Kasir:</strong> {{ $transaction->kasir->nama ?? '-' }}</p>
             <p><strong>Tanggal:</strong> {{ $transaction->tanggal }}</p>
             <p><strong>Status:</strong> {{ $transaction->status }}</p>
+            <p><strong>Metode Bayar:</strong> {{ ucfirst($transaction->metode_bayar ?? '-') }}</p>
+            @if(in_array(strtolower($transaction->metode_bayar), ['transfer', 'ewallet']))
+                <p><strong>Midtrans ID:</strong> {{ $transaction->payment_reference ?? '-' }}</p>
+                <p><strong>Midtrans Token:</strong> {{ $transaction->payment_token ?? '-' }}</p>
+                <p><strong>Status Midtrans:</strong> {{ ucfirst($transaction->payment_status ?? '-') }}</p>
+                @if($transaction->paid_at)
+                    <p><strong>Tanggal Bayar Midtrans:</strong> {{ $transaction->paid_at ? \Carbon\Carbon::parse($transaction->paid_at)->format('d/m/Y H:i') : '-' }}</p>
+                @endif
+            @endif
 
             <table class="table table-bordered mt-3">
                 <thead>
