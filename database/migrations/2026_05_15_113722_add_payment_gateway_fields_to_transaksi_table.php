@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('payment_token')->nullable()->after('payment_reference');
             $table->text('payment_redirect_url')->nullable()->after('payment_token');
             $table->string('payment_status')->default('pending')->after('payment_redirect_url');
-            $table->timestamp('payment_expired_at')->nullable()->after('payment_status');
+            $table->string('payment_type')->nullable()->after('payment_status');
+            $table->timestamp('payment_expired_at')->nullable()->after('payment_type');
             $table->timestamp('paid_at')->nullable()->after('payment_expired_at');
         });
     }
@@ -30,6 +31,7 @@ return new class extends Migration
                 'payment_token',
                 'payment_redirect_url',
                 'payment_status',
+                'payment_type',
                 'payment_expired_at',
                 'paid_at',
             ]);

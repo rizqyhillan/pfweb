@@ -32,5 +32,9 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="MIDTRANS_SERVER_KEY" value="SB-Mid-server-testkey"/>
+        <env name="MIDTRANS_CLIENT_KEY" value="SB-Mid-client-testkey"/>
+        <env name="MIDTRANS_IS_PRODUCTION" value="false"/>
+        <env name="MIDTRANS_SNAP_URL" value="https://app.sandbox.midtrans.com/snap/v1/transactions"/>
     </php>
 </phpunit>

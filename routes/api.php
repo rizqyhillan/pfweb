@@ -12,6 +12,10 @@ use App\Http\Controllers\Api\DoctorBookingController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\ShopCartController;
 use App\Http\Controllers\Api\BoardingController;
+use App\Http\Controllers\Api\MidtransCallbackController;
+
+// Midtrans Webhook — public endpoint (no auth)
+Route::post('/midtrans/callback', [MidtransCallbackController::class, 'handle']);
 
 Route::get('/test', function () {
     return response()->json([

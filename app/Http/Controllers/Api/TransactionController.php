@@ -321,6 +321,12 @@ class TransactionController extends Controller
             'status' => $transaction->status,
             'catatan' => $transaction->catatan,
             'tanggal' => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
+
+            // Payment gateway fields
+            'snap_token'     => $transaction->payment_token,
+            'redirect_url'   => $transaction->payment_redirect_url,
+            'payment_status' => $transaction->payment_status,
+            'paid_at'        => optional($transaction->paid_at)->format('Y-m-d H:i:s'),
     
             'items' => $items,
             'barang' => $barangItems,

@@ -239,6 +239,7 @@ class ShopCartController extends Controller
 
         return DB::transaction(function () use ($cart, $user, $validated) {
             $subtotal = 0;
+            $itemDetails = [];
 
             foreach ($cart->items as $item) {
                 $product = Product::where('id', $item->id_barang)
@@ -257,25 +258,35 @@ class ShopCartController extends Controller
                     ], 422);
                 }
 
-                $subtotal += $product->harga * $item->jumlah;
+                $lineTotal = $product->harga * $item->jumlah;
+                $subtotal += $lineTotal;
+
+                // Collect item details for Midtrans
+                $itemDetails[] = [
+                    'id'       => (string) $product->id,
+                    'price'    => (int) $product->harga,
+                    'quantity' => (int) $item->jumlah,
+                    'name'     => mb_substr($product->nama_barang, 0, 50),
+                ];
             }
 
             $kodeTransaksi = 'SHOP-' . now()->format('YmdHis') . '-' . $user->id;
+            $metodeBayar   = $validated['metode_bayar'] ?? 'ewallet';
 
             $transaction = Transaction::create([
-                'id_pelanggan' => $user->id,
-                'id_kasir' => null,
+                'id_pelanggan'   => $user->id,
+                'id_kasir'       => null,
                 'kode_transaksi' => $kodeTransaksi,
-                'jenis' => 'shopping',
-                'subtotal' => $subtotal,
-                'diskon' => 0,
-                'total' => $subtotal,
-                'jumlah_bayar' => 0,
-                'kembalian' => 0,
-                'metode_bayar' => $validated['metode_bayar'] ?? 'ewallet',
-                'status' => 'pending',
-                'catatan' => $validated['catatan'] ?? null,
-                'tanggal' => now(),
+                'jenis'          => 'shopping',
+                'subtotal'       => $subtotal,
+                'diskon'         => 0,
+                'total'          => $subtotal,
+                'jumlah_bayar'   => 0,
+                'kembalian'      => 0,
+                'metode_bayar'   => $metodeBayar,
+                'status'         => 'pending',
+                'catatan'        => $validated['catatan'] ?? null,
+                'tanggal'        => now(),
             ]);
 
             foreach ($cart->items as $item) {
@@ -284,10 +295,10 @@ class ShopCartController extends Controller
                     ->firstOrFail();
 
                 $transaction->barang()->create([
-                    'id_barang' => $product->id,
-                    'jumlah' => $item->jumlah,
+                    'id_barang'    => $product->id,
+                    'jumlah'       => $item->jumlah,
                     'harga_satuan' => $product->harga,
-                    'subtotal' => $product->harga * $item->jumlah,
+                    'subtotal'     => $product->harga * $item->jumlah,
                 ]);
 
                 $product->decrement('stok', $item->jumlah);
@@ -297,6 +308,40 @@ class ShopCartController extends Controller
                 'status' => 'checkout',
             ]);
 
+            // ── Midtrans Snap Token ──
+            $snapToken   = null;
+            $redirectUrl = null;
+
+            if (in_array($metodeBayar, ['transfer', 'ewallet'])) {
+                try {
+                    $midtrans = app(\App\Services\MidtransService::class);
+
+                    $snap = $midtrans->createSnapToken(
+                        orderId: $kodeTransaksi,
+                        grossAmount: (int) $subtotal,
+                        customerDetails: [
+                            'first_name' => $user->nama,
+                            'email'      => $user->email,
+                            'phone'      => $user->no_hp ?? '',
+                        ],
+                        itemDetails: $itemDetails,
+                    );
+
+                    $snapToken   = $snap['token'];
+                    $redirectUrl = $snap['redirect_url'];
+
+                    $transaction->update([
+                        'payment_provider'     => 'midtrans',
+                        'payment_token'        => $snapToken,
+                        'payment_redirect_url' => $redirectUrl,
+                        'payment_status'       => 'pending',
+                    ]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Midtrans Snap failed: ' . $e->getMessage());
+                    // Transaction is still created as pending — customer can retry payment later
+                }
+            }
+
             $transaction->load([
                 'pelanggan',
                 'barang.barang',
@@ -305,30 +350,33 @@ class ShopCartController extends Controller
             return response()->json([
                 'message' => 'Checkout berhasil dibuat.',
                 'data' => [
-                    'id' => $transaction->id,
-                    'kode_transaksi' => $transaction->kode_transaksi,
-                    'jenis' => $transaction->jenis,
-                    'status' => $transaction->status,
-                    'metode_bayar' => $transaction->metode_bayar,
-                    'subtotal' => (float) $transaction->subtotal,
-                    'diskon' => (float) $transaction->diskon,
-                    'total' => (float) $transaction->total,
-                    'catatan' => $transaction->catatan,
-                    'tanggal' => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
+                    'id'              => $transaction->id,
+                    'kode_transaksi'  => $transaction->kode_transaksi,
+                    'jenis'           => $transaction->jenis,
+                    'status'          => $transaction->status,
+                    'metode_bayar'    => $transaction->metode_bayar,
+                    'subtotal'        => (float) $transaction->subtotal,
+                    'diskon'          => (float) $transaction->diskon,
+                    'total'           => (float) $transaction->total,
+                    'catatan'         => $transaction->catatan,
+                    'tanggal'         => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
+                    'snap_token'      => $snapToken,
+                    'redirect_url'    => $redirectUrl,
+                    'payment_status'  => $transaction->payment_status,
                     'items' => $transaction->barang->map(function ($item) {
                         $product = $item->barang;
                         $image = $product->image ?? null;
 
                         return [
-                            'id' => $item->id,
-                            'id_barang' => $item->id_barang,
-                            'nama_barang' => $product->nama_barang ?? '-',
-                            'kategori' => $product->kategori ?? null,
-                            'image' => $image,
-                            'image_url' => $image ? asset('storage/' . $image) : null,
-                            'jumlah' => (int) $item->jumlah,
+                            'id'           => $item->id,
+                            'id_barang'    => $item->id_barang,
+                            'nama_barang'  => $product->nama_barang ?? '-',
+                            'kategori'     => $product->kategori ?? null,
+                            'image'        => $image,
+                            'image_url'    => $image ? asset('storage/' . $image) : null,
+                            'jumlah'       => (int) $item->jumlah,
                             'harga_satuan' => (float) $item->harga_satuan,
-                            'subtotal' => (float) $item->subtotal,
+                            'subtotal'     => (float) $item->subtotal,
                         ];
                     }),
                 ],
