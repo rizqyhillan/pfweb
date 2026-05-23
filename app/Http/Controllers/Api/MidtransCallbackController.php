@@ -60,7 +60,10 @@ class MidtransCallbackController extends Controller
                 'order_id' => $orderId,
                 'error'    => $e->getMessage()
             ]);
-            return response()->json(['message' => 'Callback processing failed'], 500);
+            return response()->json([
+                'message' => 'Callback processing failed',
+                'error'   => $e->getMessage()
+            ], 500);
         }
     }
 }
