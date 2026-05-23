@@ -9,15 +9,33 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transaksi', function (Blueprint $table) {
-            $table->string('payment_provider')->nullable()->after('status');
-            $table->string('payment_channel')->nullable()->after('payment_provider');
-            $table->string('payment_reference')->nullable()->after('payment_channel');
-            $table->string('payment_token')->nullable()->after('payment_reference');
-            $table->text('payment_redirect_url')->nullable()->after('payment_token');
-            $table->string('payment_status')->default('pending')->after('payment_redirect_url');
-            $table->string('payment_type')->nullable()->after('payment_status');
-            $table->timestamp('payment_expired_at')->nullable()->after('payment_type');
-            $table->timestamp('paid_at')->nullable()->after('payment_expired_at');
+            if (!Schema::hasColumn('transaksi', 'payment_provider')) {
+                $table->string('payment_provider')->nullable()->after('status');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_channel')) {
+                $table->string('payment_channel')->nullable()->after('payment_provider');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_reference')) {
+                $table->string('payment_reference')->nullable()->after('payment_channel');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_token')) {
+                $table->string('payment_token')->nullable()->after('payment_reference');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_redirect_url')) {
+                $table->text('payment_redirect_url')->nullable()->after('payment_token');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_status')) {
+                $table->string('payment_status')->default('pending')->after('payment_redirect_url');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_type')) {
+                $table->string('payment_type')->nullable()->after('payment_status');
+            }
+            if (!Schema::hasColumn('transaksi', 'payment_expired_at')) {
+                $table->timestamp('payment_expired_at')->nullable()->after('payment_type');
+            }
+            if (!Schema::hasColumn('transaksi', 'paid_at')) {
+                $table->timestamp('paid_at')->nullable()->after('payment_expired_at');
+            }
         });
     }
 
