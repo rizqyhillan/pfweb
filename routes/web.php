@@ -82,6 +82,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('shop-orders', [ShopOrderController::class, 'index'])->name('shop-orders.index');
     Route::get('shop-orders/{shopOrder}', [ShopOrderController::class, 'show'])->name('shop-orders.show');
     Route::put('shop-orders/{shopOrder}/status', [ShopOrderController::class, 'updateStatus'])->name('shop-orders.update-status');
+    Route::post('shop-orders/{shopOrder}/sync-midtrans', [ShopOrderController::class, 'syncMidtrans'])->name('shop-orders.sync-midtrans');
     
 
     // Path-based pagination routes

@@ -145,6 +145,16 @@
                         @if($shopOrder->paid_at)
                             <p class="mb-2"><strong>Tanggal Bayar:</strong><br>{{ $shopOrder->paid_at ? \Carbon\Carbon::parse($shopOrder->paid_at)->format('d M Y H:i') : '-' }}</p>
                         @endif
+
+                        @if($shopOrder->payment_provider === 'midtrans')
+                            <hr>
+                            <form action="{{ route('admin.shop-orders.sync-midtrans', $shopOrder) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="bi bi-arrow-repeat"></i> Sync dari Midtrans
+                                </button>
+                            </form>
+                        @endif
                     @endif
                     <p class="mb-2"><strong>Tanggal:</strong><br>{{ optional($shopOrder->tanggal)->format('d M Y H:i') }}</p>
                     <p class="mb-0"><strong>Total:</strong><br>Rp {{ number_format($shopOrder->total, 0, ',', '.') }}</p>

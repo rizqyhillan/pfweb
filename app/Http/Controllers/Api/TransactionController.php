@@ -26,6 +26,24 @@ class TransactionController extends Controller
             $trx->checkAndUpdateStatusIfExpired();
         }
 
+        // 1b. Proactively sync pending Midtrans transactions
+        $pendingMidtrans = Transaction::where('id_pelanggan', $user->id)
+            ->where('status', 'pending')
+            ->where('payment_provider', 'midtrans')
+            ->get();
+
+        if ($pendingMidtrans->isNotEmpty()) {
+            $midtrans = app(\App\Services\MidtransService::class);
+            foreach ($pendingMidtrans as $trx) {
+                try {
+                    $statusData = $midtrans->getTransactionStatus($trx->kode_transaksi);
+                    $trx->updateStatusFromMidtrans($statusData);
+                } catch (\Exception $e) {
+                    // Silently continue — status remains pending
+                }
+            }
+        }
+
         // 2. Fetch all transactions
         $transactions = Transaction::with([
                 'pelanggan',
