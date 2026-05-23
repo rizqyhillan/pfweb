@@ -51,72 +51,16 @@ class MidtransCallbackController extends Controller
             return response()->json(['message' => 'Transaction not found'], 404);
         }
 
-        // ----- 4. Idempotency: skip if already settled -----
-        if (in_array($transaction->payment_status, ['settlement', 'capture'])) {
-            return response()->json(['message' => 'Already processed'], 200);
-        }
-
-        // ----- 5. Determine new status -----
-        return DB::transaction(function () use ($transaction, $trxStatus, $fraudStatus, $paymentType, $payload) {
-
-            $paymentStatus = $trxStatus;
-
-            if ($trxStatus === 'capture') {
-                // For credit-card: check fraud status
-                $paymentStatus = ($fraudStatus === 'accept') ? 'capture' : 'deny';
-            }
-
-            switch ($paymentStatus) {
-                case 'capture':
-                case 'settlement':
-                    $transaction->update([
-                        'status'            => 'lunas',
-                        'payment_status'    => $paymentStatus,
-                        'payment_type'      => $paymentType,
-                        'payment_reference' => $payload['transaction_id'] ?? null,
-                        'paid_at'           => now(),
-                    ]);
-                    Log::info("Midtrans — Transaction {$transaction->kode_transaksi} paid (settlement).");
-                    break;
-
-                case 'pending':
-                    $transaction->update([
-                        'payment_status' => 'pending',
-                        'payment_type'   => $paymentType,
-                    ]);
-                    break;
-
-                case 'deny':
-                case 'cancel':
-                case 'expire':
-                    // Only restore stock if still pending (not already cancelled)
-                    if ($transaction->status === 'pending') {
-                        // Restore product stock
-                        foreach ($transaction->barang as $item) {
-                            if ($item->barang) {
-                                $item->barang->increment('stok', $item->jumlah);
-                            }
-                        }
-
-                        $transaction->update([
-                            'status'         => 'batal',
-                            'payment_status' => $paymentStatus,
-                            'catatan'        => trim(
-                                ($transaction->catatan ? $transaction->catatan . "\n" : '') .
-                                "Dibatalkan otomatis oleh Midtrans ({$paymentStatus})."
-                            ),
-                        ]);
-
-                        Log::info("Midtrans — Transaction {$transaction->kode_transaksi} cancelled ({$paymentStatus}), stock restored.");
-                    }
-                    break;
-
-                default:
-                    Log::info("Midtrans — Unhandled status: {$trxStatus} for {$transaction->kode_transaksi}");
-                    break;
-            }
-
+        // ----- 4. Update status using centralized model method -----
+        try {
+            $transaction->updateStatusFromMidtrans($payload);
             return response()->json(['message' => 'OK'], 200);
-        });
+        } catch (\Exception $e) {
+            Log::error('Midtrans callback status update failed', [
+                'order_id' => $orderId,
+                'error'    => $e->getMessage()
+            ]);
+            return response()->json(['message' => 'Callback processing failed'], 500);
+        }
     }
 }

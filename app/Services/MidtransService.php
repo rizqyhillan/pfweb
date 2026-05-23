@@ -95,9 +95,62 @@ class MidtransService
         string $grossAmount,
         string $signatureKey,
     ): bool {
-        $input     = $orderId . $statusCode . $grossAmount . $this->serverKey;
-        $generated = hash('sha512', $input);
+        // 1. Direct match with whatever Midtrans sent
+        $input1     = $orderId . $statusCode . $grossAmount . $this->serverKey;
+        $generated1 = hash('sha512', $input1);
+        if (hash_equals($generated1, $signatureKey)) {
+            return true;
+        }
 
-        return hash_equals($generated, $signatureKey);
+        // 2. Format as float with 2 decimal places (common in Midtrans callbacks)
+        $formattedAmount = number_format((float) $grossAmount, 2, '.', '');
+        $input2     = $orderId . $statusCode . $formattedAmount . $this->serverKey;
+        $generated2 = hash('sha512', $input2);
+        if (hash_equals($generated2, $signatureKey)) {
+            return true;
+        }
+
+        // 3. Format as integer (without decimals)
+        $intAmount = (string) (int) $grossAmount;
+        $input3     = $orderId . $statusCode . $intAmount . $this->serverKey;
+        $generated3 = hash('sha512', $input3);
+        if (hash_equals($generated3, $signatureKey)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Fetch the current status of a transaction from Midtrans API.
+     *
+     * @throws \Exception
+     */
+    public function getTransactionStatus(string $orderId): array
+    {
+        $statusUrl = $this->isProduction
+            ? "https://api.midtrans.com/v2/{$orderId}/status"
+            : "https://api.sandbox.midtrans.com/v2/{$orderId}/status";
+
+        $response = Http::withBasicAuth($this->serverKey, '')
+            ->withHeaders([
+                'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
+            ->get($statusUrl);
+
+        if ($response->failed()) {
+            Log::error('Midtrans status check failed', [
+                'order_id' => $orderId,
+                'status'   => $response->status(),
+                'body'     => $response->body(),
+            ]);
+
+            throw new \Exception(
+                'Gagal mengambil status transaksi dari Midtrans: ' . ($response->json('status_message') ?? $response->body())
+            );
+        }
+
+        return $response->json();
     }
 }

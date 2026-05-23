@@ -57,6 +57,18 @@ class TransactionController extends Controller
         // 1. Proactively check and update if expired
         $transaction->checkAndUpdateStatusIfExpired();
 
+        // 2. Proactively sync payment status with Midtrans if still pending
+        if ($transaction->status === 'pending' && $transaction->payment_provider === 'midtrans') {
+            try {
+                $midtrans = app(\App\Services\MidtransService::class);
+                $statusData = $midtrans->getTransactionStatus($transaction->kode_transaksi);
+                $transaction->updateStatusFromMidtrans($statusData);
+                $transaction->refresh();
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Check Midtrans status on show failed: ' . $e->getMessage());
+            }
+        }
+
         if ($transaction->status === 'pending' && 
             in_array($transaction->metode_bayar, ['transfer', 'ewallet']) && 
             empty($transaction->payment_token)) {
