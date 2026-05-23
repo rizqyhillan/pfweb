@@ -12,6 +12,30 @@ class ShopOrderController extends Controller
 {
     public function index(Request $request)
     {
+        // Proactively sync recently created pending Midtrans transactions (limit 5 to avoid slow page loads)
+        $pendingMidtrans = Transaction::where('status', 'pending')
+            ->where('jenis', 'shopping')
+            ->where('payment_provider', 'midtrans')
+            ->where('tanggal', '>=', now()->subHours(24))
+            ->limit(5)
+            ->get();
+
+        if ($pendingMidtrans->isNotEmpty()) {
+            try {
+                $midtrans = app(\App\Services\MidtransService::class);
+                foreach ($pendingMidtrans as $trx) {
+                    try {
+                        $statusData = $midtrans->getTransactionStatus($trx->kode_transaksi);
+                        $trx->updateStatusFromMidtrans($statusData);
+                    } catch (\Exception $e) {
+                        Log::warning('Auto sync in shop-order list failed for ' . $trx->kode_transaksi . ': ' . $e->getMessage());
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Midtrans service not available during list sync: ' . $e->getMessage());
+            }
+        }
+
         $query = Transaction::with(['pelanggan', 'barang.barang'])
             ->where('jenis', 'shopping')
             ->latest('tanggal');
