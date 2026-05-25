@@ -133,11 +133,11 @@ class TransactionController extends Controller
                 $trx->load('pelanggan');
                 $customer = $trx->pelanggan;
                 if ($customer && $customer->email) {
-                    Mail::to($customer->email)->send(new TransactionCreated($trx));
-                    Log::info('Transaction email sent to: '.$customer->email);
+                    Mail::to($customer->email)->queue(new TransactionCreated($trx));
+                    Log::info('Transaction email queued for: '.$customer->email);
                 }
             } catch (\Exception $mailEx) {
-                Log::error('Mail failed: '.$mailEx->getMessage());
+                Log::error('Mail queueing failed: '.$mailEx->getMessage());
             }
 
             if ($request->ajax() || $request->wantsJson()) {

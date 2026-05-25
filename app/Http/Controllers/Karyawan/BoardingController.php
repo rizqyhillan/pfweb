@@ -53,16 +53,16 @@ class BoardingController extends Controller
         $v['status'] = 'pending';
         $boarding = Boarding::create($v);
 
-        // Send Email Safely
+        // Send Email Safely (Queued)
         try {
             $boarding->load('hewan.owner');
             $owner = $boarding->hewan->owner ?? null;
             if ($owner && $owner->email) {
-                Mail::to($owner->email)->send(new BoardingCreated($boarding));
-                Log::info('Boarding email sent to: '.$owner->email);
+                Mail::to($owner->email)->queue(new BoardingCreated($boarding));
+                Log::info('Boarding email queued for: '.$owner->email);
             }
         } catch (\Exception $mailEx) {
-            Log::error('Mail failed: '.$mailEx->getMessage());
+            Log::error('Mail queueing failed: '.$mailEx->getMessage());
         }
 
         // Broadcast real-time event & notify admins
