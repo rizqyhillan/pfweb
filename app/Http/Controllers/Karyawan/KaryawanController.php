@@ -86,9 +86,8 @@ class KaryawanController extends Controller
     {
         $customers = User::where('role', 'customer')->get();
         $products = Product::where('is_aktif', true)->where('stok', '>', 0)->get();
-        $services = Service::where('is_aktif', true)->get();
 
-        return view('karyawan.transactions.create', compact('customers', 'products', 'services'));
+        return view('karyawan.transactions.create', compact('customers', 'products'));
     }
 
     /**
@@ -102,28 +101,16 @@ class KaryawanController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'jumlah_bayar' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
-            'product_ids' => 'nullable|array',
+            'product_ids' => 'required|array|min:1',
             'product_ids.*' => 'exists:barang,id',
-            'product_qtys' => 'nullable|array',
+            'product_qtys' => 'required|array',
             'product_qtys.*' => 'integer|min:1',
-            'service_ids' => 'nullable|array',
-            'service_ids.*' => 'exists:layanan,id',
-            'service_qtys' => 'nullable|array',
-            'service_qtys.*' => 'integer|min:1',
         ]);
 
         DB::beginTransaction();
         try {
             $subtotal = 0;
             $hasP = ! empty($request->product_ids);
-            $hasS = ! empty($request->service_ids);
-
-            $jenis = 'campuran';
-            if ($hasP && ! $hasS) {
-                $jenis = 'barang';
-            } elseif ($hasS && ! $hasP) {
-                $jenis = 'layanan';
-            }
 
             $diskon = $request->diskon ?? 0;
 
@@ -131,7 +118,7 @@ class KaryawanController extends Controller
                 'id_pelanggan' => $request->id_pelanggan,
                 'id_kasir' => Auth::id(),
                 'kode_transaksi' => 'TRX-'.date('Ymd').'-'.str_pad(Transaction::whereDate('tanggal', today())->count() + 1, 4, '0', STR_PAD_LEFT),
-                'jenis' => $jenis,
+                'jenis' => 'barang',
                 'subtotal' => 0,
                 'diskon' => $diskon,
                 'total' => 0,
@@ -165,20 +152,6 @@ class KaryawanController extends Controller
                     } catch (\Exception $e) {
                         Log::warning('Broadcast failed: '.$e->getMessage());
                     }
-                }
-            }
-            if ($hasS) {
-                foreach ($request->service_ids as $i => $sid) {
-                    $s = Service::find($sid);
-                    $qty = $request->service_qtys[$i] ?? 1;
-                    $sub = $s->harga * $qty;
-                    $subtotal += $sub;
-                    $trx->layanan()->create([
-                        'id_layanan' => $sid,
-                        'jumlah' => $qty,
-                        'harga_satuan' => $s->harga,
-                        'subtotal' => $sub,
-                    ]);
                 }
             }
 
@@ -219,7 +192,7 @@ class KaryawanController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Transaksi berhasil!',
-                    'transaction' => $trx->load(['pelanggan', 'kasir', 'barang.barang', 'layanan.layanan']),
+                    'transaction' => $trx->load(['pelanggan', 'kasir', 'barang.barang']),
                     'kembalian' => $kembalian,
                 ]);
             }
