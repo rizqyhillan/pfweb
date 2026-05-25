@@ -23,6 +23,7 @@ class ProfileController extends Controller
                 'no_hp' => $user->no_hp ?? null,
                 'alamat' => $user->alamat ?? null,
                 'foto' => $user->foto ? asset('storage/' . $user->foto) : null,
+                'foto_url' => $user->foto_url,
             ],
         ]);
     }
@@ -79,6 +80,7 @@ class ProfileController extends Controller
                 'no_hp' => $user->no_hp ?? null,
                 'alamat' => $user->alamat ?? null,
                 'foto' => $user->foto ? asset('storage/' . $user->foto) : null,
+                'foto_url' => $user->foto_url,
             ],
         ]);
     }

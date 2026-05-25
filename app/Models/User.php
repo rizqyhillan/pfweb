@@ -11,9 +11,23 @@ class User extends Authenticatable
 
     protected $fillable = ['nama', 'email', 'password', 'role', 'no_hp', 'alamat', 'is_aktif', 'foto'];
     protected $hidden = ['password', 'remember_token'];
+    protected $appends = ['foto_url'];
     protected function casts(): array
     {
         return ['email_verified_at' => 'datetime', 'password' => 'hashed', 'is_aktif' => 'boolean'];
+    }
+
+    public function getFotoUrlAttribute()
+    {
+        if (!$this->foto) {
+            return asset('admin-assets/img/avatars/1.png');
+        }
+
+        if (filter_var($this->foto, FILTER_VALIDATE_URL)) {
+            return $this->foto;
+        }
+
+        return asset('storage/' . $this->foto);
     }
 
     // Accessor agar Auth::user()->name tetap jalan

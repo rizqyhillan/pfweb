@@ -2,9 +2,27 @@
     @csrf
 </form>
 
-<form method="post" action="{{ route('profile.update') }}" class="mt-2">
+<form method="post" action="{{ route('profile.update') }}" class="mt-2" enctype="multipart/form-data">
     @csrf
     @method('patch')
+
+    <!-- Avatar Preview & Upload -->
+    <div class="d-flex align-items-center gap-4 mb-4">
+        <img src="{{ $user->foto_url }}" alt="user-avatar" class="d-block rounded-3 border" height="100" width="100" id="uploadedAvatar" style="object-fit: cover;" />
+        <div class="button-wrapper">
+            <label for="upload" class="btn btn-primary me-2 mb-2" tabindex="0">
+                <span class="d-none d-sm-block"><i class="bx bx-upload me-1"></i> Unggah Foto Baru</span>
+                <i class="bx bx-upload d-block d-sm-none"></i>
+                <input type="file" id="upload" name="foto" class="account-file-input" hidden accept="image/png, image/jpeg, image/jpg" onchange="previewImage(this);" />
+            </label>
+            <div class="text-muted" style="font-size: 0.8rem;">Diizinkan JPG, JPEG, atau PNG. Maksimal 2MB.</div>
+            @if ($errors->get('foto'))
+                <div class="text-danger mt-1">
+                    {{ $errors->first('foto') }}
+                </div>
+            @endif
+        </div>
+    </div>
 
     <div class="row">
         <div class="mb-3 col-md-6">
@@ -61,3 +79,15 @@
         @endif
     </div>
 </form>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('uploadedAvatar').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

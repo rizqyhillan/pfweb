@@ -29,6 +29,7 @@ class DoctorBookingController extends Controller
                 'email',
                 'no_hp',
                 'alamat',
+                'foto',
             ])
             ->orderBy('nama')
             ->get()
@@ -39,6 +40,8 @@ class DoctorBookingController extends Controller
                     'email' => $doctor->email,
                     'no_hp' => $doctor->no_hp,
                     'alamat' => $doctor->alamat,
+                    'foto' => $doctor->foto,
+                    'foto_url' => $doctor->foto_url,
                     'spesialis' => 'Dokter Hewan',
                     'pengalaman' => 'Berpengalaman',
                     'rating' => 4.9,
