@@ -94,12 +94,9 @@
                                         @endif
 
                                         @if($booking->status === 'dikonfirmasi')
-                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="selesai">
-                                                <button type="submit" class="btn btn-sm btn-outline-success">Selesai</button>
-                                            </form>
+                                            <a href="{{ route('admin.doctor-bookings.payment', $booking) }}" class="btn btn-sm btn-outline-success">
+                                                <i class="bx bx-wallet me-1"></i> Bayar & Selesaikan
+                                            </a>
                                         @endif
 
                                         <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus booking ini?">

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Grooming extends Model
 {
-    protected $fillable = ['id_hewan', 'id_paket', 'tanggal_grooming', 'waktu_grooming', 'status', 'total_biaya', 'catatan_grooming'];
+    protected $fillable = ['id_hewan', 'id_paket', 'id_transaksi', 'tanggal_grooming', 'waktu_grooming', 'status', 'total_biaya', 'catatan_grooming'];
 
     protected $casts = [
         'total_biaya' => 'decimal:2',
@@ -26,6 +26,11 @@ class Grooming extends Model
     public function paket()
     {
         return $this->belongsTo(PackageType::class, 'id_paket');
+    }
+
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaction::class, 'id_transaksi');
     }
 
     public function owner()

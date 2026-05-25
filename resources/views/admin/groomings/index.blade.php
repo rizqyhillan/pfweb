@@ -78,11 +78,9 @@
                       </form>
                     @endif
                     @if($grooming->status === 'aktif')
-                      <form action="{{ route('admin.groomings.update-status', $grooming) }}" method="POST">
-                        @csrf @method('PUT')
-                        <input type="hidden" name="status" value="selesai">
-                        <button class="dropdown-item text-success"><i class="icon-base bx bx-check-double me-1"></i> Selesaikan</button>
-                      </form>
+                      <a class="dropdown-item text-success" href="{{ route('admin.groomings.payment', $grooming) }}">
+                        <i class="icon-base bx bx-wallet me-1"></i> Bayar & Selesaikan
+                      </a>
                     @endif
                     @if(in_array($grooming->status, ['pending', 'aktif']))
                       <form action="{{ route('admin.groomings.update-status', $grooming) }}" method="POST" data-confirm="Batalkan grooming ini?">
