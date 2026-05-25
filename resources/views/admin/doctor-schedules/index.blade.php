@@ -61,7 +61,7 @@
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.doctor-schedules.destroy', $schedule) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
+                                        <form action="{{ route('admin.doctor-schedules.destroy', $schedule) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus jadwal ini?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

@@ -141,22 +141,29 @@
                     });
                   @endif
 
-                  // Global Delete Confirmation Interceptor
+                  // Global Delete & Form Confirmation Interceptor
                   document.addEventListener('submit', function(e) {
                     if (e.target && e.target.tagName === 'FORM') {
                       let isDeleteForm = e.target.querySelector('input[name="_method"][value="DELETE"]');
-                      let hasConfirm = e.target.getAttribute('onsubmit') && e.target.getAttribute('onsubmit').includes('confirm');
+                      let confirmText = e.target.getAttribute('data-confirm');
                       
-                      if (isDeleteForm || hasConfirm) {
+                      if (isDeleteForm || confirmText) {
                         e.preventDefault();
+                        
+                        let title = confirmText || 'Apakah Anda yakin?';
+                        let text = isDeleteForm ? "Data yang dihapus tidak dapat dikembalikan!" : "";
+                        let icon = 'warning';
+                        let confirmButtonColor = isDeleteForm ? '#d33' : '#3085d6';
+                        let confirmButtonText = isDeleteForm ? 'Ya, hapus!' : 'Ya, yakin!';
+                        
                         Swal.fire({
-                          title: 'Apakah Anda yakin?',
-                          text: "Data yang dihapus tidak dapat dikembalikan!",
-                          icon: 'warning',
+                          title: title,
+                          text: text,
+                          icon: icon,
                           showCancelButton: true,
-                          confirmButtonColor: '#d33',
+                          confirmButtonColor: confirmButtonColor,
                           cancelButtonColor: '#6c757d',
-                          confirmButtonText: 'Ya, hapus!',
+                          confirmButtonText: confirmButtonText,
                           cancelButtonText: 'Batal'
                         }).then((result) => {
                           if (result.isConfirmed) {

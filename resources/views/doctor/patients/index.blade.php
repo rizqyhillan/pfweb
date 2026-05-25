@@ -56,7 +56,7 @@
                       <div class="dropdown-menu">
                         <a class="dropdown-item" href="{{ route('doctor.patients.show', $pet) }}"><i class="icon-base bx bx-show me-1"></i> Detail</a>
                         <a class="dropdown-item" href="{{ route('doctor.patients.edit', $pet) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-                        <form action="{{ route('doctor.patients.destroy', $pet) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin?')"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+                        <form action="{{ route('doctor.patients.destroy', $pet) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
                       </div>
                     </div>
                   </td>

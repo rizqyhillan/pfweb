@@ -52,7 +52,7 @@
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{{ route('admin.rooms.edit', $r) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
             <form action="{{ route('admin.rooms.destroy', $r) }}" method="POST"
-              onsubmit="return confirm('Apakah Anda yakin ingin menghapus kamar \'{{ $r->nama_kamar }}\'?')">
+              data-confirm="Apakah Anda yakin ingin menghapus kamar '{{ $r->nama_kamar }}'?">
               @csrf @method('DELETE')
               <button class="dropdown-item text-danger">
                 <i class="icon-base bx bx-trash me-1"></i> Hapus

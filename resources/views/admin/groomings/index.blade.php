@@ -85,7 +85,7 @@
                       </form>
                     @endif
                     @if(in_array($grooming->status, ['pending', 'aktif']))
-                      <form action="{{ route('admin.groomings.update-status', $grooming) }}" method="POST" onsubmit="return confirm('Batalkan grooming ini?')">
+                      <form action="{{ route('admin.groomings.update-status', $grooming) }}" method="POST" data-confirm="Batalkan grooming ini?">
                         @csrf @method('PUT')
                         <input type="hidden" name="status" value="batal">
                         <button class="dropdown-item text-danger"><i class="icon-base bx bx-x me-1"></i> Batalkan</button>

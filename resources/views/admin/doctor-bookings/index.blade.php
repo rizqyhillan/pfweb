@@ -85,7 +85,7 @@
                                         @endif
 
                                         @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
-                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline" onsubmit="return confirm('Batalkan booking dokter ini?')">
+                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline" data-confirm="Batalkan booking dokter ini?">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="status" value="batal">
@@ -102,7 +102,7 @@
                                             </form>
                                         @endif
 
-                                        <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus booking ini?')">
+                                        <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus booking ini?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

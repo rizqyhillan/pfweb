@@ -62,7 +62,7 @@
                                             Edit
                                         </a>
 
-                                        <form action="{{ route('admin.doctor-services.destroy', $service) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus layanan ini?')">
+                                        <form action="{{ route('admin.doctor-services.destroy', $service) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus layanan ini?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

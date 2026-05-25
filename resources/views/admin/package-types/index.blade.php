@@ -62,7 +62,7 @@
             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="{{ route('admin.package-types.edit', array_merge(['package_type' => $packageType], request()->only('section'))) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
-              <form action="{{ route('admin.package-types.destroy', $packageType) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket {{ $packageType->label }}?');">
+              <form action="{{ route('admin.package-types.destroy', $packageType) }}" method="POST" data-confirm="Apakah Anda yakin ingin menghapus paket {{ $packageType->label }}?">
                 <input type="hidden" name="section" value="{{ $section }}" />
                 @csrf @method('DELETE')
                 <button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
