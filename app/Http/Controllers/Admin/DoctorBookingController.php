@@ -32,8 +32,14 @@ class DoctorBookingController extends Controller
             ->orderBy('nama_hewan')
             ->get();
 
+        $activeDoctorIds = Service::where('kategori', 'dokter')
+            ->whereNotNull('id_dokter')
+            ->where('is_aktif', true)
+            ->pluck('id_dokter');
+
         $doctors = User::where('role', 'dokter')
             ->where('is_aktif', true)
+            ->whereIn('id', $activeDoctorIds)
             ->orderBy('nama')
             ->get();
 
@@ -45,7 +51,7 @@ class DoctorBookingController extends Controller
         $schedules = DoctorSchedule::with('dokter')
             ->where('is_aktif', true)
             ->orderBy('id_dokter')
-            ->orderByRaw("FIELD(hari, 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu')")
+            ->orderByRaw("CASE hari WHEN 'senin' THEN 1 WHEN 'selasa' THEN 2 WHEN 'rabu' THEN 3 WHEN 'kamis' THEN 4 WHEN 'jumat' THEN 5 WHEN 'sabtu' THEN 6 WHEN 'minggu' THEN 7 END")
             ->orderBy('jam_mulai')
             ->get();
 
@@ -113,8 +119,14 @@ class DoctorBookingController extends Controller
             ->orderBy('nama_hewan')
             ->get();
 
+        $activeDoctorIds = Service::where('kategori', 'dokter')
+            ->whereNotNull('id_dokter')
+            ->where('is_aktif', true)
+            ->pluck('id_dokter');
+
         $doctors = User::where('role', 'dokter')
             ->where('is_aktif', true)
+            ->whereIn('id', $activeDoctorIds)
             ->orderBy('nama')
             ->get();
 
@@ -126,7 +138,7 @@ class DoctorBookingController extends Controller
         $schedules = DoctorSchedule::with('dokter')
             ->where('is_aktif', true)
             ->orderBy('id_dokter')
-            ->orderByRaw("FIELD(hari, 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu')")
+            ->orderByRaw("CASE hari WHEN 'senin' THEN 1 WHEN 'selasa' THEN 2 WHEN 'rabu' THEN 3 WHEN 'kamis' THEN 4 WHEN 'jumat' THEN 5 WHEN 'sabtu' THEN 6 WHEN 'minggu' THEN 7 END")
             ->orderBy('jam_mulai')
             ->get();
 
