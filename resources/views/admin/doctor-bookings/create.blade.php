@@ -64,6 +64,7 @@
                                 <option 
                                     value="{{ $service->id }}" 
                                     data-harga="{{ $service->harga }}"
+                                    data-dokter-id="{{ $service->id_dokter }}"
                                     {{ old('id_layanan') == $service->id ? 'selected' : '' }}
                                 >
                                     {{ $service->nama_layanan }} - Rp {{ number_format($service->harga, 0, ',', '.') }}
@@ -77,7 +78,11 @@
                         <select name="id_jadwal" id="id_jadwal" class="form-control">
                             <option value="">Pilih Jadwal</option>
                             @foreach($schedules as $schedule)
-                                <option value="{{ $schedule->id }}" {{ old('id_jadwal') == $schedule->id ? 'selected' : '' }}>
+                                <option 
+                                    value="{{ $schedule->id }}" 
+                                    data-dokter-id="{{ $schedule->id_dokter }}"
+                                    {{ old('id_jadwal') == $schedule->id ? 'selected' : '' }}
+                                >
                                     {{ ucfirst($schedule->hari) }} - 
                                     {{ \Carbon\Carbon::parse($schedule->jam_mulai)->format('H:i') }} sampai 
                                     {{ \Carbon\Carbon::parse($schedule->jam_selesai)->format('H:i') }}
@@ -172,15 +177,66 @@
 </div>
 
 <script>
-    const layananSelect = document.getElementById('id_layanan');
-    const totalBiayaInput = document.getElementById('total_biaya');
+    document.addEventListener('DOMContentLoaded', function () {
+        const doctorSelect = document.getElementById('id_dokter');
+        const layananSelect = document.getElementById('id_layanan');
+        const jadwalSelect = document.getElementById('id_jadwal');
+        const totalBiayaInput = document.getElementById('total_biaya');
 
-    layananSelect?.addEventListener('change', function () {
-        const selected = this.options[this.selectedIndex];
-        const harga = selected.getAttribute('data-harga');
+        if (layananSelect) {
+            layananSelect.addEventListener('change', function () {
+                const selected = this.options[this.selectedIndex];
+                if (selected) {
+                    const harga = selected.getAttribute('data-harga');
+                    if (harga) {
+                        totalBiayaInput.value = parseInt(harga);
+                    }
+                }
+            });
+        }
 
-        if (harga) {
-            totalBiayaInput.value = harga;
+        if (doctorSelect && layananSelect && jadwalSelect) {
+            const originalLayananOptions = Array.from(layananSelect.options);
+            const originalJadwalOptions = Array.from(jadwalSelect.options);
+
+            function filterSelect(selectElement, originalOptions, selectedDoctorId, currentSelectedValue) {
+                selectElement.innerHTML = '';
+                
+                const filtered = originalOptions.filter(option => {
+                    if (option.value === "") return true;
+                    const doctorId = option.getAttribute('data-dokter-id');
+                    return !selectedDoctorId || doctorId === selectedDoctorId;
+                });
+
+                filtered.forEach(option => {
+                    if (option.value === currentSelectedValue) {
+                        option.selected = true;
+                    } else {
+                        option.selected = false;
+                    }
+                    selectElement.appendChild(option);
+                });
+            }
+
+            function updateFilters(isInitialLoad = false) {
+                const doctorId = doctorSelect.value;
+                const currentLayanan = layananSelect.value;
+                const currentJadwal = jadwalSelect.value;
+
+                filterSelect(layananSelect, originalLayananOptions, doctorId, currentLayanan);
+                filterSelect(jadwalSelect, originalJadwalOptions, doctorId, currentJadwal);
+            }
+
+            doctorSelect.addEventListener('change', function () {
+                // Clear selected values of filtered inputs on doctor change so they don't point to other doctor's values
+                layananSelect.value = "";
+                jadwalSelect.value = "";
+                totalBiayaInput.value = 0;
+                updateFilters();
+            });
+
+            // Initial run on page load
+            updateFilters(true);
         }
     });
 </script>
