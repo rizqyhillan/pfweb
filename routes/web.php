@@ -68,13 +68,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('package-types', PackageTypeController::class);
     Route::put('boardings/{boarding}/status', [BoardingController::class, 'updateStatus'])->name('boardings.update-status');
     Route::resource('boardings', BoardingController::class);
+
+    Route::get('groomings/{grooming}/payment', [GroomingController::class, 'payment'])->name('groomings.payment');
+    Route::post('groomings/{grooming}/pay', [GroomingController::class, 'pay'])->name('groomings.pay');
     Route::put('groomings/{grooming}/status', [GroomingController::class, 'updateStatus'])->name('groomings.update-status');
     Route::resource('groomings', GroomingController::class);
+    
     Route::resource('medical-records', MedicalRecordController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('users', UserController::class);
     Route::resource('product-batches', ProductBatchController::class);
     Route::resource('stock-cards', StockCardController::class)->only(['index', 'create', 'store', 'show']);
+
+    Route::get('doctor-bookings/{doctorBooking}/payment', [DoctorBookingController::class, 'payment'])->name('doctor-bookings.payment');
+    Route::post('doctor-bookings/{doctorBooking}/pay', [DoctorBookingController::class, 'pay'])->name('doctor-bookings.pay');
     Route::put('doctor-bookings/{doctorBooking}/status', [DoctorBookingController::class, 'updateStatus'])->name('doctor-bookings.update-status');
     Route::resource('doctor-bookings', DoctorBookingController::class);
     Route::resource('doctor-schedules', DoctorScheduleController::class);
@@ -161,6 +168,19 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     // Boardings - CRUD for Karyawan
     Route::resource('boardings', App\Http\Controllers\Karyawan\BoardingController::class);
     Route::get('boardings/page/{page}', [App\Http\Controllers\Karyawan\BoardingController::class, 'index'])->name('boardings.page');
+
+    // Groomings for Karyawan
+    Route::get('groomings/{grooming}/payment', [App\Http\Controllers\Karyawan\GroomingController::class, 'payment'])->name('groomings.payment');
+    Route::post('groomings/{grooming}/pay', [App\Http\Controllers\Karyawan\GroomingController::class, 'pay'])->name('groomings.pay');
+    Route::put('groomings/{grooming}/status', [App\Http\Controllers\Karyawan\GroomingController::class, 'updateStatus'])->name('groomings.update-status');
+    Route::resource('groomings', App\Http\Controllers\Karyawan\GroomingController::class)->only(['index']);
+    Route::get('groomings/page/{page}', [App\Http\Controllers\Karyawan\GroomingController::class, 'index'])->name('groomings.page');
+
+    // Doctor Bookings for Karyawan
+    Route::get('doctor-bookings/{doctorBooking}/payment', [App\Http\Controllers\Karyawan\DoctorBookingController::class, 'payment'])->name('doctor-bookings.payment');
+    Route::post('doctor-bookings/{doctorBooking}/pay', [App\Http\Controllers\Karyawan\DoctorBookingController::class, 'pay'])->name('doctor-bookings.pay');
+    Route::put('doctor-bookings/{doctorBooking}/status', [App\Http\Controllers\Karyawan\DoctorBookingController::class, 'updateStatus'])->name('doctor-bookings.update-status');
+    Route::resource('doctor-bookings', App\Http\Controllers\Karyawan\DoctorBookingController::class)->only(['index', 'show']);
 });
 
 // Export Medical Records to Excel dan PDF

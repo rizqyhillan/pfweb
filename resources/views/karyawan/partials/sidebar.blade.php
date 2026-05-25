@@ -41,6 +41,20 @@
       </a>
     </li>
 
+    <li class="menu-item {{ request()->routeIs('karyawan.groomings*') ? 'active' : '' }}">
+      <a href="{{ route('karyawan.groomings.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-cut"></i>
+        <div class="text-truncate">Grooming</div>
+      </a>
+    </li>
+
+    <li class="menu-item {{ request()->routeIs('karyawan.doctor-bookings*') ? 'active' : '' }}">
+      <a href="{{ route('karyawan.doctor-bookings.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+        <div class="text-truncate">Booking Dokter</div>
+      </a>
+    </li>
+
     <!-- Produk & Informasi -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Produk & Layanan</span></li>
 
