@@ -36,6 +36,31 @@ Route::post('/forgot-password/reset', [MobileAuthController::class, 'resetForgot
 Route::get('/grooming/packages', [TransactionController::class, 'getGroomingPackages']);
 Route::get('/grooming/availability', [TransactionController::class, 'getGroomingAvailability']);
 
+Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
+Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
+Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
+Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
+Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
+Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
+Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
+Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
+Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
+
+// Shopping public 
+Route::get('/shop/products', [ShopController::class, 'products']);
+Route::get('/shop/products/best-sellers', [ShopController::class, 'bestSellers']);
+Route::get('/shop/categories', [ShopController::class, 'categories']);
+Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
+
+Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
+Route::get('/boarding/rooms/{id}', [BoardingController::class, 'roomDetail']);
+Route::post('/boarding/estimate', [BoardingController::class, 'estimate']);
+Route::post('/boarding/book', [BoardingController::class, 'store']);
+Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
+Route::get('/boardings/{id}', [BoardingController::class, 'show']);
+Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
+Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [MobileAuthController::class, 'logout']);
@@ -72,11 +97,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Shop
     Route::post('/checkout', [TransactionController::class, 'checkout']);
 
-    // Shopping
-    Route::get('/shop/products', [ShopController::class, 'products']);
-    Route::get('/shop/categories', [ShopController::class, 'categories']);
-    Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
-
     // Shopping Cart
     Route::get('/shop/cart', [ShopCartController::class, 'index']);
     Route::post('/shop/cart/items', [ShopCartController::class, 'addItem']);
@@ -93,24 +113,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/my-pets/{id}', [PetController::class, 'destroy']);
 
     // Doctor Booking
-    Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
-    Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
-    Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
-    Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
-    Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
-    Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
-    Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
-    Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
-    Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
+    // Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
+    // Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
+    // Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
+    // Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
+    // Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
+    // Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
+    // Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
+    // Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
+    // Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
 
     // Boarding / Penitipan
-    Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
-    Route::get('/boarding/rooms/{id}', [BoardingController::class, 'roomDetail']);
-    Route::post('/boarding/estimate', [BoardingController::class, 'estimate']);
-    Route::post('/boarding/book', [BoardingController::class, 'store']);
-    Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
-    Route::get('/boardings/{id}', [BoardingController::class, 'show']);
-    Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
-    Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
+    // Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
+    // Route::get('/boarding/rooms/{id}', [BoardingController::class, 'roomDetail']);
+    // Route::post('/boarding/estimate', [BoardingController::class, 'estimate']);
+    // Route::post('/boarding/book', [BoardingController::class, 'store']);
+    // Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
+    // Route::get('/boardings/{id}', [BoardingController::class, 'show']);
+    // Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
+    // Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
 
 });

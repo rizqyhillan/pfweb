@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
@@ -37,6 +38,43 @@ class ShopController extends Controller
         ]);
     }
 
+    public function bestSellers()
+    {
+        $products = Product::query()
+            ->select('barang.*')
+            ->selectRaw('COALESCE(SUM(transaksi_barang.jumlah), 0) as total_sold')
+            ->leftJoin('transaksi_barang', 'barang.id', '=', 'transaksi_barang.id_barang')
+            ->leftJoin('transaksi', function ($join) {
+                $join->on('transaksi_barang.id_transaksi', '=', 'transaksi.id')
+                    ->where('transaksi.jenis', '=', 'shop')
+                    ->where('transaksi.status', '=', 'lunas');
+            })
+            ->where('barang.is_aktif', true)
+            ->where('barang.stok', '>', 0)
+            ->groupBy(
+                'barang.id',
+                'barang.nama_barang',
+                'barang.kategori',
+                'barang.harga',
+                'barang.stok',
+                'barang.satuan',
+                'barang.deskripsi',
+                'barang.is_aktif',
+                'barang.image',
+                'barang.created_at',
+                'barang.updated_at'
+            )
+            ->orderByDesc('total_sold')
+            ->latest('barang.created_at')
+            ->take(4)
+            ->get()
+            ->map(fn ($product) => $this->formatProduct($product));
+
+        return response()->json([
+            'data' => $products,
+        ]);
+    }
+
     public function productDetail($id)
     {
         $product = Product::where('is_aktif', true)
@@ -50,6 +88,7 @@ class ShopController extends Controller
     public function categories()
     {
         $categories = Product::where('is_aktif', true)
+            ->where('stok', '>', 0)
             ->whereNotNull('kategori')
             ->select('kategori')
             ->distinct()
@@ -76,6 +115,9 @@ class ShopController extends Controller
 
             'image' => $image,
             'image_url' => $image ? asset('storage/' . $image) : null,
+
+            'total_sold' => (int) ($product->total_sold ?? 0),
+            'is_featured' => ((int) ($product->total_sold ?? 0)) > 0,
 
             'tersedia' => $product->stok > 0 && $product->is_aktif,
         ];
