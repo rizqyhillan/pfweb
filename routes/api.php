@@ -40,11 +40,6 @@ Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
 Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
 Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
 Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
-Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
-Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
-Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
-Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
-Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
 
 // Shopping public 
 Route::get('/shop/products', [ShopController::class, 'products']);
@@ -117,11 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
     // Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
     // Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
-    // Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
-    // Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
-    // Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
-    // Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
-    // Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
+    Route::post('/doctor-bookings', [DoctorBookingController::class, 'store']);
+    Route::get('/my-doctor-bookings', [DoctorBookingController::class, 'myBookings']);
+    Route::get('/doctor-bookings/{id}', [DoctorBookingController::class, 'show']);
+    Route::post('/doctor-bookings/{id}/cancel', [DoctorBookingController::class, 'cancel']);
+    Route::post('/doctor-bookings/{id}/reschedule', [DoctorBookingController::class, 'reschedule']);
 
     // Boarding / Penitipan
     // Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
