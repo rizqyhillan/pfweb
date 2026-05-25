@@ -714,10 +714,7 @@
       </div>
       <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
         <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-          <a href="#" class="btn btn-primary" style="border-radius: 50px; padding: 15px 30px; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; background: var(--accent-color); border: none; color: white;">
-            <i class="bi bi-google-play me-2" style="font-size: 1.3rem;"></i> Download di Google Play
-          </a>
-          <a href="#" class="btn btn-outline" style="border-radius: 50px; padding: 15px 30px; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; border: 2px solid var(--accent-color); color: var(--accent-color); background: transparent;">
+          <a href="https://mega.nz/file/yp5wRJLB#zOysOva6m88jF4NOD9LzN3sXjUrSZyE4PVcyLB9D7Yw" class="btn btn-outline" style="border-radius: 50px; padding: 15px 30px; font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center; border: 2px solid var(--accent-color); color: var(--accent-color); background: transparent;">
             <i class="bi bi-android2 me-2" style="font-size: 1.3rem;"></i> Download APK Android
           </a>
         </div>
