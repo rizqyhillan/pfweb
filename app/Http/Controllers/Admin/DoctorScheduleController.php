@@ -13,7 +13,7 @@ class DoctorScheduleController extends Controller
     {
         $schedules = DoctorSchedule::with('dokter')
             ->orderBy('id_dokter')
-            ->orderByRaw("FIELD(hari, 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu')")
+            ->orderByRaw("CASE hari WHEN 'senin' THEN 1 WHEN 'selasa' THEN 2 WHEN 'rabu' THEN 3 WHEN 'kamis' THEN 4 WHEN 'jumat' THEN 5 WHEN 'sabtu' THEN 6 WHEN 'minggu' THEN 7 END")
             ->orderBy('jam_mulai')
             ->get();
 

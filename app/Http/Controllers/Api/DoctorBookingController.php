@@ -15,8 +15,14 @@ class DoctorBookingController extends Controller
 {
     public function doctors()
     {
+        $activeDoctorIds = Service::where('kategori', 'dokter')
+            ->whereNotNull('id_dokter')
+            ->where('is_aktif', true)
+            ->pluck('id_dokter');
+
         $doctors = User::where('role', 'dokter')
             ->where('is_aktif', true)
+            ->whereIn('id', $activeDoctorIds)
             ->select([
                 'id',
                 'nama',
@@ -80,7 +86,7 @@ class DoctorBookingController extends Controller
     {
         $query = DoctorSchedule::with('dokter')
             ->where('is_aktif', true)
-            ->orderByRaw("FIELD(hari, 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu')")
+            ->orderByRaw("CASE hari WHEN 'senin' THEN 1 WHEN 'selasa' THEN 2 WHEN 'rabu' THEN 3 WHEN 'kamis' THEN 4 WHEN 'jumat' THEN 5 WHEN 'sabtu' THEN 6 WHEN 'minggu' THEN 7 END")
             ->orderBy('jam_mulai');
 
         if ($request->filled('doctor_id')) {
@@ -101,6 +107,107 @@ class DoctorBookingController extends Controller
 
         return response()->json([
             'data' => $schedules,
+        ]);
+    }
+
+    public function availability(Request $request)
+    {
+        $validated = $request->validate([
+            'doctor_id' => ['required', 'exists:users,id'],
+            'days' => ['nullable', 'integer', 'min:5', 'max:14'],
+        ]);
+
+        $doctor = User::where('id', $validated['doctor_id'])
+            ->where('role', 'dokter')
+            ->where('is_aktif', true)
+            ->firstOrFail();
+
+        $daysCount = $validated['days'] ?? 6;
+        $hariMap = [
+            'Monday' => 'senin',
+            'Tuesday' => 'selasa',
+            'Wednesday' => 'rabu',
+            'Thursday' => 'kamis',
+            'Friday' => 'jumat',
+            'Saturday' => 'sabtu',
+            'Sunday' => 'minggu',
+        ];
+
+        $schedules = DoctorSchedule::where('id_dokter', $doctor->id)
+            ->where('is_aktif', true)
+            ->orderByRaw("CASE hari WHEN 'senin' THEN 1 WHEN 'selasa' THEN 2 WHEN 'rabu' THEN 3 WHEN 'kamis' THEN 4 WHEN 'jumat' THEN 5 WHEN 'sabtu' THEN 6 WHEN 'minggu' THEN 7 END")
+            ->orderBy('jam_mulai')
+            ->get()
+            ->groupBy('hari');
+
+        $days = [];
+        $now = Carbon::now();
+
+        for ($i = 1; $i <= $daysCount; $i++) {
+            $date = $now->copy()->addDays($i);
+            $hari = $hariMap[$date->format('l')] ?? null;
+            $dateSchedules = $hari && $schedules->has($hari)
+                ? $schedules->get($hari)
+                : collect();
+
+            $pagi = [];
+            $siang = [];
+
+            foreach ($dateSchedules as $schedule) {
+                $start = Carbon::parse($schedule->jam_mulai);
+                $end = Carbon::parse($schedule->jam_selesai);
+
+                while ($start->lt($end)) {
+                    $slot = $start->format('H:i');
+                    $bookedCount = DoctorBooking::where('id_dokter', $doctor->id)
+                        ->where('id_jadwal', $schedule->id)
+                        ->whereDate('tanggal_booking', $date->format('Y-m-d'))
+                        ->where('jam_booking', $slot)
+                        ->whereNotIn('status', ['batal'])
+                        ->count();
+
+                    if ($bookedCount < $schedule->kuota) {
+                        $item = [
+                            'id_jadwal' => $schedule->id,
+                            'time' => $slot,
+                            'jam_mulai' => Carbon::parse($schedule->jam_mulai)->format('H:i'),
+                            'jam_selesai' => Carbon::parse($schedule->jam_selesai)->format('H:i'),
+                            'sisa_kuota' => max(0, $schedule->kuota - $bookedCount),
+                        ];
+
+                        if ((int) $start->format('H') < 12) {
+                            $pagi[] = $item;
+                        } else {
+                            $siang[] = $item;
+                        }
+                    }
+
+                    $start->addHour();
+                }
+            }
+
+            $days[] = [
+                'day' => $date->locale('id')->isoFormat('ddd'),
+                'date' => $date->format('d'),
+                'full_date' => $date->format('Y-m-d'),
+                'month_year' => $date->locale('id')->isoFormat('MMMM YYYY'),
+                'hari' => $hari,
+                'available' => count($pagi) > 0 || count($siang) > 0,
+                'times' => [
+                    'pagi' => $pagi,
+                    'siang' => $siang,
+                ],
+            ];
+        }
+
+        return response()->json([
+            'data' => [
+                'doctor' => [
+                    'id' => $doctor->id,
+                    'nama' => $doctor->nama,
+                ],
+                'days' => $days,
+            ],
         ]);
     }
 
@@ -134,12 +241,12 @@ class DoctorBookingController extends Controller
             })
             ->firstOrFail();
 
-        if (!empty($validated['id_jadwal'])) {
-            DoctorSchedule::where('id', $validated['id_jadwal'])
-                ->where('id_dokter', $doctor->id)
-                ->where('is_aktif', true)
-                ->firstOrFail();
-        }
+        $this->validateScheduleSlot(
+            doctorId: $doctor->id,
+            scheduleId: $validated['id_jadwal'] ?? null,
+            tanggalBooking: $validated['tanggal_booking'],
+            jamBooking: $validated['jam_booking']
+        );
 
         $booking = DoctorBooking::create([
             'id_hewan' => $pet->id,
@@ -234,12 +341,13 @@ class DoctorBookingController extends Controller
             ], 422);
         }
 
-        if (!empty($validated['id_jadwal'])) {
-            DoctorSchedule::where('id', $validated['id_jadwal'])
-                ->where('id_dokter', $booking->id_dokter)
-                ->where('is_aktif', true)
-                ->firstOrFail();
-        }
+        $this->validateScheduleSlot(
+            doctorId: $booking->id_dokter,
+            scheduleId: $validated['id_jadwal'] ?? null,
+            tanggalBooking: $validated['tanggal_booking'],
+            jamBooking: $validated['jam_booking'],
+            ignoreBookingId: $booking->id
+        );
 
         $booking->update([
             'id_jadwal' => $validated['id_jadwal'] ?? $booking->id_jadwal,
@@ -281,6 +389,63 @@ class DoctorBookingController extends Controller
             'message' => 'Booking dokter berhasil dibatalkan.',
             'data' => $this->formatBooking($booking->fresh(['hewan', 'dokter', 'layanan', 'jadwal'])),
         ]);
+    }
+
+    private function validateScheduleSlot(int $doctorId, ?int $scheduleId, string $tanggalBooking, string $jamBooking, ?int $ignoreBookingId = null): void
+    {
+        if (empty($scheduleId)) {
+            return;
+        }
+
+        $schedule = DoctorSchedule::where('id', $scheduleId)
+            ->where('id_dokter', $doctorId)
+            ->where('is_aktif', true)
+            ->firstOrFail();
+
+        $hariMap = [
+            'Monday' => 'senin',
+            'Tuesday' => 'selasa',
+            'Wednesday' => 'rabu',
+            'Thursday' => 'kamis',
+            'Friday' => 'jumat',
+            'Saturday' => 'sabtu',
+            'Sunday' => 'minggu',
+        ];
+
+        $tanggal = Carbon::parse($tanggalBooking);
+        $hariBooking = $hariMap[$tanggal->format('l')] ?? null;
+
+        if ($hariBooking !== $schedule->hari) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
+                'message' => 'Tanggal booking tidak sesuai dengan hari jadwal dokter.',
+            ], 422));
+        }
+
+        $jam = Carbon::createFromFormat('H:i', $jamBooking);
+        $jamMulai = Carbon::parse($schedule->jam_mulai);
+        $jamSelesai = Carbon::parse($schedule->jam_selesai);
+
+        if ($jam->lt($jamMulai) || $jam->gte($jamSelesai)) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
+                'message' => 'Jam booking berada di luar jadwal dokter.',
+            ], 422));
+        }
+
+        $query = DoctorBooking::where('id_dokter', $doctorId)
+            ->where('id_jadwal', $schedule->id)
+            ->whereDate('tanggal_booking', $tanggalBooking)
+            ->where('jam_booking', $jamBooking)
+            ->whereNotIn('status', ['batal']);
+
+        if ($ignoreBookingId !== null) {
+            $query->where('id', '!=', $ignoreBookingId);
+        }
+
+        if ($query->count() >= $schedule->kuota) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
+                'message' => 'Slot jadwal dokter ini sudah penuh.',
+            ], 422));
+        }
     }
 
     private function formatBooking(DoctorBooking $booking): array
