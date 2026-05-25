@@ -23,21 +23,7 @@
   </form>
 </div>
 
-@if(session('error'))
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <i class="bx bx-error-circle me-2"></i>
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
 
-@if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="bx bx-check-circle me-2"></i>
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-@endif
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
   <thead><tr><th>#</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>

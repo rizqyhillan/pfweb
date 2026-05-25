@@ -2,8 +2,8 @@
 @section('title', 'Data Pengguna')
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
-  <h4 class="mb-0">Data Pengguna</h4>
-  <a href="{{ route('admin.users.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Pengguna</a>
+  <h4 class="mb-0">{{ request('role') === 'dokter' ? 'Data Dokter' : 'Data Pengguna' }}</h4>
+  <a href="{{ route('admin.users.create', request('role') ? ['role' => request('role')] : []) }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> {{ request('role') === 'dokter' ? 'Tambah Dokter' : 'Tambah Pengguna' }}</a>
 </div>
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
   <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Role</th><th>No. HP</th><th>Status</th><th>Aksi</th></tr></thead>
@@ -20,9 +20,9 @@
         <div class="dropdown">
           <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="{{ route('admin.users.edit', $user) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+            <a class="dropdown-item" href="{{ route('admin.users.edit', [$user] + (request('role') ? ['role' => request('role')] : [])) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
             @if($user->id !== auth()->id())
-            <form action="{{ route('admin.users.destroy', $user) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
+            <form action="{{ route('admin.users.destroy', [$user] + (request('role') ? ['role' => request('role')] : [])) }}" method="POST">@csrf @method('DELETE')<button class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button></form>
             @endif
           </div>
         </div>

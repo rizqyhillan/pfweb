@@ -73,6 +73,15 @@ class ServiceController extends Controller
 
     public function destroy(Request $request, Service $service)
     {
+        $hasTransactions = \App\Models\TransactionService::where('id_layanan', $service->id)->exists();
+        $hasBookings = \App\Models\DoctorBooking::where('id_layanan', $service->id)->exists();
+
+        if ($hasTransactions || $hasBookings) {
+            return redirect()
+                ->route('admin.services.index', $request->only('jenis_layanan'))
+                ->with('error', 'Layanan tidak dapat dihapus karena telah digunakan dalam transaksi atau booking. Silakan nonaktifkan layanan ini jika tidak ingin digunakan lagi.');
+        }
+
         $service->delete();
 
         return redirect()->route('admin.services.index', $request->only('jenis_layanan'))->with('success', 'Layanan berhasil dihapus.');

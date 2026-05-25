@@ -93,14 +93,21 @@
       </ul>
     </li>
 
-        <!-- Dokter (submenu: Jadwal Dokter + Layanan Dokter + Data Booking Dokter) -->
-    <li class="menu-item {{ request()->routeIs('admin.doctor-schedules.*') || request()->routeIs('admin.doctor-services.*') || request()->routeIs('admin.doctor-bookings.*') ? 'open' : '' }}">
+    <!-- Dokter (submenu: Jadwal Dokter + Layanan Dokter + Data Booking Dokter) -->
+    <li class="menu-item {{ request()->routeIs('admin.doctor-schedules.*') || request()->routeIs('admin.doctor-services.*') || request()->routeIs('admin.doctor-bookings.*') || (request()->routeIs('admin.users.*') && request('role') === 'dokter') ? 'open' : '' }}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-plus-medical"></i>
         <div class="text-truncate">Dokter</div>
       </a>
     
       <ul class="menu-sub">
+        <li class="menu-item {{ request()->routeIs('admin.users.*') && request('role') === 'dokter' ? 'active' : '' }}">
+          <a href="{{ route('admin.users.role', ['role' => 'dokter']) }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div class="text-truncate">Data Dokter</div>
+          </a>
+        </li>
+
         <li class="menu-item {{ request()->routeIs('admin.doctor-schedules.*') ? 'active' : '' }}">
           <a href="{{ route('admin.doctor-schedules.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-calendar"></i>
@@ -185,7 +192,7 @@
     <!-- Manajemen -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Manajemen</span></li>
 
-    <li class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+    <li class="menu-item {{ request()->routeIs('admin.users.*') && request('role') !== 'dokter' ? 'active' : '' }}">
       <a href="{{ route('admin.users.index') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bx-user"></i>
         <div class="text-truncate">Pengguna</div>

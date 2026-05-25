@@ -96,6 +96,15 @@ class DoctorServiceController extends Controller
     {
         abort_if($doctorService->kategori !== 'dokter', 404);
 
+        $hasTransactions = \App\Models\TransactionService::where('id_layanan', $doctorService->id)->exists();
+        $hasBookings = \App\Models\DoctorBooking::where('id_layanan', $doctorService->id)->exists();
+
+        if ($hasTransactions || $hasBookings) {
+            return redirect()
+                ->route('admin.doctor-services.index')
+                ->with('error', 'Layanan tidak dapat dihapus karena telah digunakan dalam transaksi atau booking. Silakan nonaktifkan layanan ini jika tidak ingin digunakan lagi.');
+        }
+
         $doctorService->delete();
 
         return redirect()

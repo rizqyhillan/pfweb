@@ -97,6 +97,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('medical-records/page/{page}', [MedicalRecordController::class, 'index'])->name('medical-records.page');
     Route::get('suppliers/page/{page}', [SupplierController::class, 'index'])->name('suppliers.page');
     Route::get('users/page/{page}', [UserController::class, 'index'])->name('users.page');
+    Route::get('users/role/{role}', [UserController::class, 'index'])->name('users.role');
+    Route::get('users/role/{role}/page/{page}', [UserController::class, 'index'])->name('users.role.page');
     Route::get('product-batches/page/{page}', [ProductBatchController::class, 'index'])->name('product-batches.page');
     Route::get('stock-cards/page/{page}', [StockCardController::class, 'index'])->name('stock-cards.page');
 

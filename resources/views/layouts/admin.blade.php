@@ -133,6 +133,14 @@
                     });
                   @endif
 
+                  @if($errors->any())
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Gagal!',
+                      html: '{!! addslashes(implode("<br>", $errors->all())) !!}',
+                    });
+                  @endif
+
                   // Global Delete Confirmation Interceptor
                   document.addEventListener('submit', function(e) {
                     if (e.target && e.target.tagName === 'FORM') {

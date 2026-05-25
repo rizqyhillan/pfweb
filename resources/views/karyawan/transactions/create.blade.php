@@ -316,7 +316,7 @@
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-check-circle me-1"></i> Proses Pembayaran';
-            Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal menghubungi server.' });
+            Swal.fire({ icon: 'error', title: 'Gagal!', text: 'Gagal menghubungi server.' });
             console.error(err);
         });
     }

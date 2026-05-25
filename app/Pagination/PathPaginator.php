@@ -16,6 +16,12 @@ class PathPaginator extends LengthAwarePaginator
             $page = 1;
         }
 
-        return rtrim($this->path(), '/').'/'.$page.$this->buildFragment();
+        $url = rtrim($this->path(), '/').'/'.$page;
+
+        if (count($this->query) > 0) {
+            $url .= '?'.http_build_query($this->query, '', '&', PHP_QUERY_RFC3986);
+        }
+
+        return $url.$this->buildFragment();
     }
 }
