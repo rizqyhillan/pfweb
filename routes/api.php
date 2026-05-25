@@ -50,11 +50,6 @@ Route::get('/shop/products/{id}', [ShopController::class, 'productDetail']);
 Route::get('/boarding/rooms', [BoardingController::class, 'rooms']);
 Route::get('/boarding/rooms/{id}', [BoardingController::class, 'roomDetail']);
 Route::post('/boarding/estimate', [BoardingController::class, 'estimate']);
-Route::post('/boarding/book', [BoardingController::class, 'store']);
-Route::get('/my-boardings', [BoardingController::class, 'myBoardings']);
-Route::get('/boardings/{id}', [BoardingController::class, 'show']);
-Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
-Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
