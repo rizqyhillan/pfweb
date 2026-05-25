@@ -1,48 +1,80 @@
-<header id="header" class="header fixed-top">
+<header id="header" class="header fixed-top d-flex align-items-center" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.05); height: 75px; transition: all 0.3s; z-index: 10000;">
+  <div class="container d-flex align-items-center justify-content-between">
 
-    <div class="branding d-flex align-items-center">
+    <!-- Logo -->
+    <a href="{{ route('home') }}" class="logo d-flex align-items-center" style="text-decoration: none;">
+      <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet" style="max-height: 40px; border-radius: 8px; margin-right: 10px;">
+      <span style="font-weight: 700; font-size: 1.5rem; color: #f59e0b; font-family: 'Quicksand', sans-serif;">PawPet</span>
+    </a>
 
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="{{ route('home') }}" class="logo d-flex align-items-center">
-          <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet" style="max-height: 40px; border-radius: 8px; margin-right: 10px;">
-          <h1 class="sitename" style="font-weight: 700; color: var(--accent-color);">PawPet</h1>
-        </a>
+    <!-- Desktop Navmenu (Visible on lg and larger) -->
+    <nav class="d-none d-lg-flex align-items-center gap-4">
+      <a href="#hero" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">Home</a>
+      <a href="#fitur" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">Fitur</a>
+      <a href="#faq" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">FAQ</a>
+      
+      @guest
+        <a href="{{ route('login') }}" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">Login</a>
+      @endguest
 
-        <div class="dropdown">
-          <button class="btn btn-link p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 32px; color: var(--accent-color); border: none; background: transparent;">
-            <i class="bi bi-list"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" style="border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; padding: 10px 0; min-width: 220px;">
-            <li><a class="dropdown-item py-2 fw-semibold" href="#hero">Home</a></li>
-            <li><a class="dropdown-item py-2 fw-semibold" href="#services">Layanan Terpadu</a></li>
-            <li><a class="dropdown-item py-2 fw-semibold" href="#shop">Shop</a></li>
-            <li><a class="dropdown-item py-2 fw-semibold" href="#contact">Contact</a></li>
-            <li><hr class="dropdown-divider"></li>
-            @guest
-              <li><a class="dropdown-item py-2 fw-bold text-primary" href="{{ route('login') }}"><i class="bi bi-person me-2"></i>Login</a></li>
-            @endguest
-            @auth
-              @php
-                $dashRoute = match(Auth::user()->role) {
-                  'admin'    => route('admin.dashboard'),
-                  'dokter'   => route('doctor.dashboard'),
-                  'karyawan' => route('karyawan.dashboard'),
-                  default    => route('home'),
-                };
-              @endphp
-              <li><a class="dropdown-item py-2 fw-bold text-primary" href="{{ $dashRoute }}"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-              <li>
-                <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
-                  @csrf
-                  <button type="submit" class="dropdown-item py-2 fw-bold text-danger"><i class="bi bi-box-arrow-right me-2"></i>Keluar</button>
-                </form>
-              </li>
-            @endauth
-          </ul>
-        </div>
+      @auth
+        @php
+          $dashRoute = match(Auth::user()->role) {
+            'admin'    => route('admin.dashboard'),
+            'dokter'   => route('doctor.dashboard'),
+            'karyawan' => route('karyawan.dashboard'),
+            default    => route('home'),
+          };
+        @endphp
+        <a href="{{ $dashRoute }}" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">Dashboard</a>
+      @endauth
+    </nav>
 
-      </div>
-
+    <!-- Mobile Hamburger Toggle Button (Visible on screens smaller than lg) -->
+    <div class="d-flex d-lg-none align-items-center">
+      <button class="btn p-0 border-0 bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavCollapse" aria-expanded="false" aria-controls="mobileNavCollapse" style="color: #f59e0b; font-size: 2rem;">
+        <i class="bi bi-list"></i>
+      </button>
     </div>
 
-  </header>
+  </div>
+
+  <!-- Mobile Collapsible Menu -->
+  <div class="collapse position-absolute w-100 start-0 d-lg-none" id="mobileNavCollapse" style="top: 75px; background: rgba(255, 255, 255, 0.98); box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 1px solid rgba(0,0,0,0.05); z-index: 9999;">
+    <div class="container py-4 d-flex flex-column gap-3">
+      <a href="#hero" class="mobile-nav-link" onclick="bootstrap.Collapse.getInstance(document.getElementById('mobileNavCollapse')).hide();" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Home</a>
+      <a href="#fitur" class="mobile-nav-link" onclick="bootstrap.Collapse.getInstance(document.getElementById('mobileNavCollapse')).hide();" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Fitur</a>
+      <a href="#faq" class="mobile-nav-link" onclick="bootstrap.Collapse.getInstance(document.getElementById('mobileNavCollapse')).hide();" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">FAQ</a>
+      
+      @guest
+        <a href="{{ route('login') }}" class="mobile-nav-link" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Login</a>
+      @endguest
+      @auth
+        @php
+          $dashRouteMobile = match(Auth::user()->role) {
+            'admin'    => route('admin.dashboard'),
+            'dokter'   => route('doctor.dashboard'),
+            'karyawan' => route('karyawan.dashboard'),
+            default    => route('home'),
+          };
+        @endphp
+        <a href="{{ $dashRouteMobile }}" class="mobile-nav-link" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Dashboard</a>
+      @endauth
+
+      <a href="https://mega.nz/file/yp5wRJLB#zOysOva6m88jF4NOD9LzN3sXjUrSZyE4PVcyLB9D7Yw" target="_blank" class="w-100 text-center btn btn-primary mt-2" style="background: #f59e0b; border: none; border-radius: 50px; padding: 12px; font-weight: 700; font-size: 1.05rem; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+        <i class="bi bi-android2 me-2"></i>Download APK
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav-link-item:hover {
+    color: #f59e0b !important;
+  }
+  .mobile-nav-link:hover {
+    color: #f59e0b !important;
+    padding-left: 5px !important;
+    transition: all 0.2s;
+  }
+</style>
