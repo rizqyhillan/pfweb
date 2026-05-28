@@ -30,18 +30,45 @@ class ProductController extends Controller
             'stok' => 'required|integer|min:0',
             'satuan' => 'nullable|string|max:20',
             'deskripsi' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'variations' => 'nullable|array',
+            'variations.*.nama_variasi' => 'nullable|string|max:100',
+            'variations.*.harga' => 'nullable|numeric|min:0',
+            'variations.*.stok' => 'nullable|integer|min:0',
         ]);
 
         $v['is_aktif'] = 1;
         $v['satuan'] = $v['satuan'] ?? 'pcs';
 
-        // Handle image upload
-        $v['image'] = $request->hasFile('image')
-            ? $request->file('image')->store('products', 'public')
-            : null;
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $imagePaths[] = $file->store('products', 'public');
+            }
+        }
 
-        Product::create($v);
+        $v['image'] = $imagePaths[0] ?? null;
+
+        $product = Product::create($v);
+
+        foreach ($imagePaths as $path) {
+            $product->images()->create(['path' => $path]);
+        }
+
+        if (! empty($v['variations'])) {
+            foreach ($v['variations'] as $variation) {
+                if (empty($variation['nama_variasi']) && empty($variation['harga']) && empty($variation['stok'])) {
+                    continue;
+                }
+
+                $product->variations()->create([
+                    'nama_variasi' => $variation['nama_variasi'],
+                    'harga' => $variation['harga'] ?? $v['harga'],
+                    'stok' => $variation['stok'] ?? 0,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
@@ -60,34 +87,63 @@ class ProductController extends Controller
             'stok' => 'required|integer|min:0',
             'satuan' => 'nullable|string|max:20',
             'deskripsi' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'variations' => 'nullable|array',
+            'variations.*.nama_variasi' => 'nullable|string|max:100',
+            'variations.*.harga' => 'nullable|numeric|min:0',
+            'variations.*.stok' => 'nullable|integer|min:0',
         ]);
 
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
 
-        // Handle image upload & cleanup
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $imagePaths[] = $file->store('products', 'public');
             }
-            $v['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        if (count($imagePaths)) {
+            foreach ($imagePaths as $path) {
+                $product->images()->create(['path' => $path]);
+            }
+
+            $v['image'] = $product->image ?: $imagePaths[0];
         } else {
-            // Keep existing image
             $v['image'] = $product->image;
         }
 
         $product->update($v);
+
+        if ($request->has('variations')) {
+            $product->variations()->delete();
+
+            foreach ($v['variations'] as $variation) {
+                if (empty($variation['nama_variasi']) && empty($variation['harga']) && empty($variation['stok'])) {
+                    continue;
+                }
+
+                $product->variations()->create([
+                    'nama_variasi' => $variation['nama_variasi'],
+                    'harga' => $variation['harga'] ?? $v['harga'],
+                    'stok' => $variation['stok'] ?? 0,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Product $product)
     {
-        // Clean up image file on delete
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
+
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
