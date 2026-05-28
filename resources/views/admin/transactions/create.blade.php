@@ -3,13 +3,13 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Transaksi / POS Kasir</h4>
-    <a href="{{ route('admin.transactions.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+    <a href="{{ route('karyawan.transactions') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 
 
 
 
-<form action="{{ route('admin.transactions.store') }}" method="POST" id="posForm">
+<form action="{{ route('karyawan.transactions.store') }}" method="POST" id="posForm">
     @csrf
     <div class="row">
         <!-- Kolom Kiri: Keranjang -->
@@ -21,22 +21,12 @@
                 <div class="card-body pt-3">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Tambah Barang</label>
-                            <select class="form-select select2" id="product_select">
-                                <option value="">-- Pilih Barang --</option>
-                                @foreach($products as $p)
-                                    <option value="{{ $p->id }}" data-price="{{ $p->harga }}" data-name="{{ $p->nama_barang }}" data-stock="{{ $p->stok }}">{{ $p->nama_barang }} - Rp {{ number_format($p->harga, 0, ',', '.') }} (Stok: {{ $p->stok }})</option>
-                                @endforeach
-                            </select>
+                            <label class="form-label">Cari Barang (Nama)</label>
+                            <input type="text" class="form-control" id="product_name_search" placeholder="Ketik nama barang...">
+                            <div id="product_name_results" class="mt-2" style="max-height: 200px; overflow-y: auto; display: none; border: 1px solid #ddd; border-radius: 4px; background: white; position: absolute; width: 45%; z-index: 1000;"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Tambah Layanan</label>
-                            <select class="form-select select2" id="service_select">
-                                <option value="">-- Pilih Layanan --</option>
-                                @foreach($services as $s)
-                                    <option value="{{ $s->id }}" data-price="{{ $s->harga }}" data-name="{{ $s->nama_layanan }}">{{ $s->nama_layanan }} - Rp {{ number_format($s->harga, 0, ',', '.') }}</option>
-                                @endforeach
-                            </select>
+
                         </div>
                     </div>
                     
@@ -128,7 +118,7 @@
 
                     <button type="button" class="btn btn-success w-100 btn-lg" id="btnSubmitPOS" onclick="submitPOS()"><i class="bx bx-check-circle me-1"></i> Proses Pembayaran</button>
                     
-                    <a href="{{ route('admin.transactions.create') }}" class="btn btn-outline-primary w-100 btn-lg mt-3 d-none" id="btnNewTransaction"><i class="bx bx-plus me-1"></i> Transaksi Baru</a>
+                    <a href="{{ route('karyawan.transactions.create') }}" class="btn btn-outline-primary w-100 btn-lg mt-3 d-none" id="btnNewTransaction"><i class="bx bx-plus me-1"></i> Transaksi Baru</a>
                 </div>
             </div>
         </div>
@@ -137,20 +127,80 @@
 
 <script>
     let cart = [];
+    let products = {!! json_encode($products) !!};
     
-    document.getElementById('product_select').addEventListener('change', function() {
-        if(!this.value) return;
-        let opt = this.options[this.selectedIndex];
-        addItem('product', this.value, opt.getAttribute('data-name'), opt.getAttribute('data-price'), opt.getAttribute('data-stock'));
-        this.value = '';
+    // Search by product name
+    document.getElementById('product_name_search').addEventListener('input', function() {
+        let searchTerm = this.value.toLowerCase().trim();
+        let resultsDiv = document.getElementById('product_name_results');
+        
+        if(searchTerm.length < 1) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+        
+        let results = products.filter(p => p.nama_barang.toLowerCase().includes(searchTerm));
+        
+        if(results.length === 0) {
+            resultsDiv.innerHTML = '<div class="p-2 text-muted">Barang tidak ditemukan</div>';
+            resultsDiv.style.display = 'block';
+            return;
+        }
+        
+        let html = '';
+        results.forEach(p => {
+            html += `<div class="p-2 border-bottom" style="cursor: pointer; hover: background-color: #f5f5f5;" onclick="selectProductByName('${p.id}', '${p.nama_barang}', ${p.harga}, ${p.stok})">
+                <strong>${p.nama_barang}</strong><br>
+                <small class="text-muted">Rp ${new Intl.NumberFormat('id-ID').format(p.harga)} | Stok: ${p.stok}</small>
+            </div>`;
+        });
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
     });
 
-    document.getElementById('service_select').addEventListener('change', function() {
-        if(!this.value) return;
-        let opt = this.options[this.selectedIndex];
-        addItem('service', this.value, opt.getAttribute('data-name'), opt.getAttribute('data-price'), null);
-        this.value = '';
+    // Search by product code
+    document.getElementById('product_code_search').addEventListener('input', function() {
+        let searchTerm = this.value.toLowerCase().trim();
+        let resultsDiv = document.getElementById('product_code_results');
+        
+        if(searchTerm.length < 1) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+        
+        let results = products.filter(p => (p.kode_barang || '').toLowerCase().includes(searchTerm));
+        
+        if(results.length === 0) {
+            resultsDiv.innerHTML = '<div class="p-2 text-muted">Kode barang tidak ditemukan</div>';
+            resultsDiv.style.display = 'block';
+            return;
+        }
+        
+        let html = '';
+        results.forEach(p => {
+            html += `<div class="p-2 border-bottom" style="cursor: pointer;" onclick="selectProductByCode('${p.id}', '${p.nama_barang}', ${p.harga}, ${p.stok})">
+                <strong>${p.kode_barang || '-'}</strong><br>
+                <small class="text-muted">${p.nama_barang}</small><br>
+                <small class="text-muted">Rp ${new Intl.NumberFormat('id-ID').format(p.harga)} | Stok: ${p.stok}</small>
+            </div>`;
+        });
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
     });
+
+    function selectProductByName(id, name, price, stock) {
+        addItem('product', id, name, price, stock);
+        document.getElementById('product_name_search').value = '';
+        document.getElementById('product_name_results').style.display = 'none';
+    }
+
+    function selectProductByCode(id, name, price, stock) {
+        addItem('product', id, name, price, stock);
+        document.getElementById('product_code_search').value = '';
+        document.getElementById('product_code_results').style.display = 'none';
+    }
 
     function addItem(type, id, name, price, maxStock) {
         price = parseFloat(price);
@@ -207,14 +257,13 @@
                 let itemSub = item.price * item.qty;
                 subtotal += itemSub;
                 
-                let inputNameId = item.type === 'product' ? 'product_ids[]' : 'service_ids[]';
-                let inputNameQty = item.type === 'product' ? 'product_qtys[]' : 'service_qtys[]';
-                let badge = item.type === 'product' ? '<span class="badge bg-label-info ms-2">Brg</span>' : '<span class="badge bg-label-warning ms-2">Lyan</span>';
+                let inputNameId = 'product_ids[]';
+                let inputNameQty = 'product_qtys[]';
                 
                 let tr = `
                     <tr>
                         <td>
-                            ${item.name} ${badge}
+                            ${item.name}
                             <input type="hidden" name="${inputNameId}" value="${item.id}">
                         </td>
                         <td class="text-end">${formatRp(item.price)}</td>
@@ -267,7 +316,7 @@
 
     function submitPOS() {
         if(cart.length === 0) {
-            Swal.fire({ icon: 'info', title: 'Keranjang Kosong', text: 'Tambahkan barang atau layanan terlebih dahulu!' }); 
+            Swal.fire({ icon: 'info', title: 'Keranjang Kosong', text: 'Tambahkan barang atau layanan terlebih dahulu!' });
             return;
         }
         
@@ -286,7 +335,7 @@
         
         let formData = new FormData(document.getElementById('posForm'));
 
-        fetch('{{ route("admin.transactions.store") }}', {
+        fetch('{{ route("karyawan.transactions.store") }}', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -316,7 +365,7 @@
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bx bx-check-circle me-1"></i> Proses Pembayaran';
-            Swal.fire({ icon: 'error', title: 'Error!', text: 'Gagal menghubungi server.' });
+            Swal.fire({ icon: 'error', title: 'Gagal!', text: 'Gagal menghubungi server.' });
             console.error(err);
         });
     }
@@ -330,16 +379,6 @@
             trx.barang.forEach(item => {
                 itemsHtml += `<tr>
                     <td>${item.barang ? item.barang.nama_barang : '-'}</td>
-                    <td class="text-center">${item.jumlah}</td>
-                    <td class="text-end">Rp ${formatRp(item.harga_satuan)}</td>
-                    <td class="text-end">Rp ${formatRp(item.subtotal)}</td>
-                </tr>`;
-            });
-        }
-        if(trx.layanan && trx.layanan.length > 0) {
-            trx.layanan.forEach(item => {
-                itemsHtml += `<tr>
-                    <td>${item.layanan ? item.layanan.nama_layanan : '-'}</td>
                     <td class="text-center">${item.jumlah}</td>
                     <td class="text-end">Rp ${formatRp(item.harga_satuan)}</td>
                     <td class="text-end">Rp ${formatRp(item.subtotal)}</td>
@@ -423,13 +462,12 @@
             window.Echo.channel('pos-updates')
                 .listen('.product-stock-updated', (e) => {
                     console.log('📦 Stock updated:', e);
-                    let options = document.querySelectorAll('#product_select option');
-                    options.forEach(opt => {
-                        if(opt.value == e.product.id) {
-                            opt.setAttribute('data-stock', e.product.stok);
-                            opt.innerHTML = `${e.product.nama_barang} - Rp ${formatRp(e.product.harga)} (Stok: ${e.product.stok})`;
-                        }
-                    });
+                    
+                    // Update product data
+                    let productIndex = products.findIndex(p => p.id == e.product.id);
+                    if(productIndex !== -1) {
+                        products[productIndex].stok = e.product.stok;
+                    }
                     
                     let changed = false;
                     cart.forEach(item => {

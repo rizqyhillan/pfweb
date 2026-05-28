@@ -3,8 +3,8 @@
 
     <!-- Logo -->
     <a href="{{ route('home') }}" class="logo d-flex align-items-center" style="text-decoration: none;">
-      <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet" style="max-height: 40px; border-radius: 8px; margin-right: 10px;">
-      <span style="font-weight: 700; font-size: 1.5rem; color: #f59e0b; font-family: 'Quicksand', sans-serif;">PawPet</span>
+      <img src="{{ asset('assets/pawpet/logo/logo-paw.png') }}" alt="PawPet" style="max-height: 28px; border-radius: 6px; margin-right: 2px;">
+      <img src="{{ asset('assets/pawpet/logo/text-Pawpet.png') }}" alt="PawPet Text" style="max-height: 28px;">
     </a>
 
     <!-- Desktop Navmenu (Visible on lg and larger) -->

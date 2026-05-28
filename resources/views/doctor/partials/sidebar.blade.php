@@ -2,9 +2,9 @@
   <div class="app-brand demo">
     <a href="{{ route('doctor.dashboard') }}" class="app-brand-link">
       <span class="app-brand-logo demo">
-        <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet" style="height: 38px; width: auto;">
+        <img src="{{ asset('assets/pawpet/logo/logo-paw.png') }}" alt="PawPet" style="height: 38px; width: auto;">
       </span>
-      <span class="app-brand-text demo menu-text fw-bold ms-2">PawPet</span>
+      <img src="{{ asset('assets/pawpet/logo/text-Pawpet.png') }}" alt="PawPet Text" style="max-height: 24px;">
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

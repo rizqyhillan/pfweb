@@ -7,8 +7,8 @@
       <div class="col-lg-5">
         <div class="brand-section">
           <a href="{{ route('home') }}" class="logo d-flex align-items-center mb-4" style="text-decoration: none;">
-            <img src="{{ asset('assets/pawpet/logo/PawPet Logo New.jpg') }}" alt="PawPet Logo" style="max-height: 40px; border-radius: 8px; margin-right: 12px;">
-            <span style="font-weight: 700; font-size: 1.5rem; color: #f59e0b;">PawPet</span>
+            <img src="{{ asset('assets/pawpet/logo/logo-paw.png') }}" alt="PawPet Logo" style="max-height: 28px; border-radius: 6px; margin-right: 2px;">
+            <img src="{{ asset('assets/pawpet/logo/text-Pawpet.png') }}" alt="PawPet Text" style="max-height: 28px;">
           </a>
           <p style="font-size: 0.95rem; line-height: 1.7; color: rgba(255, 255, 255, 0.65); margin-bottom: 30px;">
             Ekosistem terintegrasi untuk segala kebutuhan anabul kesayangan Anda. Memadukan kemudahan aplikasi mobile untuk pemilik anabul dengan keandalan Laravel web dashboard untuk manajemen klinik dan dokter hewan secara real-time.
