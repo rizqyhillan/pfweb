@@ -36,7 +36,7 @@
                                 <th>No</th>
                                 <th>Nama Layanan</th>
                                 <th>Dokter</th>
-                                <th>Harga</th>
+                                <th>Estimasi Harga</th>
                                 <th>Status</th>
                                 <th>Deskripsi</th>
                                 <th class="text-end">Aksi</th>
