@@ -115,6 +115,7 @@ class ShopController extends Controller
 
             'image' => $image,
             'image_url' => $image ? asset('storage/' . $image) : null,
+            'image_urls' => $product->image_urls,
 
             'total_sold' => (int) ($product->total_sold ?? 0),
             'is_featured' => ((int) ($product->total_sold ?? 0)) > 0,
