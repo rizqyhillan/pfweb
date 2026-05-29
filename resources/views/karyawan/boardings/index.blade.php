@@ -16,7 +16,7 @@
       <table class="table">
         <thead>
           <tr>
-            <th>#</th>
+            <th>No</th>
             <th>Hewan</th>
             <th>Pemilik</th>
             <th>Kamar</th>

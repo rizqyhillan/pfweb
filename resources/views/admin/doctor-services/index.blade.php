@@ -18,11 +18,6 @@
 
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Daftar Layanan Dokter</h5>
-        </div>
-
-        <div class="card-body">
             @if($services->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -54,21 +49,20 @@
                                     </td>
                                     <td>{{ \Illuminate\Support\Str::limit($service->deskripsi, 50) }}</td>
                                     <td class="text-end">
-                                        <a href="{{ route('admin.doctor-services.show', $service) }}" class="btn btn-sm btn-outline-info">
-                                            Detail
-                                        </a>
-
-                                        <a href="{{ route('admin.doctor-services.edit', $service) }}" class="btn btn-sm btn-outline-warning">
-                                            Edit
-                                        </a>
-
-                                        <form action="{{ route('admin.doctor-services.destroy', $service) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus layanan ini?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                Hapus
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="icon-base bx bx-dots-vertical-rounded"></i>
                                             </button>
-                                        </form>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a class="dropdown-item" href="{{ route('admin.doctor-services.show', $service) }}"><i class="icon-base bx bx-show-alt me-1"></i> Detail</a>
+                                                <a class="dropdown-item" href="{{ route('admin.doctor-services.edit', $service) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+                                                <form action="{{ route('admin.doctor-services.destroy', $service) }}" method="POST" class="m-0" data-confirm="Yakin ingin menghapus layanan ini?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

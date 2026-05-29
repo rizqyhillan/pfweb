@@ -6,7 +6,7 @@
   <a href="{{ route('admin.pets.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Hewan</a>
 </div>
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Jenis</th><th>Ras</th><th>Umur</th><th>Berat</th><th>Pemilik</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>No</th><th>Nama</th><th>Jenis</th><th>Ras</th><th>Umur</th><th>Berat</th><th>Pemilik</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($pets as $pet)
     <tr>

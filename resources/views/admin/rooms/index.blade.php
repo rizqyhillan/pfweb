@@ -26,7 +26,7 @@
 
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>No</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($rooms as $r)
     <tr>

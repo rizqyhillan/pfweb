@@ -17,7 +17,7 @@
         </select>
         @error('paket')<div class="invalid-feedback">{{ $message }}</div>@enderror
       </div>
-      <div class="col-md-4"><label class="form-label">Harga/Hari *</label><input id="hargaPerHari" type="number" step="0.01" class="form-control @error('harga_per_hari') is-invalid @enderror" name="harga_per_hari" value="{{ old('harga_per_hari', 0) }}" required /></div>
+      <div class="col-md-4"><label class="form-label">Harga/Hari *</label><input id="hargaPerHari" type="number" step="0.01" class="form-control @error('harga_per_hari') is-invalid @enderror" name="harga_per_hari" value="{{ old('harga_per_hari') }}" required /></div>
     </div>
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Kapasitas *</label><input type="number" class="form-control" name="kapasitas" value="{{ old('kapasitas', 1) }}" min="1" required /></div>

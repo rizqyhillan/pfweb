@@ -11,18 +11,13 @@
         </div>
 
         <a href="{{ route('admin.doctor-bookings.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Tambah Booking
+            <i class="fas fa-plus me-1"></i>+ Tambah Booking
         </a>
     </div>
 
 
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Daftar Booking Dokter</h5>
-        </div>
-
-        <div class="card-body">
             @if($bookings->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -36,7 +31,7 @@
                                 <th>Tanggal</th>
                                 <th>Jam</th>
                                 <th>Status</th>
-                                <th>Total Biaya</th>
+                                <th>Estimasi Total Biaya</th>
                                 <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
@@ -67,45 +62,43 @@
                                     </td>
                                     <td>Rp {{ number_format($booking->total_biaya, 0, ',', '.') }}</td>
                                     <td class="text-end">
-                                        <a href="{{ route('admin.doctor-bookings.show', $booking) }}" class="btn btn-sm btn-outline-info">
-                                            Detail
-                                        </a>
-
-                                        <a href="{{ route('admin.doctor-bookings.edit', $booking) }}" class="btn btn-sm btn-outline-warning">
-                                            Edit
-                                        </a>
-
-                                        @if($booking->status === 'pending')
-                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="dikonfirmasi">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">Konfirmasi</button>
-                                            </form>
-                                        @endif
-
-                                        @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
-                                            <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline" data-confirm="Batalkan booking dokter ini?">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="batal">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Batal</button>
-                                            </form>
-                                        @endif
-
-                                        @if($booking->status === 'dikonfirmasi')
-                                            <a href="{{ route('admin.doctor-bookings.payment', $booking) }}" class="btn btn-sm btn-outline-success">
-                                                <i class="bx bx-wallet me-1"></i> Bayar & Selesaikan
-                                            </a>
-                                        @endif
-
-                                        <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="d-inline" data-confirm="Yakin ingin menghapus booking ini?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                Hapus
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="icon-base bx bx-dots-vertical-rounded"></i>
                                             </button>
-                                        </form>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                <a class="dropdown-item" href="{{ route('admin.doctor-bookings.show', $booking) }}"><i class="icon-base bx bx-show-alt me-1"></i> Detail</a>
+                                                <a class="dropdown-item" href="{{ route('admin.doctor-bookings.edit', $booking) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+
+                                                @if($booking->status === 'pending')
+                                                    <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="m-0">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="dikonfirmasi">
+                                                        <button type="submit" class="dropdown-item text-primary"><i class="icon-base bx bx-check me-1"></i> Konfirmasi</button>
+                                                    </form>
+                                                @endif
+
+                                                @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
+                                                    <form action="{{ route('admin.doctor-bookings.update-status', $booking) }}" method="POST" class="m-0" data-confirm="Batalkan booking dokter ini?">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="batal">
+                                                        <button type="submit" class="dropdown-item text-danger"><i class="icon-base bx bx-x me-1"></i> Batal</button>
+                                                    </form>
+                                                @endif
+
+                                                @if($booking->status === 'dikonfirmasi')
+                                                    <a class="dropdown-item text-success" href="{{ route('admin.doctor-bookings.payment', $booking) }}"><i class="icon-base bx bx-wallet me-1"></i> Bayar & Selesaikan</a>
+                                                @endif
+
+                                                <form action="{{ route('admin.doctor-bookings.destroy', $booking) }}" method="POST" class="m-0" data-confirm="Yakin ingin menghapus booking ini?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger"><i class="icon-base bx bx-trash me-1"></i> Hapus</button>
+                                                </form>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
