@@ -11,9 +11,14 @@ class ShopController extends Controller
 {
     public function products(Request $request)
     {
-        $query = Product::query()
+        $query = Product::with('variations')
             ->where('is_aktif', true)
-            ->where('stok', '>', 0);
+            ->where(function ($q) {
+                $q->where('stok', '>', 0)
+                  ->orWhereHas('variations', function ($v) {
+                      $v->where('stok', '>', 0);
+                  });
+            });
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -40,7 +45,7 @@ class ShopController extends Controller
 
     public function bestSellers()
     {
-        $products = Product::query()
+        $products = Product::with('variations')
             ->select('barang.*')
             ->selectRaw('COALESCE(SUM(transaksi_barang.jumlah), 0) as total_sold')
             ->leftJoin('transaksi_barang', 'barang.id', '=', 'transaksi_barang.id_barang')
@@ -50,7 +55,12 @@ class ShopController extends Controller
                     ->where('transaksi.status', '=', 'lunas');
             })
             ->where('barang.is_aktif', true)
-            ->where('barang.stok', '>', 0)
+            ->where(function ($q) {
+                $q->where('barang.stok', '>', 0)
+                  ->orWhereHas('variations', function ($v) {
+                      $v->where('stok', '>', 0);
+                  });
+            })
             ->groupBy(
                 'barang.id',
                 'barang.nama_barang',
@@ -77,7 +87,8 @@ class ShopController extends Controller
 
     public function productDetail($id)
     {
-        $product = Product::where('is_aktif', true)
+        $product = Product::with('variations')
+            ->where('is_aktif', true)
             ->findOrFail($id);
 
         return response()->json([
@@ -88,7 +99,12 @@ class ShopController extends Controller
     public function categories()
     {
         $categories = Product::where('is_aktif', true)
-            ->where('stok', '>', 0)
+            ->where(function ($q) {
+                $q->where('stok', '>', 0)
+                  ->orWhereHas('variations', function ($v) {
+                      $v->where('stok', '>', 0);
+                  });
+            })
             ->whereNotNull('kategori')
             ->select('kategori')
             ->distinct()
@@ -104,6 +120,7 @@ class ShopController extends Controller
     private function formatProduct(Product $product): array
     {
         $image = $product->image ?? null;
+        $hasStock = $product->stok > 0 || $product->variations->sum('stok') > 0;
 
         return [
             'id' => $product->id,
@@ -120,7 +137,14 @@ class ShopController extends Controller
             'total_sold' => (int) ($product->total_sold ?? 0),
             'is_featured' => ((int) ($product->total_sold ?? 0)) > 0,
 
-            'tersedia' => $product->stok > 0 && $product->is_aktif,
+            'tersedia' => $hasStock && $product->is_aktif,
+            
+            'variations' => $product->variations->map(fn ($v) => [
+                'id' => $v->id,
+                'nama_variasi' => $v->nama_variasi,
+                'harga' => (float) $v->harga,
+                'stok' => (int) $v->stok,
+            ])->toArray(),
         ];
     }
 }

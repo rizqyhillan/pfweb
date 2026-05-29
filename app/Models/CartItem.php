@@ -11,6 +11,7 @@ class CartItem extends Model
     protected $fillable = [
         'id_keranjang',
         'id_barang',
+        'id_variasi',
         'jumlah',
         'harga_satuan',
         'subtotal',
@@ -30,5 +31,10 @@ class CartItem extends Model
     public function barang()
     {
         return $this->belongsTo(Product::class, 'id_barang');
+    }
+
+    public function variasi()
+    {
+        return $this->belongsTo(ProductVariation::class, 'id_variasi');
     }
 }
