@@ -3,13 +3,13 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Transaksi / POS Kasir</h4>
-    <a href="{{ route('karyawan.transactions') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+    <a href="{{ route('admin.transactions.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 
 
 
 
-<form action="{{ route('karyawan.transactions.store') }}" method="POST" id="posForm">
+<form action="{{ route('admin.transactions.store') }}" method="POST" id="posForm">
     @csrf
     <div class="row">
         <!-- Kolom Kiri: Keranjang -->
@@ -118,7 +118,7 @@
 
                     <button type="button" class="btn btn-success w-100 btn-lg" id="btnSubmitPOS" onclick="submitPOS()"><i class="bx bx-check-circle me-1"></i> Proses Pembayaran</button>
                     
-                    <a href="{{ route('karyawan.transactions.create') }}" class="btn btn-outline-primary w-100 btn-lg mt-3 d-none" id="btnNewTransaction"><i class="bx bx-plus me-1"></i> Transaksi Baru</a>
+                    <a href="{{ route('admin.transactions.create') }}" class="btn btn-outline-primary w-100 btn-lg mt-3 d-none" id="btnNewTransaction"><i class="bx bx-plus me-1"></i> Transaksi Baru</a>
                 </div>
             </div>
         </div>
@@ -335,7 +335,7 @@
         
         let formData = new FormData(document.getElementById('posForm'));
 
-        fetch('{{ route("karyawan.transactions.store") }}', {
+        fetch('{{ route("admin.transactions.store") }}', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
