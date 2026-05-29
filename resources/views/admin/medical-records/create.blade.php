@@ -25,7 +25,121 @@
       <div class="col-md-4"><label class="form-label">Resep Obat</label><textarea class="form-control" name="resep" rows="4">{{ old('resep') }}</textarea></div>
     </div>
     <div class="mb-6"><label class="form-label">Catatan</label><textarea class="form-control" name="catatan" rows="2">{{ old('catatan') }}</textarea></div>
-    <div class="mb-6"><label class="form-label">Foto-Foto (Bisa lebih dari 1)</label><input type="file" class="form-control" name="fotos[]" multiple accept="image/*" /></div>
+    <div class="mb-6">
+      <label class="form-label">Foto-Foto (Bisa lebih dari 1)</label>
+      <input id="image-input" type="file" class="form-control" name="fotos[]" multiple accept="image/*" />
+      <small class="text-muted">Pilih lebih dari satu gambar jika perlu. Format: JPG, JPEG, PNG.</small>
+      <div id="image-preview-summary" class="mt-3 text-muted"></div>
+      <div id="image-preview-container" class="mt-2 d-flex flex-wrap gap-2"></div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const imageInput = document.getElementById('image-input');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewSummary = document.getElementById('image-preview-summary');
+        let selectedFiles = [];
+        const selectedKeys = new Set();
+
+        function getFileKey(file) {
+          return `${file.name}_${file.size}_${file.type}_${file.lastModified}`;
+        }
+
+        function updateInputFiles() {
+          if (!imageInput) {
+            return;
+          }
+
+          if (typeof DataTransfer !== 'undefined') {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            imageInput.files = dataTransfer.files;
+          }
+        }
+
+        function removeFile(key) {
+          selectedFiles = selectedFiles.filter(file => getFileKey(file) !== key);
+          selectedKeys.delete(key);
+          updateInputFiles();
+          renderImagePreview();
+        }
+
+        function renderImagePreview() {
+          previewContainer.innerHTML = '';
+          previewSummary.textContent = '';
+
+          if (selectedFiles.length === 0) {
+            previewSummary.textContent = 'Belum ada gambar yang dipilih.';
+            return;
+          }
+
+          previewSummary.textContent = `${selectedFiles.length} gambar dipilih.`;
+
+          selectedFiles.forEach(file => {
+            if (!file.type.startsWith('image/')) {
+              return;
+            }
+
+            const item = document.createElement('div');
+            item.className = 'position-relative border rounded overflow-hidden';
+            item.style.width = '120px';
+            item.style.height = '120px';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = '×';
+            removeButton.className = 'btn btn-sm btn-danger position-absolute';
+            removeButton.style.top = '5px';
+            removeButton.style.right = '5px';
+            removeButton.style.width = '28px';
+            removeButton.style.height = '28px';
+            removeButton.style.padding = '0';
+            removeButton.style.lineHeight = '1';
+            removeButton.style.zIndex = '2';
+            removeButton.addEventListener('click', function () {
+              removeFile(getFileKey(file));
+            });
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+            img.title = file.name;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+
+            item.appendChild(removeButton);
+            item.appendChild(img);
+            previewContainer.appendChild(item);
+
+            img.onload = function () {
+              URL.revokeObjectURL(this.src);
+            };
+          });
+        }
+
+        function addFiles(files) {
+          for (let i = 0; i < files.length; i += 1) {
+            const file = files[i];
+            const key = getFileKey(file);
+            if (!file.type.startsWith('image/') || selectedKeys.has(key)) {
+              continue;
+            }
+            selectedFiles.push(file);
+            selectedKeys.add(key);
+          }
+
+          updateInputFiles();
+          renderImagePreview();
+        }
+
+        if (imageInput) {
+          imageInput.addEventListener('change', function () {
+            addFiles(this.files);
+          });
+          renderImagePreview();
+        }
+      });
+    </script>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>
