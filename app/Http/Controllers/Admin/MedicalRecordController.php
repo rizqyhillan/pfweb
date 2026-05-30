@@ -14,9 +14,20 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class MedicalRecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = MedicalRecord::with(['hewan.owner', 'dokter'])->latest('tanggal')->pathPaginate(15, url('admin/medical-records/page'));
+        $query = MedicalRecord::with(['hewan.owner', 'dokter']);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('hewan', function ($q) use ($search) {
+                $q->where('nama_hewan', 'like', '%' . $search . '%');
+            });
+        }
+
+        $records = $query->latest('tanggal')
+            ->pathPaginate(15, url('admin/medical-records/page'))
+            ->withQueryString();
 
         return view('admin.medical-records.index', compact('records'));
     }

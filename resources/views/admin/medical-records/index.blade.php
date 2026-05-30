@@ -15,6 +15,27 @@
   </div>
 </div>
 
+<div class="card mb-4">
+  <div class="card-body">
+    <form action="{{ route('admin.medical-records.index') }}" method="GET">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6 col-lg-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bx bx-search"></i></span>
+            <input type="text" name="search" class="form-control" placeholder="Cari nama hewan..." value="{{ request('search') }}">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-primary me-2">Cari</button>
+          @if(request('search'))
+            <a href="{{ route('admin.medical-records.index') }}" class="btn btn-outline-secondary">Reset</a>
+          @endif
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="card">
   <div class="table-responsive text-nowrap">
     <table class="table table-hover align-middle mb-0">

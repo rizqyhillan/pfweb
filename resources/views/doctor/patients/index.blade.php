@@ -38,7 +38,7 @@
                     <small class="text-muted">{{ $pet->ras ?: '-' }}</small>
                   </td>
                   <td>
-                    {{ $pet->umur ? $pet->umur . ' bln' : '-' }}<br>
+                    {{ $pet->umur ? (is_numeric($pet->umur) ? $pet->umur . ' bln' : $pet->umur) : '-' }}<br>
                     <small class="text-muted">{{ $pet->berat ? $pet->berat . ' kg' : '-' }}</small>
                   </td>
                   <td>

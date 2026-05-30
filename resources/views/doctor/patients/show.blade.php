@@ -49,7 +49,7 @@
           </tr>
           <tr>
             <th class="ps-0">Umur</th>
-            <td>: {{ $pet->umur ? $pet->umur . ' bulan' : '-' }}</td>
+            <td>: {{ $pet->umur ? (is_numeric($pet->umur) ? $pet->umur . ' bulan' : $pet->umur) : '-' }}</td>
           </tr>
           <tr>
             <th class="ps-0">Berat</th>

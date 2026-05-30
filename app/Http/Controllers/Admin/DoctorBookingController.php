@@ -78,6 +78,14 @@ class DoctorBookingController extends Controller
             'total_biaya' => ['required', 'numeric', 'min:0'],
         ]);
 
+        $scheduleError = $this->validateDoctorSchedule($request);
+        if ($scheduleError) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $scheduleError);
+        }
+
         // Check if booking slot is available
         $existingBooking = DoctorBooking::where('id_dokter', $validated['id_dokter'])
             ->where('tanggal_booking', $validated['tanggal_booking'])
@@ -179,6 +187,14 @@ class DoctorBookingController extends Controller
             'status' => ['required', 'in:pending,dikonfirmasi,selesai,batal'],
             'total_biaya' => ['required', 'numeric', 'min:0'],
         ]);
+
+        $scheduleError = $this->validateDoctorSchedule($request);
+        if ($scheduleError) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $scheduleError);
+        }
 
         // Check if booking slot is available (exclude current booking)
         $existingBooking = DoctorBooking::where('id_dokter', $validated['id_dokter'])
@@ -329,5 +345,45 @@ class DoctorBookingController extends Controller
         return redirect()
             ->route('admin.doctor-bookings.index')
             ->with('success', 'Booking dokter berhasil dihapus.');
+    }
+
+    private function validateDoctorSchedule(Request $request)
+    {
+        if ($request->filled('id_jadwal')) {
+            $schedule = DoctorSchedule::find($request->id_jadwal);
+            if ($schedule) {
+                // Check if schedule belongs to the selected doctor
+                if ($schedule->id_dokter != $request->id_dokter) {
+                    return 'Jadwal yang dipilih tidak cocok dengan dokter yang dipilih.';
+                }
+
+                // Check day of week
+                $daysMap = [
+                    0 => 'minggu',
+                    1 => 'senin',
+                    2 => 'selasa',
+                    3 => 'rabu',
+                    4 => 'kamis',
+                    5 => 'jumat',
+                    6 => 'sabtu',
+                ];
+                $dayOfWeekNumber = \Carbon\Carbon::parse($request->tanggal_booking)->dayOfWeek;
+                $bookingDay = $daysMap[$dayOfWeekNumber];
+
+                if ($bookingDay !== strtolower($schedule->hari)) {
+                    return 'Tanggal booking tidak cocok dengan hari jadwal dokter yang dipilih (' . ucfirst($schedule->hari) . ').';
+                }
+
+                // Check time range
+                $bookingTime = \Carbon\Carbon::parse($request->jam_booking)->format('H:i');
+                $startTime = \Carbon\Carbon::parse($schedule->jam_mulai)->format('H:i');
+                $endTime = \Carbon\Carbon::parse($schedule->jam_selesai)->format('H:i');
+
+                if ($bookingTime < $startTime || $bookingTime > $endTime) {
+                    return 'Jam booking harus berada di antara ' . $startTime . ' dan ' . $endTime . ' sesuai jadwal dokter yang dipilih.';
+                }
+            }
+        }
+        return null;
     }
 }

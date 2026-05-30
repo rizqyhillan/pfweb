@@ -2,6 +2,19 @@
 
 @section('title', 'Tambah Booking Dokter')
 
+@section('page-css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+  .select2-container--bootstrap-5 .select2-selection {
+    border-color: #d9dee3 !important;
+  }
+  .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    color: #435971 !important;
+  }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -81,6 +94,9 @@
                                 <option 
                                     value="{{ $schedule->id }}" 
                                     data-dokter-id="{{ $schedule->id_dokter }}"
+                                    data-hari="{{ strtolower($schedule->hari) }}"
+                                    data-jam-mulai="{{ \Carbon\Carbon::parse($schedule->jam_mulai)->format('H:i') }}"
+                                    data-jam-selesai="{{ \Carbon\Carbon::parse($schedule->jam_selesai)->format('H:i') }}"
                                     {{ old('id_jadwal') == $schedule->id ? 'selected' : '' }}
                                 >
                                     {{ ucfirst($schedule->hari) }} - 
@@ -198,8 +214,66 @@
             });
         }
 
+        // Function to validate booking time/day against selected schedule
+        function validateScheduleTime() {
+            // Remove previous error highlights/feedbacks
+            document.querySelectorAll('.schedule-feedback').forEach(el => el.remove());
+            tanggalInput.classList.remove('is-invalid');
+            jamInput.classList.remove('is-invalid');
+
+            const selectedSchedule = jadwalSelect.options[jadwalSelect.selectedIndex];
+            if (!selectedSchedule || !selectedSchedule.value) {
+                submitBtn.disabled = false;
+                return true;
+            }
+
+            const schedHari = selectedSchedule.getAttribute('data-hari');
+            const schedMulai = selectedSchedule.getAttribute('data-jam-mulai');
+            const schedSelesai = selectedSchedule.getAttribute('data-jam-selesai');
+
+            const dateVal = tanggalInput.value;
+            const timeVal = jamInput.value;
+
+            let isValid = true;
+
+            if (dateVal) {
+                const dateObj = new Date(dateVal);
+                const days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+                const dayName = days[dateObj.getDay()];
+                if (dayName !== schedHari) {
+                    isValid = false;
+                    tanggalInput.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback d-block schedule-feedback';
+                    feedback.textContent = `Hari tanggal booking harus jatuh pada hari ${schedHari.toUpperCase()} sesuai jadwal yang dipilih.`;
+                    tanggalInput.parentNode.appendChild(feedback);
+                }
+            }
+
+            if (timeVal) {
+                if (timeVal < schedMulai || timeVal > schedSelesai) {
+                    isValid = false;
+                    jamInput.classList.add('is-invalid');
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback d-block schedule-feedback';
+                    feedback.textContent = `Jam booking harus berada di antara ${schedMulai} dan ${schedSelesai} sesuai jadwal yang dipilih.`;
+                    jamInput.parentNode.appendChild(feedback);
+                }
+            }
+
+            if (!isValid) {
+                submitBtn.disabled = true;
+                return false;
+            }
+            return true;
+        }
+
         // Function to check slot availability
         async function checkSlotAvailability() {
+            if (!validateScheduleTime()) {
+                return;
+            }
+
             const dokterID = doctorSelect.value;
             const tanggal = tanggalInput.value;
             const jam = jamInput.value;
@@ -248,10 +322,23 @@
             }
         }
 
-        if (doctorSelect && tanggalInput && jamInput) {
-            doctorSelect.addEventListener('change', checkSlotAvailability);
-            tanggalInput.addEventListener('change', checkSlotAvailability);
-            jamInput.addEventListener('change', checkSlotAvailability);
+        if (doctorSelect && tanggalInput && jamInput && jadwalSelect) {
+            doctorSelect.addEventListener('change', () => {
+                validateScheduleTime();
+                checkSlotAvailability();
+            });
+            tanggalInput.addEventListener('change', () => {
+                validateScheduleTime();
+                checkSlotAvailability();
+            });
+            jamInput.addEventListener('change', () => {
+                validateScheduleTime();
+                checkSlotAvailability();
+            });
+            jadwalSelect.addEventListener('change', () => {
+                validateScheduleTime();
+                checkSlotAvailability();
+            });
         }
 
         if (doctorSelect && layananSelect && jadwalSelect) {
@@ -292,12 +379,27 @@
                 jadwalSelect.value = "";
                 totalBiayaInput.value = 0;
                 updateFilters();
+                validateScheduleTime();
                 checkSlotAvailability();
             });
 
             // Initial run on page load
             updateFilters(true);
+            validateScheduleTime();
         }
     });
+</script>
+@endsection
+
+@section('page-js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#id_hewan').select2({
+      theme: 'bootstrap-5',
+      placeholder: 'Pilih Hewan',
+      allowClear: true
+    });
+  });
 </script>
 @endsection
