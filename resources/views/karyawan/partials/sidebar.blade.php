@@ -2,7 +2,7 @@
   <div class="app-brand demo">
     <a href="{{ route('karyawan.dashboard') }}" class="app-brand-link">
       <span class="app-brand-logo demo">
-        <img src="{{ asset('assets/pawpet/logo/logo-paw.png') }}" alt="PawPet" style="height: 38px; width: auto;">
+        <img src="{{ asset('assets/pawpet/logo/logo-paw.png') }}" alt="PawPet" style="height: 28px; width: auto;">
       </span>
       <img src="{{ asset('assets/pawpet/logo/text-Pawpet.png') }}" alt="PawPet Text" style="max-height: 24px;">
     </a>

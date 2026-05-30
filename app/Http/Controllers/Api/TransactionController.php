@@ -49,6 +49,7 @@ class TransactionController extends Controller
                 'pelanggan',
                 'kasir',
                 'barang.barang',
+                'barang.variasi',
                 'layanan.layanan',
             ])
             ->where('id_pelanggan', $user->id)
@@ -67,6 +68,7 @@ class TransactionController extends Controller
                 'pelanggan',
                 'kasir',
                 'barang.barang',
+                'barang.variasi',
                 'layanan.layanan',
             ])
             ->where('id_pelanggan', $request->user()->id)
@@ -96,12 +98,17 @@ class TransactionController extends Controller
                 $itemDetails = [];
                 foreach ($transaction->barang as $item) {
                     $product = $item->barang;
+                    $variation = $item->variasi;
                     if ($product) {
+                        $itemName = $product->nama_barang;
+                        if ($variation) {
+                            $itemName .= " - " . $variation->nama_variasi;
+                        }
                         $itemDetails[] = [
-                            'id'       => (string) $product->id,
+                            'id'       => (string) $product->id . ($variation ? '-' . $variation->id : ''),
                             'price'    => (int) $item->harga_satuan,
                             'quantity' => (int) $item->jumlah,
-                            'name'     => mb_substr($product->nama_barang, 0, 50),
+                            'name'     => mb_substr($itemName, 0, 50),
                         ];
                     }
                 }
@@ -173,6 +180,7 @@ class TransactionController extends Controller
                 'pelanggan',
                 'kasir',
                 'barang.barang',
+                'barang.variasi',
                 'layanan.layanan',
             ])
             ->where('id_pelanggan', $request->user()->id)
@@ -381,13 +389,20 @@ class TransactionController extends Controller
     {
         $barangItems = $transaction->barang->map(function ($item) {
             $product = $item->barang;
+            $variation = $item->variasi;
             $image = $product->image ?? null;
+            
+            $nama = $product->nama_barang ?? '-';
+            if ($variation) {
+                $nama .= " (Variasi: " . $variation->nama_variasi . ")";
+            }
     
             return [
                 'id' => $item->id,
                 'tipe' => 'barang',
                 'id_barang' => $item->id_barang,
-                'nama' => $product->nama_barang ?? '-',
+                'id_variasi' => $item->id_variasi,
+                'nama' => $nama,
                 'kategori' => $product->kategori ?? null,
                 'image' => $image,
                 'image_url' => $image ? asset('storage/' . $image) : null,

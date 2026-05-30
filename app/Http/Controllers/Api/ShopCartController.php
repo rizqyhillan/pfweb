@@ -16,7 +16,7 @@ class ShopCartController extends Controller
     {
         $cart = $this->getActiveCart($request->user()->id);
 
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         return response()->json([
             'data' => $this->formatCart($cart),
@@ -28,13 +28,24 @@ class ShopCartController extends Controller
         $validated = $request->validate([
             'id_barang' => ['required', 'exists:barang,id'],
             'jumlah' => ['required', 'integer', 'min:1'],
+            'id_variasi' => ['nullable', 'exists:product_variations,id'],
         ]);
 
         $product = Product::where('id', $validated['id_barang'])
             ->where('is_aktif', true)
             ->firstOrFail();
 
-        if ($product->stok < $validated['jumlah']) {
+        $variation = null;
+        if (!empty($validated['id_variasi'])) {
+            $variation = $product->variations()->findOrFail($validated['id_variasi']);
+            $price = $variation->harga;
+            $stock = $variation->stok;
+        } else {
+            $price = $product->harga;
+            $stock = $product->stok;
+        }
+
+        if ($stock < $validated['jumlah']) {
             return response()->json([
                 'message' => 'Stok produk tidak mencukupi.',
             ], 422);
@@ -42,14 +53,21 @@ class ShopCartController extends Controller
 
         $cart = $this->getActiveCart($request->user()->id);
 
-        $item = CartItem::where('id_keranjang', $cart->id)
-            ->where('id_barang', $product->id)
-            ->first();
+        $itemQuery = CartItem::where('id_keranjang', $cart->id)
+            ->where('id_barang', $product->id);
+
+        if ($variation) {
+            $itemQuery->where('id_variasi', $variation->id);
+        } else {
+            $itemQuery->whereNull('id_variasi');
+        }
+
+        $item = $itemQuery->first();
 
         if ($item) {
             $newQty = $item->jumlah + $validated['jumlah'];
 
-            if ($product->stok < $newQty) {
+            if ($stock < $newQty) {
                 return response()->json([
                     'message' => 'Stok produk tidak mencukupi untuk jumlah tersebut.',
                 ], 422);
@@ -57,20 +75,21 @@ class ShopCartController extends Controller
 
             $item->update([
                 'jumlah' => $newQty,
-                'harga_satuan' => $product->harga,
-                'subtotal' => $product->harga * $newQty,
+                'harga_satuan' => $price,
+                'subtotal' => $price * $newQty,
             ]);
         } else {
             $item = CartItem::create([
                 'id_keranjang' => $cart->id,
                 'id_barang' => $product->id,
+                'id_variasi' => $variation ? $variation->id : null,
                 'jumlah' => $validated['jumlah'],
-                'harga_satuan' => $product->harga,
-                'subtotal' => $product->harga * $validated['jumlah'],
+                'harga_satuan' => $price,
+                'subtotal' => $price * $validated['jumlah'],
             ]);
         }
 
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         return response()->json([
             'message' => 'Produk berhasil ditambahkan ke keranjang.',
@@ -86,12 +105,13 @@ class ShopCartController extends Controller
 
         $cart = $this->getActiveCart($request->user()->id);
 
-        $cartItem = CartItem::with('barang')
+        $cartItem = CartItem::with(['barang', 'variasi'])
             ->where('id', $item)
             ->where('id_keranjang', $cart->id)
             ->firstOrFail();
 
         $product = $cartItem->barang;
+        $variation = $cartItem->variasi;
 
         if (!$product || !$product->is_aktif) {
             return response()->json([
@@ -99,7 +119,10 @@ class ShopCartController extends Controller
             ], 422);
         }
 
-        if ($product->stok < $validated['jumlah']) {
+        $stock = $variation ? $variation->stok : $product->stok;
+        $price = $variation ? $variation->harga : $product->harga;
+
+        if ($stock < $validated['jumlah']) {
             return response()->json([
                 'message' => 'Stok produk tidak mencukupi.',
             ], 422);
@@ -107,11 +130,11 @@ class ShopCartController extends Controller
 
         $cartItem->update([
             'jumlah' => $validated['jumlah'],
-            'harga_satuan' => $product->harga,
-            'subtotal' => $product->harga * $validated['jumlah'],
+            'harga_satuan' => $price,
+            'subtotal' => $price * $validated['jumlah'],
         ]);
 
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         return response()->json([
             'message' => 'Jumlah produk berhasil diperbarui.',
@@ -129,7 +152,7 @@ class ShopCartController extends Controller
 
         $cartItem->delete();
 
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         return response()->json([
             'message' => 'Produk berhasil dihapus dari keranjang.',
@@ -143,7 +166,7 @@ class ShopCartController extends Controller
 
         $cart->items()->delete();
 
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         return response()->json([
             'message' => 'Keranjang berhasil dikosongkan.',
@@ -156,7 +179,7 @@ class ShopCartController extends Controller
         $user = $request->user();
     
         return DB::transaction(function () use ($user, $id) {
-            $transaction = Transaction::with('barang.barang')
+            $transaction = Transaction::with(['barang.barang', 'barang.variasi'])
                 ->where('id', $id)
                 ->where('id_pelanggan', $user->id)
                 ->where('jenis', 'shopping')
@@ -170,7 +193,12 @@ class ShopCartController extends Controller
             }
     
             foreach ($transaction->barang as $item) {
-                if ($item->barang) {
+                if ($item->id_variasi) {
+                    $variation = \App\Models\ProductVariation::find($item->id_variasi);
+                    if ($variation) {
+                        $variation->increment('stok', $item->jumlah);
+                    }
+                } else if ($item->barang) {
                     $item->barang->increment('stok', $item->jumlah);
                 }
             }
@@ -183,6 +211,7 @@ class ShopCartController extends Controller
             $transaction->load([
                 'pelanggan',
                 'barang.barang',
+                'barang.variasi',
                 'layanan.layanan',
             ]);
     
@@ -200,12 +229,19 @@ class ShopCartController extends Controller
                     'tanggal' => optional($transaction->tanggal)->format('Y-m-d H:i:s'),
                     'items' => $transaction->barang->map(function ($item) {
                         $product = $item->barang;
+                        $variation = $item->variasi;
                         $image = $product->image ?? null;
+                        
+                        $nama = $product->nama_barang ?? '-';
+                        if ($variation) {
+                            $nama .= " (Variasi: " . $variation->nama_variasi . ")";
+                        }
     
                         return [
                             'id' => $item->id,
                             'id_barang' => $item->id_barang,
-                            'nama_barang' => $product->nama_barang ?? '-',
+                            'id_variasi' => $item->id_variasi,
+                            'nama_barang' => $nama,
                             'kategori' => $product->kategori ?? null,
                             'image' => $image,
                             'image_url' => $image ? asset('storage/' . $image) : null,
@@ -229,7 +265,7 @@ class ShopCartController extends Controller
         $user = $request->user();
 
         $cart = $this->getActiveCart($user->id);
-        $cart->load('items.barang');
+        $cart->load(['items.barang', 'items.variasi']);
 
         if ($cart->items->isEmpty()) {
             return response()->json([
@@ -252,21 +288,40 @@ class ShopCartController extends Controller
                     ], 422);
                 }
 
-                if ($product->stok < $item->jumlah) {
+                $variation = null;
+                if ($item->id_variasi) {
+                    $variation = $product->variations()->where('id', $item->id_variasi)->lockForUpdate()->first();
+                    if (!$variation) {
+                        return response()->json([
+                            'message' => "Variasi produk {$product->nama_barang} tidak ditemukan.",
+                        ], 422);
+                    }
+                    $stock = $variation->stok;
+                    $price = $variation->harga;
+                } else {
+                    $stock = $product->stok;
+                    $price = $product->harga;
+                }
+
+                if ($stock < $item->jumlah) {
                     return response()->json([
                         'message' => "Stok produk {$product->nama_barang} tidak mencukupi.",
                     ], 422);
                 }
 
-                $lineTotal = $product->harga * $item->jumlah;
+                $lineTotal = $price * $item->jumlah;
                 $subtotal += $lineTotal;
 
-                // Collect item details for Midtrans
+                $itemName = $product->nama_barang;
+                if ($variation) {
+                    $itemName .= " - " . $variation->nama_variasi;
+                }
+
                 $itemDetails[] = [
-                    'id'       => (string) $product->id,
-                    'price'    => (int) $product->harga,
+                    'id'       => (string) $product->id . ($variation ? '-' . $variation->id : ''),
+                    'price'    => (int) $price,
                     'quantity' => (int) $item->jumlah,
-                    'name'     => mb_substr($product->nama_barang, 0, 50),
+                    'name'     => mb_substr($itemName, 0, 50),
                 ];
             }
 
@@ -294,21 +349,33 @@ class ShopCartController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
+                $variation = null;
+                if ($item->id_variasi) {
+                    $variation = $product->variations()->where('id', $item->id_variasi)->lockForUpdate()->firstOrFail();
+                    $price = $variation->harga;
+                } else {
+                    $price = $product->harga;
+                }
+
                 $transaction->barang()->create([
                     'id_barang'    => $product->id,
+                    'id_variasi'   => $item->id_variasi,
                     'jumlah'       => $item->jumlah,
-                    'harga_satuan' => $product->harga,
-                    'subtotal'     => $product->harga * $item->jumlah,
+                    'harga_satuan' => $price,
+                    'subtotal'     => $price * $item->jumlah,
                 ]);
 
-                $product->decrement('stok', $item->jumlah);
+                if ($variation) {
+                    $variation->decrement('stok', $item->jumlah);
+                } else {
+                    $product->decrement('stok', $item->jumlah);
+                }
             }
 
             $cart->update([
                 'status' => 'checkout',
             ]);
 
-            // ── Midtrans Snap Token ──
             $snapToken   = null;
             $redirectUrl = null;
 
@@ -350,13 +417,13 @@ class ShopCartController extends Controller
                     ]);
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::error('Midtrans Snap failed: ' . $e->getMessage());
-                    // Transaction is still created as pending — customer can retry payment later
                 }
             }
 
             $transaction->load([
                 'pelanggan',
                 'barang.barang',
+                'barang.variasi',
             ]);
 
             return response()->json([
@@ -377,12 +444,19 @@ class ShopCartController extends Controller
                     'payment_status'  => $transaction->payment_status,
                     'items' => $transaction->barang->map(function ($item) {
                         $product = $item->barang;
+                        $variation = $item->variasi;
                         $image = $product->image ?? null;
+
+                        $nama = $product->nama_barang ?? '-';
+                        if ($variation) {
+                            $nama .= " (Variasi: " . $variation->nama_variasi . ")";
+                        }
 
                         return [
                             'id'           => $item->id,
                             'id_barang'    => $item->id_barang,
-                            'nama_barang'  => $product->nama_barang ?? '-',
+                            'id_variasi'   => $item->id_variasi,
+                            'nama_barang'  => $nama,
                             'kategori'     => $product->kategori ?? null,
                             'image'        => $image,
                             'image_url'    => $image ? asset('storage/' . $image) : null,
@@ -414,20 +488,30 @@ class ShopCartController extends Controller
     {
         $items = $cart->items->map(function ($item) {
             $product = $item->barang;
+            $variation = $item->variasi;
             $image = $product->image ?? null;
+
+            $harga = $variation ? (float) $variation->harga : (float) ($product->harga ?? 0);
+            $stok = $variation ? (int) $variation->stok : (int) ($product->stok ?? 0);
+            $nama = $product->nama_barang ?? '-';
+            if ($variation) {
+                $nama .= " (Variasi: " . $variation->nama_variasi . ")";
+            }
 
             return [
                 'id' => $item->id,
                 'id_barang' => $item->id_barang,
-                'nama_barang' => $product->nama_barang ?? '-',
+                'id_variasi' => $item->id_variasi,
+                'nama_barang' => $nama,
+                'nama_variasi' => $variation ? $variation->nama_variasi : null,
                 'kategori' => $product->kategori ?? null,
                 'image' => $image,
                 'image_url' => $image ? asset('storage/' . $image) : null,
                 'jumlah' => (int) $item->jumlah,
-                'harga_satuan' => (float) $item->harga_satuan,
-                'subtotal' => (float) $item->subtotal,
-                'stok' => (int) ($product->stok ?? 0),
-                'tersedia' => $product ? ((bool) $product->is_aktif && $product->stok > 0) : false,
+                'harga_satuan' => $harga,
+                'subtotal' => $harga * $item->jumlah,
+                'stok' => $stok,
+                'tersedia' => $product ? ((bool) $product->is_aktif && $stok > 0) : false,
             ];
         });
 

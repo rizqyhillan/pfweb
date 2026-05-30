@@ -45,25 +45,45 @@
       </div>
     </div>
     <div class="row mb-6">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <label class="form-label">Gambar Produk</label>
-        @if($product->images->isNotEmpty())
-          <div class="mb-3 d-flex flex-wrap gap-2">
-            @foreach($product->images as $image)
-              <div class="text-center">
-                <img src="{{ asset('storage/' . $image->path) }}" alt="{{ $product->nama_barang }}" width="120" height="120" style="object-fit:cover; border-radius:8px; border:1px solid #e0e0e0;" />
-              </div>
-            @endforeach
+        <div class="d-flex gap-4">
+          <!-- Gambar Tersimpan -->
+          <div class="flex-grow-1">
+            <small class="d-block mb-2 text-muted" style="font-size: 12px;">Tersimpan</small>
+            <div id="existing-images-container" class="d-flex flex-wrap gap-3">
+              @if($product->images->isNotEmpty())
+                @foreach($product->images as $image)
+                  <div class="existing-image position-relative" data-image-id="{{ $image->id }}" style="width: 90px;">
+                    <div style="width: 90px; height: 90px; border: 1.5px solid #639922; border-radius: 8px; overflow: hidden; position: relative;">
+                      <button type="button" class="btn btn-sm btn-danger position-absolute delete-existing-image" style="top: 5px; right: 5px; width: 26px; height: 26px; padding: 0; line-height: 1; z-index: 2; font-size: 16px;">×</button>
+                      <img src="{{ asset('storage/' . $image->path) }}" alt="{{ $product->nama_barang }}" style="width: 100%; height: 100%; object-fit: cover;" />
+                    </div>
+                    <div style="text-align: center; margin-top: 6px;">
+                      <small style="background-color: #C0DD97; color: #27500A; padding: 2px 6px; border-radius: 3px; display: inline-block; font-size: 10px;">✓ tersimpan</small>
+                    </div>
+                  </div>
+                @endforeach
+              @endif
+            </div>
           </div>
-        @elseif($product->image)
-          <div class="mb-2">
-            <img src="{{ $product->image_url }}" alt="{{ $product->nama_barang }}" width="120" height="120" style="object-fit:cover; border-radius:8px; border:1px solid #e0e0e0;" />
-            <div class="mt-1"><small class="text-muted">Gambar saat ini</small></div>
+
+          <!-- Divider -->
+          <div style="width: 1px; background-color: #e0e0e0; min-height: 120px;"></div>
+
+          <!-- Gambar Baru -->
+          <div class="flex-grow-1">
+            <small class="d-block mb-2 text-muted" style="font-size: 12px;">Akan ditambahkan</small>
+            <div id="image-preview-container" class="d-flex flex-wrap gap-3"></div>
           </div>
-        @endif
-        <input type="file" class="form-control @if($errors->has('images.*')) is-invalid @endif" name="images[]" accept="image/jpeg,image/png" multiple />
-        <small class="text-muted">Pilih lebih dari satu gambar baru untuk ditambahkan. Format: JPG, JPEG, PNG. Maks 2MB per file.</small>
-        @if($errors->has('images.*'))<div class="invalid-feedback">{{ $errors->first('images.*') }}</div>@endif
+        </div>
+
+        <div class="mt-3">
+          <input id="image-input" type="file" class="form-control @if($errors->has('images.*')) is-invalid @endif" name="images[]" accept="image/jpeg,image/png" multiple />
+          <small class="text-muted">Pilih lebih dari satu gambar baru untuk ditambahkan. Format: JPG, JPEG, PNG. Maks 2MB per file.</small>
+          @if($errors->has('images.*'))<div class="invalid-feedback">{{ $errors->first('images.*') }}</div>@endif
+        </div>
+        <input type="hidden" id="deleted-images" name="deleted_images" value="" />
       </div>
     </div>
     <template id="variation-template">
@@ -115,6 +135,145 @@
         container.querySelectorAll('.remove-variation-button').forEach(button => {
           button.addEventListener('click', function () {
             this.closest('.variation-row').remove();
+          });
+        });
+
+        const imageInput = document.getElementById('image-input');
+        const previewContainer = document.getElementById('image-preview-container');
+        let selectedFiles = [];
+        const selectedKeys = new Set();
+
+        function getFileKey(file) {
+          return `${file.name}_${file.size}_${file.type}_${file.lastModified}`;
+        }
+
+        function updateInputFiles() {
+          if (!imageInput) {
+            return;
+          }
+
+          if (typeof DataTransfer !== 'undefined') {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            imageInput.files = dataTransfer.files;
+          }
+        }
+
+        function removeFile(key) {
+          selectedFiles = selectedFiles.filter(file => getFileKey(file) !== key);
+          selectedKeys.delete(key);
+          updateInputFiles();
+          renderImagePreview();
+        }
+
+        function renderImagePreview() {
+          previewContainer.innerHTML = '';
+
+          selectedFiles.forEach(file => {
+            if (!file.type.startsWith('image/')) {
+              return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.style.width = '90px';
+
+            const item = document.createElement('div');
+            item.style.width = '90px';
+            item.style.height = '90px';
+            item.style.border = '1.5px dashed #BA7517';
+            item.style.borderRadius = '8px';
+            item.style.overflow = 'hidden';
+            item.style.position = 'relative';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = '×';
+            removeButton.className = 'btn btn-sm btn-danger position-absolute';
+            removeButton.style.top = '5px';
+            removeButton.style.right = '5px';
+            removeButton.style.width = '26px';
+            removeButton.style.height = '26px';
+            removeButton.style.padding = '0';
+            removeButton.style.lineHeight = '1';
+            removeButton.style.zIndex = '2';
+            removeButton.style.fontSize = '16px';
+            removeButton.addEventListener('click', function () {
+              removeFile(getFileKey(file));
+            });
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+            img.title = file.name;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+
+            item.appendChild(removeButton);
+            item.appendChild(img);
+
+            const badge = document.createElement('div');
+            badge.style.textAlign = 'center';
+            badge.style.marginTop = '6px';
+
+            const badgeText = document.createElement('small');
+            badgeText.textContent = '+ baru';
+            badgeText.style.backgroundColor = '#FAC775';
+            badgeText.style.color = '#633806';
+            badgeText.style.padding = '2px 6px';
+            badgeText.style.borderRadius = '3px';
+            badgeText.style.display = 'inline-block';
+            badgeText.style.fontSize = '10px';
+
+            badge.appendChild(badgeText);
+
+            wrapper.appendChild(item);
+            wrapper.appendChild(badge);
+            previewContainer.appendChild(wrapper);
+
+            img.onload = function () {
+              URL.revokeObjectURL(this.src);
+            };
+          });
+        }
+
+        function addFiles(files) {
+          for (let i = 0; i < files.length; i += 1) {
+            const file = files[i];
+            const key = getFileKey(file);
+            if (!file.type.startsWith('image/') || selectedKeys.has(key)) {
+              continue;
+            }
+            selectedFiles.push(file);
+            selectedKeys.add(key);
+          }
+
+          updateInputFiles();
+          renderImagePreview();
+        }
+
+        if (imageInput) {
+          renderImagePreview();
+          imageInput.addEventListener('change', function () {
+            addFiles(this.files);
+          });
+        }
+
+        const deletedImagesInput = document.getElementById('deleted-images');
+        const deletedImageIds = [];
+
+        document.querySelectorAll('.delete-existing-image').forEach(button => {
+          button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const imageElement = this.closest('.existing-image');
+            const imageId = imageElement.getAttribute('data-image-id');
+            
+            if (imageId && !deletedImageIds.includes(imageId)) {
+              deletedImageIds.push(imageId);
+            }
+            
+            deletedImagesInput.value = deletedImageIds.join(',');
+            imageElement.style.display = 'none';
           });
         });
       });

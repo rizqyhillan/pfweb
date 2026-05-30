@@ -64,7 +64,7 @@
                         name="harga" 
                         id="harga" 
                         class="form-control" 
-                        value="{{ old('harga', 0) }}"
+                        value="{{ old('harga') }}"
                         min="0"
                         required
                     >

@@ -40,6 +40,7 @@ Route::get('/doctors', [DoctorBookingController::class, 'doctors']);
 Route::get('/doctor-services', [DoctorBookingController::class, 'services']);
 Route::get('/doctor-schedules', [DoctorBookingController::class, 'schedules']);
 Route::get('/doctor-availability', [DoctorBookingController::class, 'availability']);
+Route::post('/check-doctor-booking-availability', [DoctorBookingController::class, 'checkBookingAvailability']);
 
 // Shopping public 
 Route::get('/shop/products', [ShopController::class, 'products']);

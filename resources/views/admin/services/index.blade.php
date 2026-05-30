@@ -9,7 +9,7 @@
   <div class="alert alert-info">Menampilkan layanan grooming saja.</div>
 @endif
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Jenis</th><th>Harga</th><th>Durasi</th><th>Dokter</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>No</th><th>Nama</th><th>Jenis</th><th>Harga</th><th>Durasi</th><th>Dokter</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($services as $s)
     <tr>

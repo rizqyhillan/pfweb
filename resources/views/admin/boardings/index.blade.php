@@ -25,42 +25,35 @@
   </div>
 
   <div class="card">
-
-  <div class="card">
-
     <div class="table-responsive text-nowrap">
       <table class="table">
         <thead>
           <tr>
-            <th>#</th>
+            <th>No</th>
             <th>Hewan</th>
             <th>Pemilik</th>
-            <th>Kamar</th>
             <th>Paket</th>
-            <th>Check-in</th>
-            <th>Check-out</th>
+            <th>Menginap</th>
             <th>Status</th>
-            <th>Biaya</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody class="table-border-bottom-0">
           @forelse($boardings as $boarding)
+            @php
+              $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
+              $paketLabels = ['basic' => 'Basic', 'regular' => 'Regular', 'premium' => 'Premium'];
+              $paket = $boarding->kamar?->paket ?? 'unknown';
+              $stayingRange = $boarding->tanggal_masuk && $boarding->tanggal_rencana_keluar
+                ? $boarding->tanggal_masuk->format('d M') . ' - ' . $boarding->tanggal_rencana_keluar->format('d M')
+                : '-';
+            @endphp
             <tr>
               <td>{{ $loop->iteration + ($boardings->currentPage() - 1) * $boardings->perPage() }}</td>
               <td><strong>{{ $boarding->hewan?->nama_hewan ?? '-' }}</strong></td>
               <td>{{ $boarding->hewan?->owner?->nama ?? '-' }}</td>
-              <td>{{ $boarding->kamar?->nama_kamar ?? '-' }}</td>
-              <td>
-                @php
-                  $paketColors = ['basic' => 'info', 'regular' => 'warning', 'premium' => 'success'];
-                  $paketLabels = ['basic' => 'Basic', 'regular' => 'Regular', 'premium' => 'Premium'];
-                  $paket = $boarding->kamar?->paket ?? 'unknown';
-                @endphp
-                <span class="badge bg-label-{{ $paketColors[$paket] ?? 'secondary' }}">{{ $paketLabels[$paket] ?? ucfirst($paket) }}</span>
-              </td>
-              <td>{{ $boarding->tanggal_masuk ? $boarding->tanggal_masuk->format('d/m/Y') : '-' }}</td>
-              <td>{{ $boarding->tanggal_rencana_keluar ? $boarding->tanggal_rencana_keluar->format('d/m/Y') : '-' }}</td>
+              <td><span class="badge bg-label-{{ $paketColors[$paket] ?? 'secondary' }}">{{ $paketLabels[$paket] ?? ucfirst($paket) }}</span></td>
+              <td>{{ $stayingRange }}</td>
               <td>
                 @if($boarding->status === 'aktif')
                   <span class="badge bg-label-primary">Aktif</span>
@@ -72,14 +65,11 @@
                   <span class="badge bg-label-danger">Batal</span>
                 @endif
               </td>
-              <td>Rp {{ number_format($boarding->total_biaya, 0, ',', '.') }}</td>
               <td>
                 <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i
-                      class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{{ route('admin.boardings.edit', $boarding) }}"><i
-                        class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+                  <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="{{ route('admin.boardings.edit', $boarding) }}"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
                     @if($boarding->status === 'pending')
                       <form action="{{ route('admin.boardings.update-status', $boarding) }}" method="POST">
                         @csrf @method('PUT')
@@ -111,7 +101,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="10" class="text-center text-muted py-4">Belum ada data boarding</td>
+              <td colspan="7" class="text-center text-muted py-4">Belum ada data boarding</td>
             </tr>
           @endforelse
         </tbody>
@@ -134,12 +124,12 @@
             .listen('.new-boarding', (e) => {
               let b = e.boarding;
               let tbody = document.querySelector('tbody.table-border-bottom-0');
-              let noDataTr = tbody.querySelector('td[colspan="9"]');
+              let noDataTr = tbody.querySelector('td[colspan="6"]');
               if (noDataTr) noDataTr.parentElement.remove();
 
-              let biayaFormat = new Intl.NumberFormat('id-ID').format(b.total_biaya);
-              let checkinStr = b.tanggal_masuk ? new Date(b.tanggal_masuk).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
-              let checkoutStr = b.tanggal_rencana_keluar ? new Date(b.tanggal_rencana_keluar).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+              let checkinStr = b.tanggal_masuk ? new Date(b.tanggal_masuk).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : '-';
+              let checkoutStr = b.tanggal_rencana_keluar ? new Date(b.tanggal_rencana_keluar).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) : '-';
+              let stayingRange = b.tanggal_masuk && b.tanggal_rencana_keluar ? `${checkinStr} - ${checkoutStr}` : '-';
 
               let statusMap = {
                 'aktif': '<span class="badge bg-label-primary">Aktif</span>',
@@ -147,18 +137,24 @@
                 'pending': '<span class="badge bg-label-warning">Pending</span>',
                 'batal': '<span class="badge bg-label-danger">Batal</span>',
               };
-              let statusBadge = statusMap[b.status] || '<span class="badge bg-label-secondary">' + (b.status || '-') + '</span>';
+              let statusBadge = statusMap[b.status] || '<span class="badge rounded-pill bg-label-secondary">' + (b.status || '-') + '</span>';
 
               let petName = b.hewan ? b.hewan.nama_hewan : '-';
               let ownerName = (b.hewan && b.hewan.owner) ? b.hewan.owner.nama : '-';
-              let roomName = b.kamar ? b.kamar.nama_kamar : '-';
+              let paketType = b.kamar ? b.kamar.paket : 'unknown';
+              let paketMap = {
+                'basic': '<span class="badge rounded-pill bg-label-info">Basic</span>',
+                'regular': '<span class="badge rounded-pill bg-label-warning">Regular</span>',
+                'premium': '<span class="badge rounded-pill bg-label-success">Premium</span>',
+              };
+              let paketBadge = paketMap[paketType] || `<span class="badge rounded-pill bg-label-secondary">${paketType ? paketType.charAt(0).toUpperCase() + paketType.slice(1) : '-'}</span>`;
 
               let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
               let actionsHtml = `
                 <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-                  <div class="dropdown-menu">
+                  <button type="button" class="btn btn-sm btn-outline-secondary p-0 rounded-circle" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+                  <div class="dropdown-menu dropdown-menu-end">
                     <a class="dropdown-item" href="/admin/boardings/${b.id}/edit"><i class="icon-base bx bx-edit-alt me-1"></i> Edit</a>
                     <form action="/admin/boardings/${b.id}" method="POST">
                       <input type="hidden" name="_token" value="${csrfToken}">
@@ -168,17 +164,16 @@
                   </div>
                 </div>`;
 
+              let rowNumber = tbody.querySelectorAll('tr').length + 1;
               let html = `
                 <tr style="animation: slideIn .3s ease; background-color: rgba(40, 199, 111, 0.05);">
-                  <td><span class="badge bg-success bx-tada">Baru</span></td>
+                  <td>${rowNumber}</td>
                   <td><strong>${petName}</strong></td>
                   <td>${ownerName}</td>
-                  <td>${roomName}</td>
-                  <td>${checkinStr}</td>
-                  <td>${checkoutStr}</td>
+                  <td>${paketBadge}</td>
+                  <td>${stayingRange}</td>
                   <td>${statusBadge}</td>
-                  <td>Rp ${biayaFormat}</td>
-                  <td>${actionsHtml}</td>
+                  <td class="text-end">${actionsHtml}</td>
                 </tr>`;
 
               tbody.insertAdjacentHTML('afterbegin', html);

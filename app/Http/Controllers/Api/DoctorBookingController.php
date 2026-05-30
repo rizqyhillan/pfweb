@@ -483,4 +483,26 @@ class DoctorBookingController extends Controller
             'payment_note' => 'Pembayaran dilakukan di lokasi setelah layanan selesai.',
         ];
     }
+
+    public function checkBookingAvailability(Request $request)
+    {
+        $validated = $request->validate([
+            'id_dokter' => ['required', 'exists:users,id'],
+            'tanggal_booking' => ['required', 'date'],
+            'jam_booking' => ['required', 'date_format:H:i'],
+        ]);
+
+        $existingBooking = DoctorBooking::where('id_dokter', $validated['id_dokter'])
+            ->where('tanggal_booking', $validated['tanggal_booking'])
+            ->where('jam_booking', $validated['jam_booking'])
+            ->whereNotIn('status', ['batal'])
+            ->exists();
+
+        return response()->json([
+            'available' => !$existingBooking,
+            'message' => $existingBooking 
+                ? 'Jam booking tidak tersedia untuk dokter ini pada tanggal dan jam tersebut.'
+                : 'Jam booking tersedia.',
+        ]);
+    }
 }

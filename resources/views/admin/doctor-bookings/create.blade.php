@@ -182,6 +182,9 @@
         const layananSelect = document.getElementById('id_layanan');
         const jadwalSelect = document.getElementById('id_jadwal');
         const totalBiayaInput = document.getElementById('total_biaya');
+        const tanggalInput = document.getElementById('tanggal_booking');
+        const jamInput = document.getElementById('jam_booking');
+        const submitBtn = document.querySelector('button[type="submit"]');
 
         if (layananSelect) {
             layananSelect.addEventListener('change', function () {
@@ -193,6 +196,62 @@
                     }
                 }
             });
+        }
+
+        // Function to check slot availability
+        async function checkSlotAvailability() {
+            const dokterID = doctorSelect.value;
+            const tanggal = tanggalInput.value;
+            const jam = jamInput.value;
+
+            if (!dokterID || !tanggal || !jam) {
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/check-doctor-booking-availability', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    },
+                    body: JSON.stringify({
+                        id_dokter: dokterID,
+                        tanggal_booking: tanggal,
+                        jam_booking: jam,
+                    }),
+                });
+
+                const data = await response.json();
+                
+                if (!data.available) {
+                    submitBtn.disabled = true;
+                    jamInput.classList.add('is-invalid');
+                    if (!jamInput.nextElementSibling || !jamInput.nextElementSibling.classList.contains('invalid-feedback')) {
+                        const feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback d-block';
+                        feedback.textContent = 'Jam booking tidak tersedia untuk dokter ini pada tanggal dan jam tersebut.';
+                        jamInput.parentNode.insertBefore(feedback, jamInput.nextSibling);
+                    }
+                } else {
+                    submitBtn.disabled = false;
+                    jamInput.classList.remove('is-invalid');
+                    const feedback = jamInput.nextElementSibling;
+                    if (feedback && feedback.classList.contains('invalid-feedback')) {
+                        feedback.remove();
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking availability:', error);
+                submitBtn.disabled = false;
+            }
+        }
+
+        if (doctorSelect && tanggalInput && jamInput) {
+            doctorSelect.addEventListener('change', checkSlotAvailability);
+            tanggalInput.addEventListener('change', checkSlotAvailability);
+            jamInput.addEventListener('change', checkSlotAvailability);
         }
 
         if (doctorSelect && layananSelect && jadwalSelect) {
@@ -233,6 +292,7 @@
                 jadwalSelect.value = "";
                 totalBiayaInput.value = 0;
                 updateFilters();
+                checkSlotAvailability();
             });
 
             // Initial run on page load

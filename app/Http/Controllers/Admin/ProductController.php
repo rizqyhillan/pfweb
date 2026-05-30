@@ -50,14 +50,18 @@ class ProductController extends Controller
 
         $v['image'] = $imagePaths[0] ?? null;
 
+        $variationsData = $v['variations'] ?? [];
+        unset($v['images']);
+        unset($v['variations']);
+
         $product = Product::create($v);
 
         foreach ($imagePaths as $path) {
             $product->images()->create(['path' => $path]);
         }
 
-        if (! empty($v['variations'])) {
-            foreach ($v['variations'] as $variation) {
+        if (! empty($variationsData)) {
+            foreach ($variationsData as $variation) {
                 if (empty($variation['nama_variasi']) && empty($variation['harga']) && empty($variation['stok'])) {
                     continue;
                 }
@@ -89,6 +93,7 @@ class ProductController extends Controller
             'deskripsi' => 'nullable|string',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'deleted_images' => 'nullable|string',
             'variations' => 'nullable|array',
             'variations.*.nama_variasi' => 'nullable|string|max:100',
             'variations.*.harga' => 'nullable|numeric|min:0',
@@ -96,6 +101,19 @@ class ProductController extends Controller
         ]);
 
         $v['is_aktif'] = $request->has('is_aktif') ? 1 : 0;
+
+        if (!empty($v['deleted_images'])) {
+            $deletedIds = explode(',', $v['deleted_images']);
+            foreach ($deletedIds as $imageId) {
+                $image = $product->images()->find($imageId);
+                if ($image) {
+                    Storage::disk('public')->delete($image->path);
+                    $image->delete();
+                }
+            }
+        }
+
+        unset($v['deleted_images']);
 
         $imagePaths = [];
         if ($request->hasFile('images')) {
@@ -114,12 +132,17 @@ class ProductController extends Controller
             $v['image'] = $product->image;
         }
 
+        unset($v['images']);
+
+        $variationsData = $v['variations'] ?? [];
+        unset($v['variations']);
+
         $product->update($v);
 
         if ($request->has('variations')) {
             $product->variations()->delete();
 
-            foreach ($v['variations'] as $variation) {
+            foreach ($variationsData as $variation) {
                 if (empty($variation['nama_variasi']) && empty($variation['harga']) && empty($variation['stok'])) {
                     continue;
                 }

@@ -35,7 +35,10 @@
 </head>
 <body>
     <div class="header">
-        <h1>🐾 PawPet Clinic</h1>
+        <h1>
+        <img src="{{ public_path('assets/pawpet/logo/logo-paw.png') }}" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 6px;">
+        PawPet Clinic
+        </h1>
         <p>Laporan Transaksi</p>
         <p>
             @if($startDate && $endDate)

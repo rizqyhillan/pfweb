@@ -78,6 +78,20 @@ class DoctorBookingController extends Controller
             'total_biaya' => ['required', 'numeric', 'min:0'],
         ]);
 
+        // Check if booking slot is available
+        $existingBooking = DoctorBooking::where('id_dokter', $validated['id_dokter'])
+            ->where('tanggal_booking', $validated['tanggal_booking'])
+            ->where('jam_booking', $validated['jam_booking'])
+            ->whereNotIn('status', ['batal'])
+            ->exists();
+
+        if ($existingBooking) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Jam booking tidak tersedia. Dokter sudah memiliki booking pada tanggal dan jam tersebut.');
+        }
+
         if (!empty($validated['id_layanan'])) {
             $service = Service::where('kategori', 'dokter')
                 ->where('is_aktif', true)
@@ -165,6 +179,21 @@ class DoctorBookingController extends Controller
             'status' => ['required', 'in:pending,dikonfirmasi,selesai,batal'],
             'total_biaya' => ['required', 'numeric', 'min:0'],
         ]);
+
+        // Check if booking slot is available (exclude current booking)
+        $existingBooking = DoctorBooking::where('id_dokter', $validated['id_dokter'])
+            ->where('tanggal_booking', $validated['tanggal_booking'])
+            ->where('jam_booking', $validated['jam_booking'])
+            ->where('id', '!=', $doctorBooking->id)
+            ->whereNotIn('status', ['batal'])
+            ->exists();
+
+        if ($existingBooking) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Jam booking tidak tersedia. Dokter sudah memiliki booking pada tanggal dan jam tersebut.');
+        }
 
         if (!empty($validated['id_layanan'])) {
             $service = Service::where('kategori', 'dokter')

@@ -14,7 +14,7 @@
       <a href="#faq" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">FAQ</a>
       
       @guest
-        <a href="{{ route('login') }}" class="nav-link-item" style="color: #2d2d2d; font-weight: 600; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; transition: color 0.2s;">Login</a>
+        <a href="{{ route('login') }}" class="nav-link-item" style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: white; font-weight: 700; text-decoration: none; font-size: 0.95rem; font-family: 'Quicksand', sans-serif; padding: 10px 24px; border-radius: 50px; transition: all 0.3s; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3); display: inline-flex; align-items: center; gap: 6px;"><i class="bi bi-box-arrow-in-right"></i>Login</a>
       @endguest
 
       @auth
@@ -47,7 +47,7 @@
       <a href="#faq" class="mobile-nav-link" onclick="bootstrap.Collapse.getInstance(document.getElementById('mobileNavCollapse')).hide();" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">FAQ</a>
       
       @guest
-        <a href="{{ route('login') }}" class="mobile-nav-link" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Login</a>
+        <a href="{{ route('login') }}" class="mobile-nav-link" style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: white; font-weight: 700; font-size: 1.1rem; text-decoration: none; padding: 12px 16px; display: block; border-radius: 50px; font-family: 'Quicksand', sans-serif; text-align: center; margin-top: 8px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
       @endguest
       @auth
         @php
@@ -72,9 +72,21 @@
   .nav-link-item:hover {
     color: #f59e0b !important;
   }
+  
+  .nav-link-item[href*="login"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+  }
+  
   .mobile-nav-link:hover {
     color: #f59e0b !important;
     padding-left: 5px !important;
     transition: all 0.2s;
+  }
+  
+  .mobile-nav-link[href*="login"]:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+    padding-left: 16px !important;
   }
 </style>

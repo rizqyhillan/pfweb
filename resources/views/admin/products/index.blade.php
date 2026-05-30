@@ -6,7 +6,7 @@
   <a href="{{ route('admin.products.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Barang</a>
 </div>
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Gambar</th><th>Nama Barang</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Satuan</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>No</th><th>Gambar</th><th>Nama Barang</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Satuan</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($products as $p)
     <tr>
