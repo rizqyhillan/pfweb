@@ -122,5 +122,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/boardings/{id}', [BoardingController::class, 'show']);
     Route::post('/boardings/{id}/cancel', [BoardingController::class, 'cancel']);
     Route::post('/boardings/{id}/reschedule', [BoardingController::class, 'reschedule']);
-
 });

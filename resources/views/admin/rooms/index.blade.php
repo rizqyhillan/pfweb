@@ -26,11 +26,21 @@
 
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
-  <thead><tr><th>#</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
+  <thead><tr><th>No</th><th>Foto</th><th>Nama</th><th>Paket</th><th>Harga/Hari</th><th>Kapasitas</th><th>Status</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">
     @forelse($rooms as $r)
     <tr>
       <td>{{ $loop->iteration + ($rooms->currentPage() - 1) * $rooms->perPage() }}</td>
+      <td>
+        @php
+          $firstPhoto = $r->foto_urls[0] ?? null;
+        @endphp
+        @if($firstPhoto)
+          <img src="{{ asset('storage/' . $firstPhoto) }}" alt="Foto {{ $r->nama_kamar }}" class="rounded" style="width: 64px; height: 48px; object-fit: cover;">
+        @else
+          <span class="badge bg-label-secondary">Belum ada</span>
+        @endif
+      </td>
       <td><strong>{{ $r->nama_kamar }}</strong></td>
       <td>
         @php
@@ -63,7 +73,7 @@
       </td>
     </tr>
     @empty
-    <tr><td colspan="7" class="text-center text-muted py-4">Belum ada kamar</td></tr>
+    <tr><td colspan="8" class="text-center text-muted py-4">Belum ada kamar</td></tr>
     @endforelse
   </tbody>
 </table></div>

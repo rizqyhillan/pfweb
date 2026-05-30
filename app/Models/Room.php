@@ -16,6 +16,7 @@ class Room extends Model
         'terisi',
         'harga_per_hari',
         'fasilitas',
+        'foto_urls',
         'status',
     ];
 
@@ -23,7 +24,41 @@ class Room extends Model
         'kapasitas' => 'integer',
         'terisi' => 'integer',
         'harga_per_hari' => 'decimal:2',
+        'foto_urls' => 'array',
     ];
+
+
+    public function getFotoUrlsAttribute($value): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        $decoded = json_decode($value, true);
+
+        return is_array($decoded) ? array_values(array_filter($decoded)) : [];
+    }
+
+    public function getFotoFullUrlsAttribute(): array
+    {
+        return collect($this->foto_urls)
+            ->filter()
+            ->map(function ($path) {
+                $path = ltrim((string) $path, '/');
+
+                if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                    return $path;
+                }
+
+                return asset('storage/' . $path);
+            })
+            ->values()
+            ->all();
+    }
 
     public function getPaketLabelAttribute(): string
     {

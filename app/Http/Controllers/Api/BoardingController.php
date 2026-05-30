@@ -234,6 +234,10 @@ class BoardingController extends Controller
             'sisa_kapasitas' => max(0, (int) $room->kapasitas - (int) $room->terisi),
             'harga_per_hari' => (float) $room->harga_per_hari,
             'fasilitas' => $room->fasilitas,
+            'foto_urls' => $room->foto_full_urls,
+            'fotoUrls' => $room->foto_full_urls,
+            'foto' => $room->foto_full_urls[0] ?? null,
+            'image_url' => $room->foto_full_urls[0] ?? null,
             'status' => $room->status,
             'tersedia' => $room->status === 'tersedia' && $room->terisi < $room->kapasitas,
         ];
