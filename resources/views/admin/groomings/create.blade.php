@@ -107,41 +107,35 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const hevanSelect = document.getElementById('hevanSelect');
-      const ownerDisplay = document.getElementById('ownerDisplay');
-      const paketSelect = document.getElementById('paketSelect');
-      const biayaInput = document.getElementById('biayaInput');
-
-      hevanSelect.addEventListener('change', function () {
-        const selected = this.options[this.selectedIndex];
-        ownerDisplay.value = selected ? (selected.dataset.owner || '-') : '-';
-      });
-
-      paketSelect.addEventListener('change', function () {
-        const selected = this.options[this.selectedIndex];
-        biayaInput.value = selected ? (selected.dataset.price || 0) : 0;
-      });
-
-      // Initialize on page load
-      hevanSelect.dispatchEvent(new Event('change'));
-      paketSelect.dispatchEvent(new Event('change'));
-    });
-  </script>
+  <!-- Script removed from content section, now unified in page-js section below -->
 @endsection
 
 @section('page-js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
-    $('#hevanSelect').select2({
+    var hevanSelect = $('#hevanSelect');
+    var ownerDisplay = $('#ownerDisplay');
+    var paketSelect = $('#paketSelect');
+    var biayaInput = $('#biayaInput');
+
+    hevanSelect.select2({
       theme: 'bootstrap-5',
       placeholder: '-- Pilih Hewan --',
       allowClear: true
     }).on('change', function() {
-      this.dispatchEvent(new Event('change'));
+      var selected = this.options[this.selectedIndex];
+      ownerDisplay.val(selected ? (selected.dataset.owner || '-') : '-');
     });
+
+    paketSelect.on('change', function() {
+      var selected = this.options[this.selectedIndex];
+      biayaInput.val(selected ? (selected.dataset.price || 0) : 0);
+    });
+
+    // Initialize on page load
+    hevanSelect.trigger('change');
+    paketSelect.trigger('change');
   });
 </script>
 @endsection

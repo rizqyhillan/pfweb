@@ -26,8 +26,8 @@
         <select id="hewanSelect" class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required>
           <option value="">-- Pilih Hewan --</option>
           @foreach($pets as $p)
-            <option value="{{ $p->id }}" data-owner="{{ $p->owner->nama ?? '-' }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>
-              {{ $p->nama_hewan }} - {{ $p->owner->nama ?? 'Tanpa Pemilik' }}
+            <option value="{{ $p->id }}" data-owner="{{ $p->owner?->nama ?? '-' }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>
+              {{ $p->nama_hewan }} - {{ $p->owner?->nama ?? 'Tanpa Pemilik' }}
             </option>
           @endforeach
         </select>
@@ -190,21 +190,20 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
-    var ownerDisplay = document.getElementById('ownerDisplay');
+    var hewanSelect = $('#hewanSelect');
+    var ownerDisplay = $('#ownerDisplay');
 
-    $('#hewanSelect').select2({
+    hewanSelect.select2({
       theme: 'bootstrap-5',
       placeholder: '-- Pilih Hewan --',
       allowClear: true
     }).on('change', function() {
       var selected = this.options[this.selectedIndex];
-      if (ownerDisplay) {
-        ownerDisplay.value = selected ? (selected.dataset.owner || '-') : '-';
-      }
+      ownerDisplay.val(selected ? (selected.dataset.owner || '-') : '-');
     });
 
     // Initialize owner display on page load
-    $('#hewanSelect').trigger('change');
+    hewanSelect.trigger('change');
   });
 </script>
 @endsection
