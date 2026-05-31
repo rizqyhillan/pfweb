@@ -5,6 +5,28 @@
   <h4 class="mb-0">Data Hewan Peliharaan</h4>
   <a href="{{ route('admin.pets.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Hewan</a>
 </div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form action="{{ route('admin.pets.index') }}" method="GET">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6 col-lg-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bx bx-search"></i></span>
+            <input type="text" name="search" class="form-control" placeholder="Cari nama pemilik atau hewan..." value="{{ request('search') }}">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-primary me-2">Cari</button>
+          @if(request('search'))
+            <a href="{{ route('admin.pets.index') }}" class="btn btn-outline-secondary">Reset</a>
+          @endif
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
   <thead><tr><th>No</th><th>Nama</th><th>Jenis</th><th>Ras</th><th>Umur</th><th>Berat</th><th>Pemilik</th><th>Aksi</th></tr></thead>
   <tbody class="table-border-bottom-0">

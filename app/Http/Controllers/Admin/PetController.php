@@ -12,9 +12,22 @@ use Illuminate\Support\Facades\Storage;
 
 class PetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pets = Pet::with('owner')->latest()->pathPaginate(15, url('admin/pets/page'));
+        $query = Pet::with('owner');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('owner', function ($qOwner) use ($search) {
+                    $qOwner->where('nama', 'like', '%' . $search . '%');
+                })->orWhere('nama_hewan', 'like', '%' . $search . '%');
+            });
+        }
+
+        $pets = $query->latest()
+            ->pathPaginate(15, url('admin/pets/page'))
+            ->withQueryString();
 
         return view('admin.pets.index', compact('pets'));
     }
