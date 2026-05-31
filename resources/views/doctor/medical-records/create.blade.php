@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'Tambah Rekam Medis')
 @section('page-css')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 <style>
   .select2-container--bootstrap-5 .select2-selection {
@@ -187,7 +187,7 @@
 @endsection
 
 @section('page-js')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
     var hewanSelect = $('#hewanSelect');
@@ -196,7 +196,8 @@
     hewanSelect.select2({
       theme: 'bootstrap-5',
       placeholder: '-- Pilih Hewan --',
-      allowClear: true
+      allowClear: true,
+      minimumResultsForSearch: 0
     }).on('change', function() {
       var selected = this.options[this.selectedIndex];
       ownerDisplay.val(selected ? (selected.dataset.owner || '-') : '-');
