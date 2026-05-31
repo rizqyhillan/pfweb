@@ -1,5 +1,18 @@
 @extends('layouts.admin')
 @section('title', 'Tambah Pasien')
+@section('page-css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+  .select2-container--bootstrap-5 .select2-selection {
+    border-color: #d9dee3 !important;
+  }
+  .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    color: #435971 !important;
+  }
+</style>
+@endsection
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Tambah Data Pasien (Hewan)</h4>
@@ -9,8 +22,8 @@
   <form action="{{ route('doctor.patients.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
       <div class="col-md-6"><label class="form-label">Pemilik *</label>
-        <select class="form-select @error('id_pemilik') is-invalid @enderror" name="id_pemilik" required><option value="">-- Pilih --</option>
-          @foreach($owners as $o)<option value="{{ $o->id }}" {{ old('id_pemilik') == $o->id ? 'selected' : '' }}>{{ $o->nama }} ({{ $o->email }})</option>@endforeach
+        <select id="pemilikSelect" class="form-select @error('id_pemilik') is-invalid @enderror" name="id_pemilik" required><option value="">-- Pilih Pemilik --</option>
+          @foreach($owners as $o)<option value="{{ $o->id }}" {{ old('id_pemilik') == $o->id ? 'selected' : '' }}>{{ $o->nama }} - {{ $o->email }}</option>@endforeach
         </select>@error('id_pemilik')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-6"><label class="form-label">Nama Hewan *</label><input type="text" class="form-control @error('nama_hewan') is-invalid @enderror" name="nama_hewan" value="{{ old('nama_hewan') }}" required />@error('nama_hewan')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
     </div>
@@ -49,4 +62,17 @@
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>
+@endsection
+
+@section('page-js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#pemilikSelect').select2({
+      theme: 'bootstrap-5',
+      placeholder: '-- Pilih Pemilik --',
+      allowClear: true
+    });
+  });
+</script>
 @endsection
