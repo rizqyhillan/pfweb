@@ -180,15 +180,6 @@
           renderImagePreview();
         }
 
-        const hewanSelect = document.getElementById('hewanSelect');
-        const ownerDisplay = document.getElementById('ownerDisplay');
-        if (hewanSelect) {
-          hewanSelect.addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-            ownerDisplay.value = selected ? (selected.dataset.owner || '-') : '-';
-          });
-          hewanSelect.dispatchEvent(new Event('change'));
-        }
       });
     </script>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
@@ -200,13 +191,21 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
+    var ownerDisplay = document.getElementById('ownerDisplay');
+
     $('#hewanSelect').select2({
       theme: 'bootstrap-5',
       placeholder: '-- Pilih Hewan --',
       allowClear: true
     }).on('change', function() {
-      this.dispatchEvent(new Event('change'));
+      var selected = this.options[this.selectedIndex];
+      if (ownerDisplay) {
+        ownerDisplay.value = selected ? (selected.dataset.owner || '-') : '-';
+      }
     });
+
+    // Initialize owner display on page load
+    $('#hewanSelect').trigger('change');
   });
 </script>
 @endsection
