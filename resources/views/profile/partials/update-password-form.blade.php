@@ -8,7 +8,7 @@
             <div class="position-relative">
                 <input class="form-control" type="password" id="update_password_current_password" name="current_password" autocomplete="current-password" style="padding-right: 40px;" />
                 <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
-                    <i class="bx bx-show" style="font-size: 1.25rem;"></i>
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
                 </button>
             </div>
             @if ($errors->updatePassword->get('current_password'))
@@ -23,7 +23,7 @@
             <div class="position-relative">
                 <input class="form-control" type="password" id="update_password_password" name="password" autocomplete="new-password" style="padding-right: 40px;" />
                 <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
-                    <i class="bx bx-show" style="font-size: 1.25rem;"></i>
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
                 </button>
             </div>
             @if ($errors->updatePassword->get('password'))
@@ -38,7 +38,7 @@
             <div class="position-relative">
                 <input class="form-control" type="password" id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password" style="padding-right: 40px;" />
                 <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
-                    <i class="bx bx-show" style="font-size: 1.25rem;"></i>
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
                 </button>
             </div>
             @if ($errors->updatePassword->get('password_confirmation'))

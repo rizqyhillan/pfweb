@@ -40,7 +40,7 @@
             <input id="password" class="has-toggle" type="password" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
             <i class="bi bi-lock"></i>
             <button type="button" class="toggle-password" tabindex="-1" aria-label="Toggle Password Visibility">
-                <i class="bi bi-eye"></i>
+                <i class="bi bi-eye-slash"></i>
             </button>
         </div>
         @error('password')
@@ -55,7 +55,7 @@
             <input id="password_confirmation" class="has-toggle" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ulangi password">
             <i class="bi bi-shield-lock"></i>
             <button type="button" class="toggle-password" tabindex="-1" aria-label="Toggle Password Visibility">
-                <i class="bi bi-eye"></i>
+                <i class="bi bi-eye-slash"></i>
             </button>
         </div>
         @error('password_confirmation')

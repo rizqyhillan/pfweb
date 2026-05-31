@@ -359,21 +359,21 @@
             if (input && icon) {
               if (input.type === 'password') {
                 input.type = 'text';
-                if (icon.classList.contains('bx-show')) {
-                  icon.classList.remove('bx-show');
-                  icon.classList.add('bx-hide');
-                } else if (icon.classList.contains('bi-eye')) {
-                  icon.classList.remove('bi-eye');
-                  icon.classList.add('bi-eye-slash');
-                }
-              } else {
-                input.type = 'password';
                 if (icon.classList.contains('bx-hide')) {
                   icon.classList.remove('bx-hide');
                   icon.classList.add('bx-show');
                 } else if (icon.classList.contains('bi-eye-slash')) {
                   icon.classList.remove('bi-eye-slash');
                   icon.classList.add('bi-eye');
+                }
+              } else {
+                input.type = 'password';
+                if (icon.classList.contains('bx-show')) {
+                  icon.classList.remove('bx-show');
+                  icon.classList.add('bx-hide');
+                } else if (icon.classList.contains('bi-eye')) {
+                  icon.classList.remove('bi-eye');
+                  icon.classList.add('bi-eye-slash');
                 }
               }
             }

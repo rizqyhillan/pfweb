@@ -327,6 +327,16 @@
             width: 38px;
             transition: color 0.3s;
             z-index: 10;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .toggle-password:focus,
+        .toggle-password:focus-visible,
+        .toggle-password:active {
+            outline: none !important;
+            box-shadow: none !important;
+            background: none !important;
+            border: none !important;
         }
         .toggle-password:hover {
             color: var(--paw-amber);
@@ -414,12 +424,12 @@
                     if (input && icon) {
                         if (input.type === 'password') {
                             input.type = 'text';
-                            icon.classList.remove('bi-eye');
-                            icon.classList.add('bi-eye-slash');
-                        } else {
-                            input.type = 'password';
                             icon.classList.remove('bi-eye-slash');
                             icon.classList.add('bi-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
                         }
                     }
                 });
