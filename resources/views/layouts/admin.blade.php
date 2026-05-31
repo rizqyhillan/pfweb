@@ -348,6 +348,38 @@
         }
       }
 
+      // Toggle password visibility
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.toggle-password').forEach(button => {
+          button.addEventListener('click', () => {
+            const wrapper = button.closest('.position-relative') || button.closest('.input-wrapper') || button.parentElement;
+            if (!wrapper) return;
+            const input = wrapper.querySelector('input');
+            const icon = button.querySelector('i');
+            if (input && icon) {
+              if (input.type === 'password') {
+                input.type = 'text';
+                if (icon.classList.contains('bx-show')) {
+                  icon.classList.remove('bx-show');
+                  icon.classList.add('bx-hide');
+                } else if (icon.classList.contains('bi-eye')) {
+                  icon.classList.remove('bi-eye');
+                  icon.classList.add('bi-eye-slash');
+                }
+              } else {
+                input.type = 'password';
+                if (icon.classList.contains('bx-hide')) {
+                  icon.classList.remove('bx-hide');
+                  icon.classList.add('bx-show');
+                } else if (icon.classList.contains('bi-eye-slash')) {
+                  icon.classList.remove('bi-eye-slash');
+                  icon.classList.add('bi-eye');
+                }
+              }
+            }
+          });
+        });
+      });
     </script>
     <style>
       @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }

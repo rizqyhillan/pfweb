@@ -30,8 +30,11 @@
     <div class="form-group">
         <label for="password">Password</label>
         <div class="input-wrapper">
-            <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            <input id="password" class="has-toggle" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
             <i class="bi bi-lock"></i>
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Toggle Password Visibility">
+                <i class="bi bi-eye"></i>
+            </button>
         </div>
         @error('password')
             <div class="field-error">{{ $message }}</div>

@@ -306,6 +306,31 @@
             border: 1px solid #a7f3d0;
         }
 
+        /* Toggle Password Button */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #d1a054;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+        .toggle-password:hover {
+            color: var(--paw-amber);
+        }
+        .input-wrapper input.has-toggle {
+            padding-right: 2.75rem;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .auth-illustration { display: none; }
@@ -367,6 +392,29 @@
                 container.appendChild(paw);
             }
         })();
+
+        // Toggle password visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', () => {
+                    const wrapper = button.closest('.input-wrapper');
+                    if (!wrapper) return;
+                    const input = wrapper.querySelector('input');
+                    const icon = button.querySelector('i');
+                    if (input && icon) {
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                        }
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

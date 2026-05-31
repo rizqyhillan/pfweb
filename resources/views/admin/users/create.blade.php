@@ -12,8 +12,25 @@
       <div class="col-md-6"><label class="form-label">Email *</label><input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required />@error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
     </div>
     <div class="row mb-6">
-      <div class="col-md-4"><label class="form-label">Password *</label><input type="password" class="form-control @error('password') is-invalid @enderror" name="password" required />@error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-      <div class="col-md-4"><label class="form-label">Konfirmasi Password *</label><input type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" required /></div>
+      <div class="col-md-4">
+        <label class="form-label">Password *</label>
+        <div class="position-relative">
+          <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" required style="padding-right: 40px;" />
+          <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
+            <i class="bx bx-show" style="font-size: 1.25rem;"></i>
+          </button>
+        </div>
+        @error('password')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Konfirmasi Password *</label>
+        <div class="position-relative">
+          <input type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" required style="padding-right: 40px;" />
+          <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
+            <i class="bx bx-show" style="font-size: 1.25rem;"></i>
+          </button>
+        </div>
+      </div>
       <div class="col-md-4"><label class="form-label">Role *</label>
         <select class="form-select @error('role') is-invalid @enderror" name="role" required>
           @foreach(['admin'=>'Admin','dokter'=>'Dokter','karyawan'=>'Karyawan'] as $k=>$v)<option value="{{ $k }}" {{ old('role', request('role')) == $k ? 'selected' : '' }}>{{ $v }}</option>@endforeach
