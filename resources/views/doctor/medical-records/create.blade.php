@@ -21,16 +21,44 @@
 <div class="card"><div class="card-body">
   <form action="{{ route('admin.medical-records.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
-      <div class="col-md-4"><label class="form-label">Hewan *</label>
-        <select id="hewanSelect" class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih --</option>
-          @foreach($pets as $p)<option value="{{ $p->id }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>{{ $p->nama_hewan }} ({{ $p->owner->nama ?? '-' }})</option>@endforeach
-        </select>@error('id_hewan')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-      <div class="col-md-4"><label class="form-label">Dokter</label>
-        <select class="form-select" name="id_dokter"><option value="">-- Pilih --</option>
-          @foreach($doctors as $d)<option value="{{ $d->id }}" {{ old('id_dokter') == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>@endforeach
-        </select></div>
-      <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="berat_saat_itu" value="{{ old('berat_saat_itu') }}" /></div>
-      <div class="col-md-2"><label class="form-label">Tanggal *</label><input type="datetime-local" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d\TH:i')) }}" required /></div>
+      <div class="col-md-6">
+        <label class="form-label">Hewan *</label>
+        <select id="hewanSelect" class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required>
+          <option value="">-- Pilih Hewan --</option>
+          @foreach($pets as $p)
+            <option value="{{ $p->id }}" data-owner="{{ $p->owner->nama ?? '-' }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>
+              {{ $p->nama_hewan }}
+            </option>
+          @endforeach
+        </select>
+        @error('id_hewan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Pemilik (Otomatis)</label>
+        <input type="text" id="ownerDisplay" class="form-control" readonly />
+      </div>
+    </div>
+
+    <div class="row mb-6">
+      <div class="col-md-6">
+        <label class="form-label">Dokter</label>
+        <select class="form-select" name="id_dokter">
+          <option value="">-- Pilih --</option>
+          @foreach($doctors as $d)
+            <option value="{{ $d->id }}" {{ old('id_dokter') == $d->id ? 'selected' : '' }}>
+              {{ $d->nama }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Berat (kg)</label>
+        <input type="number" step="0.01" class="form-control" name="berat_saat_itu" value="{{ old('berat_saat_itu') }}" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Tanggal *</label>
+        <input type="datetime-local" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d\TH:i')) }}" required />
+      </div>
     </div>
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Diagnosa</label><textarea class="form-control" name="diagnosa" rows="4">{{ old('diagnosa') }}</textarea></div>
@@ -151,6 +179,16 @@
           });
           renderImagePreview();
         }
+
+        const hewanSelect = document.getElementById('hewanSelect');
+        const ownerDisplay = document.getElementById('ownerDisplay');
+        if (hewanSelect) {
+          hewanSelect.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            ownerDisplay.value = selected ? (selected.dataset.owner || '-') : '-';
+          });
+          hewanSelect.dispatchEvent(new Event('change'));
+        }
       });
     </script>
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
@@ -164,8 +202,10 @@
   $(document).ready(function() {
     $('#hewanSelect').select2({
       theme: 'bootstrap-5',
-      placeholder: '-- Pilih --',
+      placeholder: '-- Pilih Hewan --',
       allowClear: true
+    }).on('change', function() {
+      this.dispatchEvent(new Event('change'));
     });
   });
 </script>
