@@ -48,8 +48,12 @@
             <td>: {{ $pet->ras ?? '-' }}</td>
           </tr>
           <tr>
+            <th class="ps-0">Tanggal Lahir</th>
+            <td>: {{ $pet->tanggal_lahir ? \Carbon\Carbon::parse($pet->tanggal_lahir)->format('d M Y') : '-' }}</td>
+          </tr>
+          <tr>
             <th class="ps-0">Umur</th>
-            <td>: {{ $pet->umur ? (is_numeric($pet->umur) ? $pet->umur . ' bulan' : $pet->umur) : '-' }}</td>
+            <td>: {{ $pet->tanggal_lahir ? \Carbon\Carbon::parse($pet->tanggal_lahir)->locale('id')->diffForHumans(null, true) : '-' }}</td>
           </tr>
           <tr>
             <th class="ps-0">Berat</th>

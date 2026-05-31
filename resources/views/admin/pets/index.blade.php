@@ -14,7 +14,7 @@
       <td><strong>{{ $pet->nama_hewan }}</strong></td>
       <td>{{ $pet->jenis }}</td>
       <td>{{ $pet->ras ?? '-' }}</td>
-      <td>{{ $pet->umur ?? '-' }}</td>
+      <td>{{ $pet->tanggal_lahir ? \Carbon\Carbon::parse($pet->tanggal_lahir)->locale('id')->diffForHumans(null, true) : '-' }}</td>
       <td>{{ $pet->berat ? $pet->berat . ' kg' : '-' }}</td>
       <td>{{ $pet->owner->nama ?? '-' }}</td>
       <td>

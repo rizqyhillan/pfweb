@@ -19,7 +19,6 @@ return new class extends Migration {
     $table->date('tanggal_lahir')->nullable();
 
     $table->string('ras')->nullable();
-    $table->string('umur')->nullable();
 
     $table->decimal('berat', 8, 2)->nullable();
 

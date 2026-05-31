@@ -35,7 +35,7 @@
           'required' => false,
         ])
       </div>
-      <div class="col-md-2"><label class="form-label">Umur</label><input type="text" class="form-control" name="umur" value="{{ old('umur') }}" placeholder="2 tahun" /></div>
+      <div class="col-md-2"><label class="form-label">Tanggal Lahir</label><input type="date" class="form-control" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" max="{{ date('Y-m-d') }}" /></div>
       <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="berat" value="{{ old('berat') }}" /></div>
     </div>
     <div class="row mb-6">

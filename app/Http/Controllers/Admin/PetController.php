@@ -31,16 +31,15 @@ class PetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_pemilik' => 'required|exists:users,id',
-            'nama_hewan' => 'required|string|max:100',
-            'jenis' => 'required|string|max:50',
+            'id_pemilik'    => 'required|exists:users,id',
+            'nama_hewan'    => 'required|string|max:100',
+            'jenis'         => 'required|string|max:50',
             'jenis_kelamin' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
-            'ras' => 'nullable|string|max:100',
-            'umur' => 'nullable|string|max:30',
-            'berat' => 'nullable|numeric',
-            'catatan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'ras'           => 'nullable|string|max:100',
+            'berat'         => 'nullable|numeric',
+            'catatan'       => 'nullable|string',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -59,6 +58,7 @@ class PetController extends Controller
         return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil ditambahkan');
     }
 
+
     public function edit(Pet $pet)
     {
         $owners = User::where('role', 'customer')->get();
@@ -73,23 +73,21 @@ class PetController extends Controller
         $pet = Pet::findOrFail($id);
 
         $validated = $request->validate([
-            'id_pemilik' => 'required|exists:users,id',
-            'nama_hewan' => 'required|string|max:100',
-            'jenis' => 'required|string|max:50',
+            'id_pemilik'    => 'required|exists:users,id',
+            'nama_hewan'    => 'required|string|max:100',
+            'jenis'         => 'required|string|max:50',
             'jenis_kelamin' => 'nullable|string|max:20',
             'tanggal_lahir' => 'nullable|date',
-            'ras' => 'nullable|string|max:100',
-            'umur' => 'nullable|string|max:30',
-            'berat' => 'nullable|numeric',
-            'catatan' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'ras'           => 'nullable|string|max:100',
+            'berat'         => 'nullable|numeric',
+            'catatan'       => 'nullable|string',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
             if ($pet->foto && Storage::disk('public')->exists($pet->foto)) {
                 Storage::disk('public')->delete($pet->foto);
             }
-
             $validated['foto'] = $request->file('foto')->store('pets', 'public');
         }
 
@@ -104,7 +102,6 @@ class PetController extends Controller
 
         return redirect()->route('admin.pets.index')->with('success', 'Hewan berhasil diperbarui');
     }
-
     public function show(Pet $pet)
     {
         $pet->load(['owner', 'rekamMedis.dokter']);
