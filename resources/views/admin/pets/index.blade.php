@@ -1,31 +1,27 @@
 @extends('layouts.admin')
 @section('title', 'Data Hewan')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-6">
-  <h4 class="mb-0">Data Hewan Peliharaan</h4>
-  <a href="{{ route('admin.pets.create') }}" class="btn btn-primary"><i class="bx bx-plus me-1"></i> Tambah Hewan</a>
-</div>
-
-<div class="card mb-4">
-  <div class="card-body">
-    <form action="{{ route('admin.pets.index') }}" method="GET">
-      <div class="row g-3 align-items-center">
-        <div class="col-md-6 col-lg-4">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bx bx-search"></i></span>
-            <input type="text" name="search" class="form-control" placeholder="Cari nama pemilik atau hewan..." value="{{ request('search') }}">
-          </div>
-        </div>
-        <div class="col-md-6">
-          <button type="submit" class="btn btn-primary me-2">Cari</button>
-          @if(request('search'))
-            <a href="{{ route('admin.pets.index') }}" class="btn btn-outline-secondary">Reset</a>
-          @endif
-        </div>
+  <div class="d-flex justify-content-between align-items-end gap-3 mb-6">
+    <h4 class="mb-0">Data Hewan Peliharaan</h4>
+    <form method="GET" action="{{ route('admin.pets.index') }}" class="d-flex gap-2 align-items-end">
+      <div style="min-width: 220px;">
+        <label for="search" class="form-label mb-2">Cari Pemilik / Hewan</label>
+        <input 
+          id="search"
+          type="text" 
+          name="search" 
+          value="{{ request('search') }}" 
+          class="form-control form-control-sm" 
+          placeholder="Cari..."
+        >
       </div>
+      <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+      @if(request('search'))
+        <a href="{{ route('admin.pets.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+      @endif
+      <a href="{{ route('admin.pets.create') }}" class="btn btn-primary btn-sm"><i class="bx bx-plus me-1"></i> Tambah Hewan</a>
     </form>
   </div>
-</div>
 
 <div class="card"><div class="table-responsive text-nowrap"><table class="table">
   <thead><tr><th>No</th><th>Nama</th><th>Jenis</th><th>Ras</th><th>Umur</th><th>Berat</th><th>Pemilik</th><th>Aksi</th></tr></thead>

@@ -1,40 +1,28 @@
 @extends('layouts.admin')
 @section('title', 'Rekam Medis')
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Rekam Medis</h4>
-
-  <div class="d-flex gap-2">
-    <a href="{{ route('admin.medical-records.create') }}" class="btn btn-primary">
-      <i class="bx bx-plus me-1"></i> Tambah Rekam Medis
-    </a>
-
-    <a href="{{ route('admin.medical-records.export.excel') }}" class="btn btn-success">
-      <i class="bx bx-download me-1"></i> Export Excel
-    </a>
-  </div>
-</div>
-
-<div class="card mb-4">
-  <div class="card-body">
-    <form action="{{ route('admin.medical-records.index') }}" method="GET">
-      <div class="row g-3 align-items-center">
-        <div class="col-md-6 col-lg-4">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bx bx-search"></i></span>
-            <input type="text" name="search" class="form-control" placeholder="Cari nama hewan..." value="{{ request('search') }}">
-          </div>
-        </div>
-        <div class="col-md-6">
-          <button type="submit" class="btn btn-primary me-2">Cari</button>
-          @if(request('search'))
-            <a href="{{ route('admin.medical-records.index') }}" class="btn btn-outline-secondary">Reset</a>
-          @endif
-        </div>
+  <div class="d-flex justify-content-between align-items-end gap-3 mb-6">
+    <h4 class="mb-0">Rekam Medis</h4>
+    <form method="GET" action="{{ route('admin.medical-records.index') }}" class="d-flex gap-2 align-items-end">
+      <div style="min-width: 220px;">
+        <label for="search" class="form-label mb-2">Cari Nama Hewan</label>
+        <input 
+          id="search"
+          type="text" 
+          name="search" 
+          value="{{ request('search') }}" 
+          class="form-control form-control-sm" 
+          placeholder="Cari..."
+        >
       </div>
+      <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+      @if(request('search'))
+        <a href="{{ route('admin.medical-records.index') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+      @endif
+      <a href="{{ route('admin.medical-records.create') }}" class="btn btn-primary btn-sm"><i class="bx bx-plus me-1"></i> Tambah Rekam Medis</a>
+      <a href="{{ route('admin.medical-records.export.excel') }}" class="btn btn-success btn-sm"><i class="bx bx-download me-1"></i> Export Excel</a>
     </form>
   </div>
-</div>
 
 <div class="card">
   <div class="table-responsive text-nowrap">

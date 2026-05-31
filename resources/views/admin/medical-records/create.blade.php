@@ -1,5 +1,18 @@
 @extends('layouts.admin')
 @section('title', 'Tambah Rekam Medis')
+@section('page-css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+  .select2-container--bootstrap-5 .select2-selection {
+    border-color: #d9dee3 !important;
+  }
+  .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    color: #435971 !important;
+  }
+</style>
+@endsection
+
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Tambah Rekam Medis</h4>
@@ -9,7 +22,7 @@
   <form action="{{ route('admin.medical-records.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
       <div class="col-md-4"><label class="form-label">Hewan *</label>
-        <select class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih --</option>
+        <select id="hewanSelect" class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required><option value="">-- Pilih --</option>
           @foreach($pets as $p)<option value="{{ $p->id }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>{{ $p->nama_hewan }} ({{ $p->owner->nama ?? '-' }})</option>@endforeach
         </select>@error('id_hewan')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
       <div class="col-md-4"><label class="form-label">Dokter</label>
@@ -143,4 +156,17 @@
     <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
   </form>
 </div></div>
+@endsection
+
+@section('page-js')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#hewanSelect').select2({
+      theme: 'bootstrap-5',
+      placeholder: '-- Pilih --',
+      allowClear: true
+    });
+  });
+</script>
 @endsection
