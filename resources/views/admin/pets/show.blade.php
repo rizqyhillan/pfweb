@@ -48,6 +48,10 @@
             <td>: {{ $pet->ras ?? '-' }}</td>
           </tr>
           <tr>
+            <th class="ps-0">Jenis Kelamin</th>
+            <td>: {{ $pet->jenis_kelamin ?? '-' }}</td>
+          </tr>
+          <tr>
             <th class="ps-0">Tanggal Lahir</th>
             <td>: {{ $pet->tanggal_lahir ? \Carbon\Carbon::parse($pet->tanggal_lahir)->format('d M Y') : '-' }}</td>
           </tr>

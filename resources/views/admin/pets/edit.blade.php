@@ -35,6 +35,14 @@
           'required' => false,
         ])
       </div>
+      <div class="col-md-2">
+        <label class="form-label">Jenis Kelamin</label>
+        <select class="form-select" name="jenis_kelamin">
+          <option value="">-- Pilih --</option>
+          <option value="Jantan" {{ old('jenis_kelamin', $pet->jenis_kelamin) == 'Jantan' ? 'selected' : '' }}>Jantan</option>
+          <option value="Betina" {{ old('jenis_kelamin', $pet->jenis_kelamin) == 'Betina' ? 'selected' : '' }}>Betina</option>
+        </select>
+      </div>
       <div class="col-md-2"><label class="form-label">Tanggal Lahir</label><input type="date" class="form-control" name="tanggal_lahir" value="{{ old('tanggal_lahir', $pet->tanggal_lahir) }}" max="{{ date('Y-m-d') }}" /></div>
       <div class="col-md-2"><label class="form-label">Berat (kg)</label><input type="number" step="0.01" class="form-control" name="berat" value="{{ old('berat', $pet->berat) }}" /></div>
     </div>
