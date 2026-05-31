@@ -27,7 +27,7 @@
           <option value="">-- Pilih Hewan --</option>
           @foreach($pets as $p)
             <option value="{{ $p->id }}" data-owner="{{ $p->owner->nama ?? '-' }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>
-              {{ $p->nama_hewan }}
+              {{ $p->nama_hewan }} - {{ $p->owner->nama ?? 'Tanpa Pemilik' }}
             </option>
           @endforeach
         </select>

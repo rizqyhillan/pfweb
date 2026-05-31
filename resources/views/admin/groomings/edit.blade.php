@@ -36,7 +36,7 @@
               @foreach($pets as $pet)
                 <option value="{{ $pet->id }}" data-owner="{{ $pet->owner?->nama ?? '-' }}"
                   {{ old('id_hewan', $grooming->id_hewan) == $pet->id ? 'selected' : '' }}>
-                  {{ $pet->nama_hewan }}
+                  {{ $pet->nama_hewan }} - {{ $pet->owner?->nama ?? 'Tanpa Pemilik' }}
                 </option>
               @endforeach
             </select>
