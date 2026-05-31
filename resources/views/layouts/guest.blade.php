@@ -201,11 +201,14 @@
         }
         .input-wrapper {
             position: relative;
+            display: block;
+            width: 100%;
         }
-        .input-wrapper i {
+        .input-wrapper > i {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
             color: #d1a054; font-size: 1.1rem;
             transition: color 0.3s;
+            pointer-events: none; /* Make sure background icons don't block clicks */
         }
         .input-wrapper input {
             width: 100%;
@@ -312,23 +315,30 @@
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
-            border: none;
+            background: none !important;
+            border: none !important;
             cursor: pointer;
             color: #d1a054;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            height: 38px;
+            width: 38px;
             transition: color 0.3s;
             z-index: 10;
         }
         .toggle-password:hover {
             color: var(--paw-amber);
         }
+        .toggle-password i {
+            position: static !important;
+            color: inherit !important;
+            font-size: 1.1rem !important;
+            transform: none !important;
+        }
         .input-wrapper input.has-toggle {
-            padding-right: 2.75rem;
+            padding-right: 3rem;
         }
 
         /* ── Responsive ── */
