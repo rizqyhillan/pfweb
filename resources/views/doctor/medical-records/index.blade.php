@@ -5,7 +5,7 @@
   <h4 class="mb-0">Rekam Medis</h4>
 
   <div class="d-flex gap-2">
-    <a href="{{ route('admin.medical-records.create') }}" class="btn btn-primary">
+    <a href="{{ route('doctor.medical-records.create') }}" class="btn btn-primary">
       <i class="bx bx-plus me-1"></i> Tambah Rekam Medis
     </a>
 
@@ -48,13 +48,13 @@
                 <i class="icon-base bx bx-dots-vertical-rounded"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-end">
-                <a class="dropdown-item" href="{{ route('admin.medical-records.show', $r) }}">
+                <a class="dropdown-item" href="{{ route('doctor.medical-records.show', $r) }}">
                   <i class="icon-base bx bx-show me-1"></i> Detail
                 </a>
-                <a class="dropdown-item" href="{{ route('admin.medical-records.edit', $r) }}">
+                <a class="dropdown-item" href="{{ route('doctor.medical-records.edit', $r) }}">
                   <i class="icon-base bx bx-edit-alt me-1"></i> Edit
                 </a>
-                <form action="{{ route('admin.medical-records.destroy', $r) }}" method="POST" class="m-0">
+                <form action="{{ route('doctor.medical-records.destroy', $r) }}" method="POST" class="m-0">
                   @csrf @method('DELETE')
                   <button type="submit" class="dropdown-item text-danger">
                     <i class="icon-base bx bx-trash me-1"></i> Hapus
