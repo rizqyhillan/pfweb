@@ -201,11 +201,14 @@
         }
         .input-wrapper {
             position: relative;
+            display: block;
+            width: 100%;
         }
-        .input-wrapper i {
+        .input-wrapper > i {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
             color: #d1a054; font-size: 1.1rem;
             transition: color 0.3s;
+            pointer-events: none; /* Make sure background icons don't block clicks */
         }
         .input-wrapper input {
             width: 100%;
@@ -306,6 +309,48 @@
             border: 1px solid #a7f3d0;
         }
 
+        /* Toggle Password Button */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none !important;
+            border: none !important;
+            cursor: pointer;
+            color: #d1a054;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 38px;
+            width: 38px;
+            transition: color 0.3s;
+            z-index: 10;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .toggle-password:focus,
+        .toggle-password:focus-visible,
+        .toggle-password:active {
+            outline: none !important;
+            box-shadow: none !important;
+            background: none !important;
+            border: none !important;
+        }
+        .toggle-password:hover {
+            color: var(--paw-amber);
+        }
+        .toggle-password i {
+            position: static !important;
+            color: inherit !important;
+            font-size: 1.1rem !important;
+            transform: none !important;
+        }
+        .input-wrapper input.has-toggle {
+            padding-right: 3rem;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .auth-illustration { display: none; }
@@ -367,6 +412,29 @@
                 container.appendChild(paw);
             }
         })();
+
+        // Toggle password visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', () => {
+                    const wrapper = button.closest('.input-wrapper');
+                    if (!wrapper) return;
+                    const input = wrapper.querySelector('input');
+                    const icon = button.querySelector('i');
+                    if (input && icon) {
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.remove('bi-eye-slash');
+                            icon.classList.add('bi-eye');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('bi-eye');
+                            icon.classList.add('bi-eye-slash');
+                        }
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

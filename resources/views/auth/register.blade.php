@@ -37,8 +37,11 @@
     <div class="form-group">
         <label for="password">Password</label>
         <div class="input-wrapper">
-            <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
+            <input id="password" class="has-toggle" type="password" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
             <i class="bi bi-lock"></i>
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Toggle Password Visibility">
+                <i class="bi bi-eye-slash"></i>
+            </button>
         </div>
         @error('password')
             <div class="field-error">{{ $message }}</div>
@@ -49,8 +52,11 @@
     <div class="form-group">
         <label for="password_confirmation">Konfirmasi Password</label>
         <div class="input-wrapper">
-            <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ulangi password">
+            <input id="password_confirmation" class="has-toggle" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ulangi password">
             <i class="bi bi-shield-lock"></i>
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Toggle Password Visibility">
+                <i class="bi bi-eye-slash"></i>
+            </button>
         </div>
         @error('password_confirmation')
             <div class="field-error">{{ $message }}</div>

@@ -5,7 +5,12 @@
     <div class="row">
         <div class="mb-3 col-md-12">
             <label for="update_password_current_password" class="form-label">{{ __('Current Password') }}</label>
-            <input class="form-control" type="password" id="update_password_current_password" name="current_password" autocomplete="current-password" />
+            <div class="position-relative">
+                <input class="form-control" type="password" id="update_password_current_password" name="current_password" autocomplete="current-password" style="padding-right: 40px;" />
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
             @if ($errors->updatePassword->get('current_password'))
                 <div class="text-danger mt-1">
                     {{ $errors->updatePassword->first('current_password') }}
@@ -15,7 +20,12 @@
 
         <div class="mb-3 col-md-6">
             <label for="update_password_password" class="form-label">{{ __('New Password') }}</label>
-            <input class="form-control" type="password" id="update_password_password" name="password" autocomplete="new-password" />
+            <div class="position-relative">
+                <input class="form-control" type="password" id="update_password_password" name="password" autocomplete="new-password" style="padding-right: 40px;" />
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
             @if ($errors->updatePassword->get('password'))
                 <div class="text-danger mt-1">
                     {{ $errors->updatePassword->first('password') }}
@@ -25,7 +35,12 @@
 
         <div class="mb-3 col-md-6">
             <label for="update_password_password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
-            <input class="form-control" type="password" id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password" />
+            <div class="position-relative">
+                <input class="form-control" type="password" id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password" style="padding-right: 40px;" />
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none text-muted toggle-password" style="z-index: 10; border: none; background: transparent; padding-right: 12px;" tabindex="-1">
+                    <i class="bx bx-hide" style="font-size: 1.25rem;"></i>
+                </button>
+            </div>
             @if ($errors->updatePassword->get('password_confirmation'))
                 <div class="text-danger mt-1">
                     {{ $errors->updatePassword->first('password_confirmation') }}
