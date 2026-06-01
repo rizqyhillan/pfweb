@@ -16,10 +16,10 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-6">
   <h4 class="mb-0">Tambah Rekam Medis</h4>
-  <a href="{{ route('admin.medical-records.index') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
+  <a href="{{ route('doctor.medical-records') }}" class="btn btn-secondary"><i class="bx bx-arrow-back me-1"></i> Kembali</a>
 </div>
 <div class="card"><div class="card-body">
-  <form action="{{ route('admin.medical-records.store') }}" method="POST" enctype="multipart/form-data">@csrf
+  <form action="{{ route('doctor.medical-records.store') }}" method="POST" enctype="multipart/form-data">@csrf
     <div class="row mb-6">
       <div class="col-md-6">
         <label class="form-label">Hewan *</label>
@@ -42,14 +42,8 @@
     <div class="row mb-6">
       <div class="col-md-6">
         <label class="form-label">Dokter</label>
-        <select class="form-select" name="id_dokter">
-          <option value="">-- Pilih --</option>
-          @foreach($doctors as $d)
-            <option value="{{ $d->id }}" {{ old('id_dokter') == $d->id ? 'selected' : '' }}>
-              {{ $d->nama }}
-            </option>
-          @endforeach
-        </select>
+        <input type="text" class="form-control" value="drh. {{ Auth::user()->nama }}" readonly />
+        <input type="hidden" name="id_dokter" value="{{ Auth::id() }}" />
       </div>
       <div class="col-md-3">
         <label class="form-label">Berat (kg)</label>

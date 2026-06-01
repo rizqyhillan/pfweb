@@ -41,7 +41,7 @@
     <div class="row mb-6">
       <div class="col-md-6">
         <label class="form-label">Dokter</label>
-        <input type="text" class="form-control" value="drh. {{ $medical_record->dokter->nama ?? Auth::user()->nama }}" readonly />
+        <input type="text" class="form-control" value="drh. {{ $medical_record->dokter?->nama ?? Auth::user()->nama }}" readonly />
         <input type="hidden" name="id_dokter" value="{{ $medical_record->id_dokter }}" />
       </div>
       <div class="col-md-3">
