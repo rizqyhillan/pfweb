@@ -86,6 +86,9 @@
                         <button class="dropdown-item text-danger"><i class="icon-base bx bx-x me-1"></i> Batalkan</button>
                       </form>
                     @endif
+                    @if(!in_array($grooming->status, ['pending', 'aktif']))
+                      <span class="dropdown-item text-muted disabled"><i class="icon-base bx bx-block me-1"></i> Tidak ada aksi</span>
+                    @endif
                   </div>
                 </div>
               </td>

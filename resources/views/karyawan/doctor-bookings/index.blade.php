@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 
 @section('title', 'Booking Dokter')
@@ -31,7 +32,7 @@
                                 <th>Jam</th>
                                 <th>Status</th>
                                 <th>Total Biaya</th>
-                                <th class="text-end">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,34 +61,45 @@
                                         </span>
                                     </td>
                                     <td>Rp {{ number_format($booking->total_biaya, 0, ',', '.') }}</td>
-                                    <td class="text-end">
-                                        <a href="{{ route('karyawan.doctor-bookings.show', $booking) }}" class="btn btn-sm btn-outline-info">
-                                            Detail
-                                        </a>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{{ route('karyawan.doctor-bookings.show', $booking) }}">
+                                                    <i class="icon-base bx bx-show me-1"></i> Detail
+                                                </a>
 
-                                        @if($booking->status === 'pending')
-                                            <form action="{{ route('karyawan.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="dikonfirmasi">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">Konfirmasi</button>
-                                            </form>
-                                        @endif
+                                                @if($booking->status === 'pending')
+                                                    <form action="{{ route('karyawan.doctor-bookings.update-status', $booking) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="dikonfirmasi">
+                                                        <button type="submit" class="dropdown-item text-primary">
+                                                            <i class="icon-base bx bx-check me-1"></i> Konfirmasi
+                                                        </button>
+                                                    </form>
+                                                @endif
 
-                                        @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
-                                            <form action="{{ route('karyawan.doctor-bookings.update-status', $booking) }}" method="POST" class="d-inline" data-confirm="Batalkan booking dokter ini?">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="status" value="batal">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Batal</button>
-                                            </form>
-                                        @endif
+                                                @if($booking->status === 'dikonfirmasi')
+                                                    <a class="dropdown-item text-success" href="{{ route('karyawan.doctor-bookings.payment', $booking) }}">
+                                                        <i class="icon-base bx bx-wallet me-1"></i> Bayar & Selesaikan
+                                                    </a>
+                                                @endif
 
-                                        @if($booking->status === 'dikonfirmasi')
-                                            <a href="{{ route('karyawan.doctor-bookings.payment', $booking) }}" class="btn btn-sm btn-outline-success">
-                                                <i class="bx bx-wallet me-1"></i> Bayar & Selesaikan
-                                            </a>
-                                        @endif
+                                                @if(in_array($booking->status, ['pending', 'dikonfirmasi']))
+                                                    <form action="{{ route('karyawan.doctor-bookings.update-status', $booking) }}" method="POST" data-confirm="Batalkan booking dokter ini?">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="status" value="batal">
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="icon-base bx bx-x me-1"></i> Batal
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

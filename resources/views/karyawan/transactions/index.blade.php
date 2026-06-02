@@ -51,10 +51,16 @@
                     </td>
                     <td>{{ $trx->tanggal ? $trx->tanggal->format('d/m/Y') : '-' }}</td>
                     <td>
-                      <a href="{{ route('karyawan.transactions.show', $trx) }}" class="btn btn-sm btn-icon btn-info"
-                        title="Detail">
-                        <i class="bx bx-show"></i>
-                      </a>
+                      <div class="dropdown">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                          <a class="dropdown-item" href="{{ route('karyawan.transactions.show', $trx) }}">
+                            <i class="icon-base bx bx-show me-1"></i> Detail
+                          </a>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 @empty
@@ -104,9 +110,16 @@
                           <td>${statusBadge}</td>
                           <td>${dateStr}</td>
                           <td>
-                            <a href="/karyawan/transactions/${trx.id}" class="btn btn-sm btn-icon btn-info" title="Detail">
-                              <i class="bx bx-show"></i>
-                            </a>
+                            <div class="dropdown">
+                              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/karyawan/transactions/${trx.id}">
+                                  <i class="icon-base bx bx-show me-1"></i> Detail
+                                </a>
+                              </div>
+                            </div>
                           </td>
                       </tr>`;
 
