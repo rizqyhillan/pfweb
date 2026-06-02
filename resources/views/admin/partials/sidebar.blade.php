@@ -24,6 +24,14 @@
       </a>
     </li>
 
+
+    <li class="menu-item {{ request()->routeIs('admin.home-banners.*') ? 'active' : '' }}">
+      <a href="{{ route('admin.home-banners.index') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-image-alt"></i>
+        <div class="text-truncate">Banner Mobile</div>
+      </a>
+    </li>
+
     <!-- Pasien Hewan -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Pasien Hewan</span></li>
 

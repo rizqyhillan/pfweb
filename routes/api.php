@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\ShopCartController;
 use App\Http\Controllers\Api\BoardingController;
 use App\Http\Controllers\Api\MidtransCallbackController;
+use App\Http\Controllers\Api\HomeBannerController;
 
 // Midtrans Webhook — public endpoint (no auth)
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'handle']);
@@ -27,6 +28,8 @@ Route::post('/login', [MobileAuthController::class, 'login']);
 Route::post('/register', [MobileAuthController::class, 'register']);
 Route::post('/send-otp', [MobileAuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [MobileAuthController::class, 'verifyOtpAndRegister']);
+
+Route::get('/home-banners', [HomeBannerController::class, 'index']);
 
 Route::post('/forgot-password/send-otp', [MobileAuthController::class, 'sendForgotPasswordOtp']);
 Route::post('/forgot-password/verify-otp', [MobileAuthController::class, 'verifyForgotPasswordOtp']);
@@ -84,9 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/grooming-bookings/{id}', [TransactionController::class, 'showGrooming']);
     Route::post('/grooming-bookings/{id}/cancel', [TransactionController::class, 'cancelGrooming']);
     Route::post('/grooming-bookings/{id}/reschedule', [TransactionController::class, 'rescheduleGrooming']);
-
-    // Shop
-    Route::post('/checkout', [TransactionController::class, 'checkout']);
 
     // Shopping Cart
     Route::get('/shop/cart', [ShopCartController::class, 'index']);

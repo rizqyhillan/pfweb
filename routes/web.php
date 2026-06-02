@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\DoctorBookingController;
 use App\Http\Controllers\Admin\DoctorScheduleController;
 use App\Http\Controllers\Admin\DoctorServiceController;
 use App\Http\Controllers\Admin\ShopOrderController;
+use App\Http\Controllers\Admin\HomeBannerController;
 
 // use Illuminate\Support\Facades\Mail;
 
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('package-types', PackageTypeController::class);
     Route::put('boardings/{boarding}/status', [BoardingController::class, 'updateStatus'])->name('boardings.update-status');
     Route::resource('boardings', BoardingController::class);
+    Route::resource('home-banners', HomeBannerController::class)->except(['show']);
 
     Route::get('groomings/{grooming}/payment', [GroomingController::class, 'payment'])->name('groomings.payment');
     Route::post('groomings/{grooming}/pay', [GroomingController::class, 'pay'])->name('groomings.pay');
@@ -100,6 +102,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('rooms/page/{page}', [RoomController::class, 'index'])->name('rooms.page');
     Route::get('package-types/page/{page}', [PackageTypeController::class, 'index'])->name('package-types.page');
     Route::get('boardings/page/{page}', [BoardingController::class, 'index'])->name('boardings.page');
+    Route::get('home-banners/page/{page}', [HomeBannerController::class, 'index'])->name('home-banners.page');
     Route::get('groomings/page/{page}', [GroomingController::class, 'index'])->name('groomings.page');
     Route::get('medical-records/page/{page}', [MedicalRecordController::class, 'index'])->name('medical-records.page');
     Route::get('suppliers/page/{page}', [SupplierController::class, 'index'])->name('suppliers.page');
