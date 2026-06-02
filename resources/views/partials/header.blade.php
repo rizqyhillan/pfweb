@@ -61,7 +61,7 @@
         <a href="{{ $dashRouteMobile }}" class="mobile-nav-link" style="color: #2d2d2d; font-weight: 600; font-size: 1.1rem; text-decoration: none; padding: 8px 0; display: block; border-bottom: 1px solid rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif;">Dashboard</a>
       @endauth
 
-      <a href="https://mega.nz/file/SxInySoS#ecoC6lj9OfaUMJEKL_KsGQQYc0ix1I8cyFEQO690uNo" target="_blank" class="w-100 text-center btn btn-primary mt-2" style="background: #f59e0b; border: none; border-radius: 50px; padding: 12px; font-weight: 700; font-size: 1.05rem; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+      <a href="https://mega.nz/file/ao50SRhJ#3HGWwJIIOkfEfBdlVlOTM_MwoP1S-3G9MJ1qfDfnrUM" target="_blank" class="w-100 text-center btn btn-primary mt-2" style="background: #f59e0b; border: none; border-radius: 50px; padding: 12px; font-weight: 700; font-size: 1.05rem; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
         <i class="bi bi-android2 me-2"></i>Download APK
       </a>
     </div>
