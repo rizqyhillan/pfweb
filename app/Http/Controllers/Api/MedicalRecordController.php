@@ -32,6 +32,7 @@ class MedicalRecordController extends Controller
         $records = MedicalRecord::with([
                 'hewan.owner',
                 'dokter',
+                'photos',
             ])
             ->where('id_hewan', $id)
             ->whereHas('hewan', function ($query) use ($request) {
@@ -50,7 +51,7 @@ class MedicalRecordController extends Controller
     {
         $data = $request->validate([
             'id_hewan' => 'required|exists:hewan,id',
-            'id_dokter' => 'required|exists:users,id',
+            'id_dokter' => 'nullable|exists:users,id',
             'diagnosa' => 'nullable|string',
             'tindakan' => 'nullable|string',
             'resep' => 'nullable|string',
@@ -59,12 +60,17 @@ class MedicalRecordController extends Controller
             'tanggal' => 'required|date',
         ]);
 
-        $record = MedicalRecord::create($data);
+        $record = MedicalRecord::with([
+                'hewan.owner',
+                'dokter',
+                'photos',
+            ])
+            ->findOrFail(MedicalRecord::create($data)->id);
 
         return response()->json([
             'message' => 'Rekam medis berhasil ditambahkan',
-            'data' => $record
-        ]);
+            'data' => $this->formatMedicalRecord($record),
+        ], 201);
     }
 
     public function show(Request $request, $id)
@@ -72,6 +78,7 @@ class MedicalRecordController extends Controller
         $record = MedicalRecord::with([
                 'hewan.owner',
                 'dokter',
+                'photos',
             ])
             ->where('id', $id)
             ->whereHas('hewan', function ($query) use ($request) {
@@ -86,25 +93,63 @@ class MedicalRecordController extends Controller
 
     private function formatMedicalRecord(MedicalRecord $record): array
     {
+        $hewan = $record->hewan;
+        $owner = $hewan?->owner;
+        $dokter = $record->dokter;
+
         return [
             'id' => $record->id,
-
             'id_hewan' => $record->id_hewan,
-            'nama_hewan' => $record->hewan->nama_hewan ?? '-',
-            'jenis_hewan' => $record->hewan->jenis ?? null,
-            'ras_hewan' => $record->hewan->ras ?? null,
-
             'id_dokter' => $record->id_dokter,
-            'nama_dokter' => $record->dokter->nama ?? '-',
+
+            // Format flat untuk mobile versi sekarang/baru.
+            'nama_hewan' => $hewan?->nama_hewan ?? '-',
+            'jenis_hewan' => $hewan?->jenis ?? '-',
+            'ras_hewan' => $hewan?->ras ?? '-',
+            'umur_hewan' => $hewan?->umur ? (string) $hewan->umur : '-',
+            'berat_hewan' => $hewan?->berat !== null ? (float) $hewan->berat : null,
+            'nama_pemilik' => $owner?->nama ?? '-',
+            'nama_dokter' => $dokter?->nama ?? '-',
+            'spesialisasi_dokter' => $dokter?->spesialisasi ?? 'Dokter Hewan',
+            'foto_dokter_url' => $dokter?->foto_url,
 
             'diagnosa' => $record->diagnosa,
             'tindakan' => $record->tindakan,
             'resep' => $record->resep,
-            'berat_saat_itu' => $record->berat_saat_itu ? (float) $record->berat_saat_itu : null,
+            'catatan' => $record->catatan,
+            'berat_saat_itu' => $record->berat_saat_itu !== null ? (float) $record->berat_saat_itu : null,
             'tanggal' => optional($record->tanggal)->format('Y-m-d H:i:s'),
-
             'created_at' => optional($record->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => optional($record->updated_at)->format('Y-m-d H:i:s'),
+
+            'photos' => $record->photos->map(fn ($photo) => [
+                'id' => $photo->id,
+                'foto' => $photo->foto,
+                'foto_url' => asset('storage/' . $photo->foto),
+            ])->values(),
+
+            // Format nested supaya tetap kompatibel dengan model Flutter lama.
+            'hewan' => $hewan ? [
+                'id' => $hewan->id,
+                'nama_hewan' => $hewan->nama_hewan,
+                'jenis' => $hewan->jenis,
+                'ras' => $hewan->ras,
+                'umur' => $hewan->umur,
+                'berat' => $hewan->berat !== null ? (float) $hewan->berat : null,
+                'owner' => $owner ? [
+                    'id' => $owner->id,
+                    'nama' => $owner->nama,
+                    'email' => $owner->email,
+                ] : null,
+            ] : null,
+            'dokter' => $dokter ? [
+                'id' => $dokter->id,
+                'nama' => $dokter->nama,
+                'email' => $dokter->email,
+                'foto' => $dokter->foto,
+                'foto_url' => $dokter->foto_url,
+                'spesialisasi' => $dokter->spesialisasi ?? 'Dokter Hewan',
+            ] : null,
         ];
     }
 }
