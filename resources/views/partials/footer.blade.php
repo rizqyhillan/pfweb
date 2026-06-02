@@ -17,15 +17,15 @@
           <div class="contact-info" style="font-size: 0.9rem; display: flex; flex-column: gap-3; flex-direction: column;">
             <div class="d-flex align-items-center gap-3 mb-2">
               <i class="bi bi-geo-alt-fill" style="color: #f59e0b; font-size: 1.1rem;"></i>
-              <span>Jl. Raya Pet Care No. 123, Jakarta</span>
+              <span>Jl. Mastrip No.164, Lingkungan Panji, Tegalgede, Kec. Sumbersari, Kabupaten Jember Jawa Timur</span>
             </div>
             <div class="d-flex align-items-center gap-3 mb-2">
               <i class="bi bi-telephone-fill" style="color: #f59e0b; font-size: 1.1rem;"></i>
-              <span>+62 811 2233 4455</span>
+              <span>+62 857 049 635 37</span>
             </div>
             <div class="d-flex align-items-center gap-3">
               <i class="bi bi-envelope-fill" style="color: #f59e0b; font-size: 1.1rem;"></i>
-              <span>hello@pawpet.id</span>
+              <span>rizqycoe@gmail.com</span>
             </div>
           </div>
         </div>

@@ -39,27 +39,10 @@
 
             <!-- Single CTA Button -->
             <div class="hero-actions mb-5">
-              <a href="https://mega.nz/file/yp5wRJLB#zOysOva6m88jF4NOD9LzN3sXjUrSZyE4PVcyLB9D7Yw" target="_blank" class="btn-hero-download" style="display: inline-flex; align-items: center; background: #f59e0b; color: #fff; border: none; border-radius: 50px; padding: 15px 35px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35); transition: all 0.3s;">
+              <a href="https://mega.nz/file/ex5FRTZa#B8tYmaDeDlQzp6C2-qxD4dvOUUBHK9hsCt244u83gvI" target="_blank" class="btn-hero-download" style="display: inline-flex; align-items: center; background: #f59e0b; color: #fff; border: none; border-radius: 50px; padding: 15px 35px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35); transition: all 0.3s;">
                 <i class="bi bi-android2 me-2" style="font-size: 1.3rem;"></i> Download APK Android
               </a>
             </div>
-
-            <!-- Stats Row -->
-            <div class="row g-4" style="border-top: 1px solid rgba(0, 0, 0, 0.06); padding-top: 30px;">
-              <div class="col-4">
-                <h3 style="font-size: 1.8rem; font-weight: 800; color: #1e1b4b; margin-bottom: 5px;">{{ $stats['totalProducts'] ?? 45 }}+</h3>
-                <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 0;">Produk Pilihan</p>
-              </div>
-              <div class="col-4">
-                <h3 style="font-size: 1.8rem; font-weight: 800; color: #1e1b4b; margin-bottom: 5px;">{{ $stats['totalServices'] ?? 12 }}+</h3>
-                <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 0;">Layanan Aktif</p>
-              </div>
-              <div class="col-4">
-                <h3 style="font-size: 1.8rem; font-weight: 800; color: #1e1b4b; margin-bottom: 5px;">{{ $stats['totalDoctors'] ?? 6 }}+</h3>
-                <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 0;">Dokter Hewan</p>
-              </div>
-            </div>
-
           </div>
         </div>
 
@@ -408,7 +391,7 @@
             </p>
 
             <div class="d-flex justify-content-center gap-3 flex-wrap position-relative">
-              <a href="https://mega.nz/file/yp5wRJLB#zOysOva6m88jF4NOD9LzN3sXjUrSZyE4PVcyLB9D7Yw" target="_blank" class="btn btn-light px-4 py-3" style="border-radius: 50px; font-weight: 700; font-size: 1.1rem; color: #d97706; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; display: inline-flex; align-items: center; transition: all 0.3s ease;">
+              <a href="https://mega.nz/file/ex5FRTZa#B8tYmaDeDlQzp6C2-qxD4dvOUUBHK9hsCt244u83gvI" target="_blank" class="btn btn-light px-4 py-3" style="border-radius: 50px; font-weight: 700; font-size: 1.1rem; color: #d97706; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; display: inline-flex; align-items: center; transition: all 0.3s ease;">
                 <i class="bi bi-android2 me-2" style="font-size: 1.3rem;"></i> Download APK Android
               </a>
             </div>
