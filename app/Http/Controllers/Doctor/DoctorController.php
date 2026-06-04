@@ -9,6 +9,7 @@ use App\Models\Pet;
 use App\Models\PetBreed;
 use App\Models\PetType;
 use App\Models\User;
+use App\Models\DoctorBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,62 @@ class DoctorController extends Controller
         return view('doctor.dashboard.index', compact(
             'doctor', 'totalPatients', 'myRecords', 'recentRecords', 'todaySchedules'
         ));
+    }
+
+    /**
+     * Daftar booking masuk untuk dokter ini.
+     */
+    public function bookings(Request $request)
+    {
+        $doctor = Auth::user();
+
+        // Get filter inputs
+        $filterDate = $request->input('tanggal');
+        $filterStatus = $request->input('status');
+
+        $query = DoctorBooking::with(['hewan.owner', 'layanan', 'jadwal'])
+            ->where('id_dokter', $doctor->id);
+
+        if ($filterDate) {
+            $query->whereDate('tanggal_booking', $filterDate);
+        }
+
+        if ($filterStatus) {
+            $query->where('status', $filterStatus);
+        }
+
+        $bookings = $query->orderBy('tanggal_booking', 'desc')
+            ->orderBy('jam_booking', 'asc')
+            ->get();
+
+        // Booking statistics by date
+        $bookingCountsByDate = DoctorBooking::where('id_dokter', $doctor->id)
+            ->whereNotIn('status', ['batal'])
+            ->selectRaw('tanggal_booking, count(*) as total')
+            ->groupBy('tanggal_booking')
+            ->orderBy('tanggal_booking', 'desc')
+            ->get();
+
+        return view('doctor.bookings.index', compact('bookings', 'bookingCountsByDate', 'filterDate', 'filterStatus'));
+    }
+
+    /**
+     * Update status dan catatan dokter pada booking.
+     */
+    public function updateBookingStatus(Request $request, DoctorBooking $booking)
+    {
+        if ($booking->id_dokter !== Auth::id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,dikonfirmasi,selesai,batal',
+            'catatan_dokter' => 'nullable|string',
+        ]);
+
+        $booking->update($validated);
+
+        return redirect()->route('doctor.bookings')->with('success', 'Status dan catatan booking berhasil diperbarui.');
     }
 
     /**
@@ -171,12 +228,13 @@ class DoctorController extends Controller
     /**
      * Form tambah rekam medis.
      */
-    public function createMedicalRecord()
+    public function createMedicalRecord(Request $request)
     {
         $pets = Pet::with('owner')->get();
         $doctors = User::where('role', 'dokter')->get();
+        $selectedPetId = $request->input('id_hewan');
 
-        return view('doctor.medical-records.create', compact('pets', 'doctors'));
+        return view('doctor.medical-records.create', compact('pets', 'doctors', 'selectedPetId'));
     }
 
     /**

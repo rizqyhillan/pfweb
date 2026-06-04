@@ -27,6 +27,13 @@
     <!-- Menu Dokter -->
     <li class="menu-header small text-uppercase"><span class="menu-header-text">Menu Dokter</span></li>
 
+    <li class="menu-item {{ request()->routeIs('doctor.bookings') ? 'active' : '' }}">
+      <a href="{{ route('doctor.bookings') }}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-calendar-check"></i>
+        <div class="text-truncate">Booking Masuk</div>
+      </a>
+    </li>
+
     <li class="menu-item {{ request()->routeIs('doctor.patients') ? 'active' : '' }}">
       <a href="{{ route('doctor.patients') }}" class="menu-link">
         <i class="menu-icon tf-icons bx bxs-dog"></i>

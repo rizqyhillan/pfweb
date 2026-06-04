@@ -26,7 +26,7 @@
         <select id="hewanSelect" class="form-select @error('id_hewan') is-invalid @enderror" name="id_hewan" required>
           <option value="">-- Pilih Hewan --</option>
           @foreach($pets as $p)
-            <option value="{{ $p->id }}" data-owner="{{ $p->owner?->nama ?? '-' }}" {{ old('id_hewan') == $p->id ? 'selected' : '' }}>
+            <option value="{{ $p->id }}" data-owner="{{ $p->owner?->nama ?? '-' }}" {{ old('id_hewan', $selectedPetId ?? '') == $p->id ? 'selected' : '' }}>
               {{ $p->nama_hewan }} - {{ $p->owner?->nama ?? 'Tanpa Pemilik' }}
             </option>
           @endforeach

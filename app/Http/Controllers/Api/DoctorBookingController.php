@@ -162,20 +162,20 @@ class DoctorBookingController extends Controller
 
                 while ($start->lt($end)) {
                     $slot = $start->format('H:i');
-                    $bookedCount = DoctorBooking::where('id_dokter', $doctor->id)
+                    $isBooked = DoctorBooking::where('id_dokter', $doctor->id)
                         ->where('id_jadwal', $schedule->id)
                         ->whereDate('tanggal_booking', $date->format('Y-m-d'))
                         ->where('jam_booking', $slot)
                         ->whereNotIn('status', ['batal'])
-                        ->count();
+                        ->exists();
 
-                    if ($bookedCount < $schedule->kuota) {
+                    if (!$isBooked) {
                         $item = [
                             'id_jadwal' => $schedule->id,
                             'time' => $slot,
                             'jam_mulai' => Carbon::parse($schedule->jam_mulai)->format('H:i'),
                             'jam_selesai' => Carbon::parse($schedule->jam_selesai)->format('H:i'),
-                            'sisa_kuota' => max(0, $schedule->kuota - $bookedCount),
+                            'sisa_kuota' => 1,
                         ];
 
                         if ((int) $start->format('H') < 12) {
@@ -444,9 +444,9 @@ class DoctorBookingController extends Controller
             $query->where('id', '!=', $ignoreBookingId);
         }
 
-        if ($query->count() >= $schedule->kuota) {
+        if ($query->exists()) {
             throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
-                'message' => 'Slot jadwal dokter ini sudah penuh.',
+                'message' => 'Jam booking tidak tersedia. Dokter sudah memiliki booking pada tanggal dan jam tersebut.',
             ], 422));
         }
     }

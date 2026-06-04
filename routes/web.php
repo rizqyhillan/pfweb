@@ -124,6 +124,8 @@ Route::middleware(['auth', 'role:dokter'])->prefix('doctor')->name('doctor.')->g
         return redirect()->route('doctor.dashboard');
     });
     Route::get('/dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/bookings', [DoctorController::class, 'bookings'])->name('bookings');
+    Route::post('/bookings/{booking}/update-status', [DoctorController::class, 'updateBookingStatus'])->name('bookings.update-status');
     Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');
     Route::get('/patients/page/{page}', [DoctorController::class, 'patients'])->name('patients.page');
     Route::get('/patients/create', [DoctorController::class, 'createPatient'])->name('patients.create');
