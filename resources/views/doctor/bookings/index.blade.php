@@ -310,4 +310,96 @@
     });
   });
 </script>
+
+@section('page-js')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.Echo !== 'undefined') {
+      window.Echo.channel('doctor-bookings')
+        .listen('.new-doctor-booking', (e) => {
+          let b = e.booking;
+          // Check if booking is for this doctor
+          let doctorId = document.querySelector('meta[name="user-id"]')?.getAttribute('content');
+          if (doctorId && parseInt(doctorId) !== b.id_dokter) return;
+
+          let tbody = document.querySelector('tbody.table-border-bottom-0');
+          if (!tbody) return;
+
+          let noDataTr = tbody.querySelector('td[colspan="6"]');
+          if (noDataTr) noDataTr.parentElement.remove();
+
+          let timeStr = b.jam_booking ? b.jam_booking.substring(0, 5) : '-';
+          let dateStr = b.tanggal_booking ? new Date(b.tanggal_booking).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+          
+          let petName = b.hewan ? b.hewan.nama_hewan : '-';
+          let petType = b.hewan && b.hewan.jenis ? b.hewan.jenis : '-';
+          let ownerName = (b.hewan && b.hewan.owner) ? b.hewan.owner.nama : '-';
+          let serviceName = b.layanan ? b.layanan.nama_layanan : 'Konsultasi Umum';
+          
+          let keluhanStr = b.keluhan ? (b.keluhan.length > 40 ? b.keluhan.substring(0, 40) + '...' : b.keluhan) : '-';
+
+          let statusMap = {
+            'pending': '<span class="badge bg-label-warning">Pending</span>',
+            'dikonfirmasi': '<span class="badge bg-label-info">Dikonfirmasi</span>',
+            'selesai': '<span class="badge bg-label-success">Selesai</span>',
+            'batal': '<span class="badge bg-label-danger">Batal</span>',
+          };
+          let statusBadge = statusMap[b.status] || '<span class="badge bg-label-secondary">' + b.status + '</span>';
+
+          let updateRoute = `/doctor/bookings/${b.id}/update-status`;
+          let aksiHtml = `
+            <div class="d-flex gap-1">
+              <button type="button" 
+                      class="btn btn-xs btn-outline-primary edit-status-btn"
+                      data-id="${b.id}"
+                      data-status="${b.status}"
+                      data-catatan="${b.catatan_dokter || ''}"
+                      data-action="${updateRoute}"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#updateStatusModal"
+                      title="Update Status & Catatan">
+                <i class="bx bx-edit-alt"></i> Status
+              </button>
+            </div>
+          `;
+
+          let html = `
+            <tr style="animation: slideIn .3s ease; background-color: rgba(40, 199, 111, 0.05);">
+              <td>
+                <strong>${timeStr}</strong><br>
+                <small class="text-muted">${dateStr}</small>
+              </td>
+              <td>
+                <strong>${petName}</strong> 
+                <span class="badge bg-label-secondary btn-xs">${petType}</span><br>
+                <small class="text-muted"><i class="bx bx-user"></i> ${ownerName}</small>
+              </td>
+              <td><span class="text-primary">${serviceName}</span></td>
+              <td>
+                <span class="text-wrap d-block" style="max-width: 180px; font-size: 0.85rem;" title="${b.keluhan || ''}">
+                  ${keluhanStr}
+                </span>
+              </td>
+              <td>${statusBadge}</td>
+              <td>${aksiHtml}</td>
+            </tr>`;
+
+          tbody.insertAdjacentHTML('afterbegin', html);
+
+          // Re-attach event listener for the new button
+          const newBtn = tbody.querySelector(`button[data-id="${b.id}"]`);
+          if (newBtn) {
+            newBtn.addEventListener('click', function() {
+              const form = document.getElementById('updateStatusForm');
+              form.setAttribute('action', this.getAttribute('data-action'));
+              document.getElementById('statusSelect').value = this.getAttribute('data-status');
+              document.getElementById('catatanDokter').value = this.getAttribute('data-catatan') || '';
+            });
+          }
+        });
+    }
+  });
+</script>
+@endsection
+
 @endsection

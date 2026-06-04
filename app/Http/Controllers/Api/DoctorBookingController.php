@@ -10,6 +10,10 @@ use App\Models\Service;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Events\DoctorBookingCreatedRealtime;
+use App\Notifications\SystemNotification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class DoctorBookingController extends Controller
 {
@@ -270,6 +274,36 @@ class DoctorBookingController extends Controller
             'layanan',
             'jadwal',
         ]);
+
+        try {
+            $booking->load('hewan.owner');
+            event(new DoctorBookingCreatedRealtime($booking));
+
+            $petName = $booking->hewan->nama_hewan ?? 'Hewan';
+            $customerName = $booking->hewan->owner->nama ?? 'Customer';
+            $jam = $booking->jam_booking ? \Carbon\Carbon::parse($booking->jam_booking)->format('H:i') : '-';
+            
+            // Notify the assigned doctor
+            if ($doctor) {
+                Notification::send($doctor, new SystemNotification(
+                    'Booking Baru',
+                    "Pasien {$petName} ({$customerName}) mendaftar konsultasi pada tanggal {$booking->tanggal_booking} jam {$jam}.",
+                    'info',
+                    route('doctor.bookings', ['tanggal' => $booking->tanggal_booking])
+                ));
+            }
+
+            // Notify admins as well
+            $admins = User::where('role', 'admin')->get();
+            Notification::send($admins, new SystemNotification(
+                'Booking Dokter',
+                "Booking baru untuk drh. {$doctor->nama} pada {$booking->tanggal_booking} {$jam}.",
+                'info',
+                url('/admin/dashboard')
+            ));
+        } catch (\Exception $e) {
+            Log::warning('Doctor booking broadcast failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'message' => 'Booking dokter berhasil dibuat. Pembayaran dilakukan di lokasi.',
